@@ -10,64 +10,88 @@
   <style>
     :root {
       --primary: #f59e0b;
+      --primary-hover: #d97706;
+      /* Tema Scuro (predefinito) */
       --bg: #0f172a;
       --card: #1e293b;
       --border: #334155;
       --text: #f8fafc;
       --muted: #94a3b8;
+      --subcard: #020617;
+      --highlight: #fbbf24;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body.light-theme {
+      /* Tema Chiaro */
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --border: #cbd5e1;
+      --text: #0f172a;
+      --muted: #64748b;
+      --subcard: #f8fafc;
+      --highlight: #d97706;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease; }
     body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); padding: 16px; display: flex; justify-content: center; }
     .app { width: 100%; max-width: 500px; display: flex; flex-direction: column; gap: 14px; }
     .header { display: flex; justify-content: space-between; align-items: center; }
+    
+    .actions-top { display: flex; align-items: center; gap: 8px; }
+    .theme-btn { background: var(--card); border: 1px solid var(--border); color: var(--text); padding: 6px 10px; border-radius: 8px; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    
     .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 16px; }
-    .lang-box { display: flex; gap: 4px; background: #0f172a; padding: 3px; border-radius: 8px; }
+    .lang-box { display: flex; gap: 4px; background: var(--subcard); padding: 3px; border-radius: 8px; border: 1px solid var(--border); }
     .lang-btn { border: none; background: transparent; color: var(--muted); font-weight: 700; font-size: 11px; padding: 6px 10px; border-radius: 6px; cursor: pointer; }
     .lang-btn.active { background: var(--primary); color: #fff; }
-    .input-box { width: 100%; background: #0f172a; border: 1px solid var(--border); color: #fff; padding: 12px; border-radius: 10px; font-size: 13px; margin-top: 6px; outline: none; }
+    
+    .input-box { width: 100%; background: var(--subcard); border: 1px solid var(--border); color: var(--text); padding: 12px; border-radius: 10px; font-size: 13px; margin-top: 6px; outline: none; }
     
     .upload-zone { border: 2px dashed var(--primary); background: rgba(245, 158, 11, 0.05); border-radius: 12px; padding: 18px; text-align: center; cursor: pointer; margin-top: 10px; position: relative; }
     .upload-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer; }
     
-    .thumbs-container { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
-    .thumb-item { position: relative; width: 85px; height: 85px; border-radius: 8px; overflow: hidden; background: #020617; border: 1px solid var(--border); }
+    .thumbs-container { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; min-height: 10px; }
+    .thumb-item { position: relative; width: 80px; height: 80px; border-radius: 8px; overflow: hidden; background: var(--subcard); border: 1px solid var(--border); }
     .thumb-item img { width: 100%; height: 100%; object-fit: cover; }
     .thumb-item .del-btn { position: absolute; top: 2px; right: 2px; background: rgba(0,0,0,0.85); color: #fff; border-radius: 50%; width: 22px; height: 22px; font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center; cursor: pointer; }
 
     .btn { width: 100%; background: var(--primary); color: #fff; border: none; padding: 13px; border-radius: 10px; font-weight: 700; font-size: 14px; cursor: pointer; margin-top: 12px; }
-    .btn-secondary { background: #334155; }
+    .btn-secondary { background: var(--card); border: 1px solid var(--border); color: var(--text); margin-top: 8px; }
     
-    .plate-card { position: relative; border-radius: 16px; overflow: hidden; background: #000; border: 1px solid var(--border); margin-top: 6px; }
-    .plate-img-wrapper { width: 100%; height: 220px; overflow: hidden; position: relative; }
+    .plate-card { position: relative; border-radius: 16px; overflow: hidden; background: var(--subcard); border: 1px solid var(--border); margin-top: 6px; }
+    .plate-img-wrapper { width: 100%; height: 220px; overflow: hidden; position: relative; background: var(--subcard); }
     .plate-img { width: 100%; height: 100%; object-fit: cover; }
     .fav-btn { position: absolute; top: 12px; right: 12px; background: rgba(15, 23, 42, 0.85); border: 1px solid var(--border); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; color: #fff; z-index: 5; }
     .fav-btn.is-fav { color: #f59e0b; }
-    .plate-title-bar { padding: 14px; background: #1e293b; border-top: 1px solid var(--border); }
+    .plate-title-bar { padding: 14px; background: var(--card); border-top: 1px solid var(--border); }
 
     .servings { background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.35); border-radius: 14px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
     .serv-row { display: flex; justify-content: space-between; align-items: center; }
     .serv-num-box { display: flex; align-items: baseline; gap: 4px; }
-    .serv-num-input { background: #0f172a; border: 1px solid var(--primary); color: #fbbf24; font-size: 22px; font-weight: 800; width: 75px; text-align: center; border-radius: 8px; padding: 4px; }
+    .serv-num-input { background: var(--subcard); border: 1px solid var(--primary); color: var(--highlight); font-size: 22px; font-weight: 800; width: 75px; text-align: center; border-radius: 8px; padding: 4px; }
     .quick-chips { display: flex; gap: 6px; flex-wrap: wrap; }
-    .chip { background: #0f172a; border: 1px solid var(--border); color: var(--text); font-size: 11px; font-weight: 700; padding: 6px 12px; border-radius: 8px; cursor: pointer; }
+    .chip { background: var(--subcard); border: 1px solid var(--border); color: var(--text); font-size: 11px; font-weight: 700; padding: 6px 12px; border-radius: 8px; cursor: pointer; }
 
     .ing-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
-    .step-card { display: flex; gap: 12px; background: #0f172a; padding: 14px; border-radius: 10px; font-size: 13px; margin-top: 8px; line-height: 1.5; }
+    .step-card { display: flex; gap: 12px; background: var(--subcard); padding: 14px; border-radius: 10px; font-size: 13px; margin-top: 8px; line-height: 1.5; border: 1px solid var(--border); }
     .step-num { width: 24px; height: 24px; border-radius: 50%; background: var(--primary); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 12px; flex-shrink: 0; }
     
-    .fav-item { display: flex; justify-content: space-between; align-items: center; background: #0f172a; border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; margin-top: 6px; cursor: pointer; }
+    .fav-item { display: flex; justify-content: space-between; align-items: center; background: var(--subcard); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; margin-top: 6px; cursor: pointer; }
   </style>
 </head>
 <body>
   <div class="app">
     <div class="header">
       <div>
-        <h2 style="font-size: 20px; font-weight: 800; color: #fbbf24;">👨‍🍳 Seniorama Rezept</h2>
+        <h2 style="font-size: 20px; font-weight: 800; color: #f59e0b;">👨‍🍳 Seniorama Rezept</h2>
         <span style="font-size: 11px; color: #10b981; font-weight: 700;">● Küchen-Manager</span>
       </div>
-      <div class="lang-box">
-        <button class="lang-btn" id="btn-it" onclick="setLang('it')">🇮🇹 IT</button>
-        <button class="lang-btn active" id="btn-de" onclick="setLang('de')">🇩🇪 DE</button>
+      <div class="actions-top">
+        <button class="theme-btn" onclick="toggleTheme()" id="theme-btn" title="Tema">🌙</button>
+        <div class="lang-box">
+          <button class="lang-btn" id="btn-it" onclick="setLang('it')">🇮🇹 IT</button>
+          <button class="lang-btn active" id="btn-de" onclick="setLang('de')">🇩🇪 DE</button>
+        </div>
       </div>
     </div>
 
@@ -77,10 +101,10 @@
       <input type="url" id="recipe-url" class="input-box" placeholder="https://www.swissmilk.ch/de/rezepte/...">
       <button class="btn btn-secondary" onclick="loadFromUrl()" id="btn-url">🌐 Rezept von URL laden</button>
 
-      <div class="upload-zone">
+      <div class="upload-zone" id="drop-zone">
         <div style="font-size: 30px;">📑 📸 📄</div>
         <div style="font-weight: 700; font-size: 13px; margin-top: 4px;" id="lbl-upload">Screenshots tippen & auswählen</div>
-        <input type="file" id="file-input" accept="image/*" multiple onchange="handleFiles(event)">
+        <input type="file" id="file-input" accept="image/*" multiple>
       </div>
       
       <!-- CONTENITORE ANTEPRIME -->
@@ -103,7 +127,7 @@
           <img id="plate-img" class="plate-img" src="" alt="Gericht">
         </div>
         <div class="plate-title-bar">
-          <h3 id="rec-title" style="font-size: 18px; font-weight:800; color:#fff;"></h3>
+          <h3 id="rec-title" style="font-size: 18px; font-weight:800; color:var(--text);"></h3>
         </div>
       </div>
 
@@ -113,7 +137,7 @@
           <span style="font-size: 13px; font-weight: 700;" id="lbl-serv">Personen (1 - 200):</span>
           <div class="serv-num-box">
             <input type="number" id="serv-input" class="serv-num-input" min="1" max="200" value="4" onchange="scale(this.value)">
-            <span style="font-size: 12px; font-weight: 700; color: #fbbf24;">Pers.</span>
+            <span style="font-size: 12px; font-weight: 700; color: var(--highlight);">Pers.</span>
           </div>
         </div>
         <input type="range" id="serv-slider" min="1" max="200" value="4" oninput="scale(this.value)" style="accent-color: var(--primary);" />
@@ -130,9 +154,9 @@
 
       <!-- INGREDIENTI E PREPARAZIONE -->
       <div class="card">
-        <h4 style="font-size: 15px; font-weight: 800; margin-bottom: 8px; color:#fbbf24;" id="lbl-ing">Zutaten:</h4>
+        <h4 style="font-size: 15px; font-weight: 800; margin-bottom: 8px; color:var(--highlight);" id="lbl-ing">Zutaten:</h4>
         <div id="ing-box"></div>
-        <h4 style="font-size: 15px; font-weight: 800; margin-top: 18px; margin-bottom: 8px; color:#fbbf24;" id="lbl-steps">Zubereitung:</h4>
+        <h4 style="font-size: 15px; font-weight: 800; margin-top: 18px; margin-bottom: 8px; color:var(--highlight);" id="lbl-steps">Zubereitung:</h4>
         <div id="step-box"></div>
       </div>
     </div>
@@ -143,6 +167,24 @@
     let currentData = null;
     let lang = 'de';
     let currentImgUrl = '';
+    let isLight = false;
+
+    // GESTIONE TEMA CHIARO / SCURO
+    function initTheme() {
+      const savedTheme = localStorage.getItem('seniorama_theme');
+      if (savedTheme === 'light') {
+        document.body.classList.add('light-theme');
+        document.getElementById('theme-btn').innerText = '☀️';
+        isLight = true;
+      }
+    }
+
+    function toggleTheme() {
+      isLight = !isLight;
+      document.body.classList.toggle('light-theme', isLight);
+      document.getElementById('theme-btn').innerText = isLight ? '☀️' : '🌙';
+      localStorage.setItem('seniorama_theme', isLight ? 'light' : 'dark');
+    }
 
     function setLang(l) {
       lang = l;
@@ -164,21 +206,23 @@
       }
     }
 
-    // CARICAMENTO IMMEDIATO TRAMITE OBJECT-URL (ZERO MEMORY CRASH)
-    function handleFiles(e) {
+    // LISTENER ROBUSTO PER IL CARICAMENTO RIPETUTO DEGLI SCREENSHOT
+    const fileInput = document.getElementById('file-input');
+    fileInput.addEventListener('change', function(e) {
       const files = e.target.files;
       if (!files || files.length === 0) return;
 
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
         if (file.type.startsWith('image/')) {
-          const objectUrl = URL.createObjectURL(file);
-          rawImages.push(objectUrl);
+          const url = URL.createObjectURL(file);
+          rawImages.push(url);
         }
       }
       renderThumbs();
-      e.target.value = ''; // Permette di riselezionare subito altri file
-    }
+      // RESET DEL VALORE: garantisce che i caricamenti successivi funzionino sempre!
+      fileInput.value = '';
+    });
 
     function renderThumbs() {
       const box = document.getElementById('thumbs');
@@ -195,7 +239,9 @@
     }
 
     function removeImg(idx) {
-      URL.revokeObjectURL(rawImages[idx]);
+      if (rawImages[idx]) {
+        URL.revokeObjectURL(rawImages[idx]);
+      }
       rawImages.splice(idx, 1);
       renderThumbs();
     }
@@ -342,11 +388,12 @@
 
         const row = document.createElement('div');
         row.className = 'ing-row';
-        row.innerHTML = `<span>${i.name}</span><strong style="color:#fbbf24">${formattedQty}</strong>`;
+        row.innerHTML = `<span>${i.name}</span><strong style="color:var(--highlight); font-weight:800;">${formattedQty}</strong>`;
         ingBox.appendChild(row);
       });
     }
 
+    // PREFERITI
     function getFavorites() {
       return JSON.parse(localStorage.getItem('seniorama_favs') || '[]');
     }
@@ -381,41 +428,4 @@
       const box = document.getElementById('fav-list');
       const favs = getFavorites();
       if (favs.length === 0) {
-        box.innerHTML = `<p style="font-size:12px; color:var(--muted); margin-top:4px;">${lang === 'it' ? 'Nessuna ricetta salvata.' : 'Keine Favoriten vorhanden.'}</p>`;
-        return;
-      }
-      box.innerHTML = '';
-      favs.forEach((f, i) => {
-        const item = document.createElement('div');
-        item.className = 'fav-item';
-        item.innerHTML = `
-          <span style="font-weight:700; font-size:13px;" onclick="loadFavorite(${i})">🍽️ ${f.title}</span>
-          <span style="color:#ef4444; font-weight:800;" onclick="removeFavorite(${i})">✕</span>
-        `;
-        box.appendChild(item);
-      });
-    }
-
-    function loadFavorite(i) {
-      const fav = getFavorites()[i];
-      if (!fav) return;
-      currentData = fav.data;
-      currentImgUrl = fav.img;
-      document.getElementById('plate-img').src = currentImgUrl;
-      document.getElementById('result-area').style.display = 'flex';
-      scale(currentData.originalServings || 4);
-      updateStar();
-    }
-
-    function removeFavorite(i) {
-      let favs = getFavorites();
-      favs.splice(i, 1);
-      localStorage.setItem('seniorama_favs', JSON.stringify(favs));
-      updateStar();
-      renderFavorites();
-    }
-
-    renderFavorites();
-  </script>
-</body>
-</html>
+        box.innerHTML = `<p style="font-size:12px; color:var(--muted); margin-top:4px;">${lang === 'it' 
