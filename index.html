@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Seniorama Rezept</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -20,50 +20,49 @@
     }
 
     body.light {
-      --bg: #f1f5f9;
+      --bg: #f8fafc;
       --card: #ffffff;
       --border: #cbd5e1;
       --text: #0f172a;
       --muted: #64748b;
-      --subcard: #f8fafc;
+      --subcard: #f1f5f9;
       --highlight: #d97706;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); padding: 14px; display: flex; justify-content: center; min-height: 100vh; }
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg); color: var(--text); padding: 14px; display: flex; justify-content: center; min-height: 100vh; }
     .app { width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 14px; }
     
     .header { display: flex; justify-content: space-between; align-items: center; }
     .actions-top { display: flex; align-items: center; gap: 8px; }
-    .theme-btn { background: var(--card); border: 1px solid var(--border); color: var(--text); padding: 8px 12px; border-radius: 8px; font-size: 16px; cursor: pointer; }
+    .theme-btn { background-color: var(--card); border: 1px solid var(--border); color: var(--text); padding: 7px 12px; border-radius: 8px; font-size: 16px; cursor: pointer; }
     
-    .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 16px; }
-    .lang-box { display: flex; gap: 4px; background: var(--subcard); padding: 3px; border-radius: 8px; border: 1px solid var(--border); }
+    .card { background-color: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 16px; }
+    .lang-box { display: flex; gap: 4px; background-color: var(--subcard); padding: 3px; border-radius: 8px; border: 1px solid var(--border); }
     .lang-btn { border: none; background: transparent; color: var(--muted); font-weight: 700; font-size: 11px; padding: 6px 10px; border-radius: 6px; cursor: pointer; }
-    .lang-btn.active { background: var(--primary); color: #fff; }
+    .lang-btn.active { background-color: var(--primary); color: #fff; }
     
-    .input-box { width: 100%; background: var(--subcard); border: 1px solid var(--border); color: var(--text); padding: 12px; border-radius: 10px; font-size: 13px; margin-top: 6px; outline: none; }
+    .input-box { width: 100%; background-color: var(--subcard); border: 1px solid var(--border); color: var(--text); padding: 12px; border-radius: 10px; font-size: 13px; margin-top: 6px; outline: none; }
     
     .upload-zone { border: 2px dashed var(--primary); background: rgba(245, 158, 11, 0.05); border-radius: 12px; padding: 18px; text-align: center; cursor: pointer; margin-top: 10px; }
     
     .thumbs-container { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
-    .thumb-item { position: relative; width: 80px; height: 80px; border-radius: 8px; overflow: hidden; background: var(--subcard); border: 1px solid var(--border); }
+    .thumb-item { position: relative; width: 80px; height: 80px; border-radius: 8px; overflow: hidden; background-color: var(--subcard); border: 1px solid var(--border); flex-shrink: 0; }
     .thumb-item img { width: 100%; height: 100%; object-fit: cover; }
-    .thumb-item .del-btn { position: absolute; top: 2px; right: 2px; background: rgba(0,0,0,0.8); color: #fff; border-radius: 50%; width: 22px; height: 22px; font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+    .thumb-item .del-btn { position: absolute; top: 2px; right: 2px; background: rgba(0,0,0,0.85); color: #fff; border-radius: 50%; width: 22px; height: 22px; font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center; cursor: pointer; }
 
-    .btn { width: 100%; background: var(--primary); color: #fff; border: none; padding: 13px; border-radius: 10px; font-weight: 700; font-size: 14px; cursor: pointer; margin-top: 12px; }
-    .btn-secondary { background: var(--card); border: 1px solid var(--border); color: var(--text); margin-top: 8px; }
+    .btn { width: 100%; background-color: var(--primary); color: #fff; border: none; padding: 13px; border-radius: 10px; font-weight: 700; font-size: 14px; cursor: pointer; margin-top: 12px; }
+    .btn-secondary { background-color: var(--card); border: 1px solid var(--border); color: var(--text); margin-top: 8px; }
     
-    .plate-card { position: relative; border-radius: 16px; overflow: hidden; background: var(--subcard); border: 1px solid var(--border); margin-top: 4px; }
-    .plate-img-wrapper { width: 100%; height: 220px; overflow: hidden; position: relative; }
+    .plate-card { position: relative; border-radius: 16px; overflow: hidden; background-color: var(--subcard); border: 1px solid var(--border); margin-top: 4px; }
+    .plate-img-wrapper { width: 100%; height: 220px; overflow: hidden; position: relative; background-color: var(--subcard); }
     .plate-img { width: 100%; height: 100%; object-fit: cover; }
     .fav-btn { position: absolute; top: 12px; right: 12px; background: rgba(15, 23, 42, 0.85); border: 1px solid var(--border); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; color: #fff; z-index: 5; }
     .fav-btn.is-fav { color: #f59e0b; }
-    .plate-title-bar { padding: 14px; background: var(--card); border-top: 1px solid var(--border); }
+    .plate-title-bar { padding: 14px; background-color: var(--card); border-top: 1px solid var(--border); }
 
-    /* SCHEMA TEMPI & METRICHE (STILE SWISSMILK) */
     .recipe-meta-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 10px; }
-    .meta-box { background: var(--subcard); border: 1px solid var(--border); border-radius: 10px; padding: 8px 4px; text-align: center; display: flex; flex-direction: column; gap: 3px; }
+    .meta-box { background-color: var(--subcard); border: 1px solid var(--border); border-radius: 10px; padding: 8px 4px; text-align: center; display: flex; flex-direction: column; gap: 3px; }
     .meta-icon { font-size: 14px; }
     .meta-label { font-size: 10px; color: var(--muted); font-weight: 600; text-transform: uppercase; }
     .meta-val { font-size: 12px; font-weight: 800; color: var(--highlight); }
@@ -71,22 +70,22 @@
     .servings { background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.35); border-radius: 14px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
     .serv-row { display: flex; justify-content: space-between; align-items: center; }
     .serv-num-box { display: flex; align-items: baseline; gap: 4px; }
-    .serv-num-input { background: var(--subcard); border: 1px solid var(--primary); color: var(--highlight); font-size: 22px; font-weight: 800; width: 75px; text-align: center; border-radius: 8px; padding: 4px; }
+    .serv-num-input { background-color: var(--subcard); border: 1px solid var(--primary); color: var(--highlight); font-size: 22px; font-weight: 800; width: 75px; text-align: center; border-radius: 8px; padding: 4px; }
     .quick-chips { display: flex; gap: 6px; flex-wrap: wrap; }
-    .chip { background: var(--subcard); border: 1px solid var(--border); color: var(--text); font-size: 11px; font-weight: 700; padding: 6px 12px; border-radius: 8px; cursor: pointer; }
+    .chip { background-color: var(--subcard); border: 1px solid var(--border); color: var(--text); font-size: 11px; font-weight: 700; padding: 6px 12px; border-radius: 8px; cursor: pointer; }
 
     .ing-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
-    .step-card { display: flex; gap: 12px; background: var(--subcard); padding: 14px; border-radius: 10px; font-size: 13px; margin-top: 8px; line-height: 1.55; border: 1px solid var(--border); }
-    .step-num { width: 24px; height: 24px; border-radius: 50%; background: var(--primary); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 12px; flex-shrink: 0; }
+    .step-card { display: flex; gap: 12px; background-color: var(--subcard); padding: 14px; border-radius: 10px; font-size: 13px; margin-top: 8px; line-height: 1.55; border: 1px solid var(--border); }
+    .step-num { width: 24px; height: 24px; border-radius: 50%; background-color: var(--primary); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 12px; flex-shrink: 0; }
     
-    .fav-item { display: flex; justify-content: space-between; align-items: center; background: var(--subcard); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; margin-top: 6px; }
+    .fav-item { display: flex; justify-content: space-between; align-items: center; background-color: var(--subcard); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; margin-top: 6px; }
   </style>
 </head>
 <body>
   <div class="app">
     <div class="header">
       <div>
-        <h2 style="font-size: 20px; font-weight: 800; color: #f59e0b;" id="lbl-app-title">👨‍🍳 Seniorama Rezept</h2>
+        <h2 style="font-size: 20px; font-weight: 800; color: #f59e0b;">👨‍🍳 Seniorama Rezept</h2>
         <span style="font-size: 11px; color: #10b981; font-weight: 700;" id="lbl-sub-title">● Küchen-Manager</span>
       </div>
       <div class="actions-top">
@@ -131,7 +130,6 @@
         <div class="plate-title-bar">
           <h3 id="rec-title" style="font-size: 18px; font-weight:800;"></h3>
           
-          <!-- SCHEMINO TEMPI E DIFFICOLTÀ SWISSMILK -->
           <div class="recipe-meta-grid">
             <div class="meta-box">
               <span class="meta-icon">⏱️</span>
@@ -163,7 +161,7 @@
           <span style="font-size: 13px; font-weight: 700;" id="lbl-serv">Personen (1 - 200):</span>
           <div class="serv-num-box">
             <input type="number" id="serv-input" class="serv-num-input" min="1" max="200" value="4" onchange="scaleServings(this.value)">
-            <span style="font-size: 12px; font-weight: 700; color: var(--highlight);" id="lbl-unit-pers">Pers.</span>
+            <span style="font-size: 12px; font-weight: 700; color: var(--highlight);">Pers.</span>
           </div>
         </div>
         <input type="range" id="serv-slider" min="1" max="200" value="4" oninput="scaleServings(this.value)" style="accent-color: var(--primary);" />
@@ -194,7 +192,6 @@
     var currentLang = 'de';
     var currentPlateUrl = '';
 
-    // Database bilingue con tempi precisi (stile Swissmilk)
     var recipesDb = {
       meat: {
         de: {
@@ -202,19 +199,19 @@
           baseServings: 4,
           meta: { prep: "25 min", cook: "15 min", total: "40 min", diff: "Mittel" },
           ingredients: [
-            { name: "Rindfleisch (z.B. Huft oder Stotzen), in feine Streifen geschnitten", amount: 600, unit: "g" },
-            { name: "Peperoni (rot und gelb), entkernt und in feine Streifen geschnitten", amount: 250, unit: "g" },
+            { name: "Rindfleisch (Huft/Stotzen), in feine Streifen geschnitten", amount: 600, unit: "g" },
+            { name: "Peperoni (rot & gelb), in feine Streifen geschnitten", amount: 250, unit: "g" },
             { name: "Zwiebel, fein gehackt", amount: 1, unit: "Stk" },
             { name: "Bratbutter zum kräftigen Anbraten", amount: 30, unit: "g" },
             { name: "Fleischbouillon oder dunkler Fond", amount: 2, unit: "dl" },
             { name: "Vollrahm", amount: 1.5, unit: "dl" },
-            { name: "Edelsüss-Paprikapulver, Meersalz und frisch gemahlener Pfeffer", amount: 1, unit: "EL" }
+            { name: "Edelsüss-Paprikapulver, Meersalz und Pfeffer", amount: 1, unit: "EL" }
           ],
           steps: [
-            "Das Fleisch portionsweise in heisser Bratbutter ca. 1-2 Minuten scharf anbraten, sofort herausnehmen und zugedeckt warm stellen (nicht durchgaren, damit es zart bleibt).",
-            "Hitze reduzieren. Zwiebeln und Peperonistreifen in derselben Pfanne ca. 3-4 Minuten glasig dünsten. Das Paprikapulver kurz mitrösten, um das Aroma zu entfalten.",
-            "Mit der Fleischbouillon ablöschen, den Bratensatz am Pfannenboden lösen und die Flüssigkeit um die Hälfte einkochen lassen. Den Vollrahm beigeben und 2-3 Minuten cremig einköcheln.",
-            "Das warmgestellte Fleisch samt ausgetretenem Saft wieder in die Sauce geben. Nur noch kurz auf kleinster Stufe heiss werden lassen (nicht mehr kochen!) und sofort anrichten."
+            "Das Fleisch portionsweise in heisser Bratbutter ca. 1-2 Minuten scharf anbraten, sofort herausnehmen und warm stellen.",
+            "Hitze reduzieren. Zwiebeln und Peperonistreifen in derselben Pfanne 3-4 Minuten glasig dünsten. Das Paprikapulver kurz mitrösten.",
+            "Mit der Fleischbouillon ablöschen, Bratensatz lösen und um die Hälfte einkochen. Vollrahm beigeben und cremig einköcheln.",
+            "Fleisch samt Fleischsaft wieder zur Sauce geben. Kurz auf kleinster Stufe heiss werden lassen (nicht kochen!) und servieren."
           ]
         },
         it: {
@@ -222,19 +219,19 @@
           baseServings: 4,
           meta: { prep: "25 min", cook: "15 min", total: "40 min", diff: "Media" },
           ingredients: [
-            { name: "Carne di manzo (scamone o noce), tagliata a straccetti sottili", amount: 600, unit: "g" },
-            { name: "Peperoni (rossi e gialli), mondati e tagliati a listarelle", amount: 250, unit: "g" },
+            { name: "Carne di manzo (scamone/noce), a straccetti sottili", amount: 600, unit: "g" },
+            { name: "Peperoni (rossi e gialli), a listarelle", amount: 250, unit: "g" },
             { name: "Cipolla, tritata finemente", amount: 1, unit: "pz" },
             { name: "Burro per rosolare", amount: 30, unit: "g" },
-            { name: "Brodo di carne ristretto o fondo bruno", amount: 2, unit: "dl" },
+            { name: "Brodo di carne o fondo bruno", amount: 2, unit: "dl" },
             { name: "Panna intera per salse", amount: 1.5, unit: "dl" },
-            { name: "Paprika dolce, sale marino e pepe nero macinato", amount: 1, unit: "cucchiaio" }
+            { name: "Paprika dolce, sale marino e pepe macinato", amount: 1, unit: "cucchiaio" }
           ],
           steps: [
-            "Rosolare la carne a fiamma viva nel burro per 1-2 minuti a porzioni per non farle rilasciare acqua. Togliere subito dalla padella e tenerla al caldo coperta.",
-            "Abbassare il fuoco. Nella medesima padella imbiondire la cipolla e unire i peperoni, facendoli appassire per 3-4 minuti. Unire la paprika e tostarla per pochi secondi.",
-            "Sfumare con il brodo di carne sciogliendo i fondi di cottura e ridurre a metà a fuoco vivo. Versare la panna e cuocere per altri 2-3 minuti fino a ottenere una crema densa.",
-            "Reincorporare la carne e i suoi succhi nella salsa, lasciar scaldare a fuoco bassissimo per un minuto (senza far bollire per mantenere la carne morbidissima) e servire subito."
+            "Rosolare la carne nel burro ben caldo a fiamma viva per 1-2 minuti. Togliere dalla padella e tenerla al caldo.",
+            "Abbassare la fiamma. Nella stessa padella imbiondire la cipolla e unire i peperoni per 3-4 minuti. Tostare brevemente la paprika.",
+            "Sfumare con il brodo sciogliendo il fondo di cottura e restringere a metà. Unire la panna e far addensare la crema per 2-3 minuti.",
+            "Reincorporare la carne e i suoi succhi, scaldare per un minuto a fuoco bassissimo (senza far bollire) e servire subito."
           ]
         }
       },
@@ -244,20 +241,20 @@
           baseServings: 4,
           meta: { prep: "20 min", cook: "15 min", total: "35 min", diff: "Einfach" },
           ingredients: [
-            { name: "Altbackenes Brot oder Butterzopf, in mundgerechte Stücke geschnitten", amount: 200, unit: "g" },
-            { name: "Schweizer Butter zum goldbraunen Rösten", amount: 40, unit: "g" },
-            { name: "Äpfel (säuerliche Sorte), geschält, entkernt und in feine Schnitze geschnitten", amount: 4, unit: "Stk" },
+            { name: "Altbackenes Brot oder Butterzopf, in mundgerechte Stücke", amount: 200, unit: "g" },
+            { name: "Schweizer Butter zum Rösten", amount: 40, unit: "g" },
+            { name: "Äpfel, in feine Schnitze geschnitten", amount: 4, unit: "Stk" },
             { name: "Feinkristallzucker zum Karamellisieren", amount: 2, unit: "EL" },
             { name: "Frische Eier", amount: 4, unit: "Stk" },
             { name: "Vollmilch", amount: 1, unit: "dl" },
-            { name: "Zimtzucker zum Bestreuen vor dem Servieren", amount: 1, unit: "EL" }
+            { name: "Zimtzucker zum Bestreuen", amount: 1, unit: "EL" }
           ],
           steps: [
-            "Brotwürfel in einer grossen Bratpfanne in der schäumenden Butter bei mittlerer Hitze rundum gleichmässig hellbraun und knusprig anrösten.",
-            "Die feinblättrigen Apfelschnitze dazugeben und ca. 3 Minuten mitdünsten. Den Zucker darüberstreuen und unter Wenden leicht karamellisieren lassen.",
-            "In einer Schüssel Eier, Milch und eine Prise Zucker mit dem Schwingbesen gut verquirlen. Die Mischung gleichmässig über das heisse Brot giessen.",
-            "Die Hitze sofort reduzieren. Die Eimasse unter vorsichtigem, stetem Wenden mit einer Kelle bei milder Hitze stocken lassen, bis sie feucht-cremig gebunden ist.",
-            "Das Vogelheu sofort auf vorgewärmten Tellern anrichten und grosszügig mit Zimtzucker bestreut servieren (klassisch mit Apfelmus als Beilage)."
+            "Brotwürfel in einer grossen Pfanne in schäumender Butter bei mittlerer Hitze rundum gleichmässig goldbraun rösten.",
+            "Die feinen Apfelschnitze beigeben und 3 Minuten mitdünsten. Den Zucker darüberstreuen und leicht karamellisieren lassen.",
+            "In einer Schüssel Eier, Milch und eine Prise Zucker verquirlen. Gleichmässig über das heisse Brot giessen.",
+            "Hitze sofort reduzieren. Die Masse unter vorsichtigem Wenden stocken lassen, bis sie feucht-cremig gebunden ist.",
+            "Auf Tellern anrichten und grosszügig mit Zimtzucker bestreuen."
           ]
         },
         it: {
@@ -265,20 +262,20 @@
           baseServings: 4,
           meta: { prep: "20 min", cook: "15 min", total: "35 min", diff: "Facile" },
           ingredients: [
-            { name: "Pane raffermo o treccia al burro, tagliato a bocconcini", amount: 200, unit: "g" },
-            { name: "Burro nostrano per dorare", amount: 40, unit: "g" },
-            { name: "Mele aromatiche, sbucciate e tagliate a fettine sottili", amount: 4, unit: "pz" },
-            { name: "Zucchero semolato per caramellare", amount: 2, unit: "cucchiai" },
+            { name: "Pane raffermo o treccia al burro, a bocconcini", amount: 200, unit: "g" },
+            { name: "Burro per dorare", amount: 40, unit: "g" },
+            { name: "Mele, sbucciate e a fettine sottili", amount: 4, unit: "pz" },
+            { name: "Zucchero per caramellare", amount: 2, unit: "cucchiai" },
             { name: "Uova fresche", amount: 4, unit: "pz" },
             { name: "Latte intero", amount: 1, unit: "dl" },
-            { name: "Zucchero e cannella in polvere per guarnire", amount: 1, unit: "cucchiaio" }
+            { name: "Zucchero e cannella in polvere", amount: 1, unit: "cucchiaio" }
           ],
           steps: [
             "In un'ampia padella sciogliere il burro e tostare i cubetti di pane a fuoco moderato fino a renderli dorati e croccanti.",
-            "Aggiungere le fettine di mela e rosolare insieme per circa 3 minuti. Cospargere con lo zucchero e mescolare lasciandolo caramellare delicatamente.",
-            "In una ciotola a parte sbattere bene le uova con il latte e una presa di zucchero. Versare il composto d'uovo caldo in maniera uniforme sul pane.",
-            "Abbassare subito la fiamma. Mescolare delicatamente con una spatola finché l'uovo non si rapprende mantenendo una consistenza morbida e cremosa (senza farlo asciugare).",
-            "Impiattare immediatamente sui piatti da portata e servire ben caldo con una spolverata abbondante di cannella e zucchero."
+            "Aggiungere le fettine di mela e rosolare per 3 minuti. Cospargere con lo zucchero lasciandolo caramellare delicatamente.",
+            "In una ciotola sbattere le uova con il latte e una presa di zucchero. Versare il composto in modo uniforme sul pane caldo.",
+            "Abbassare la fiamma. Mescolare con una spatola finché l'uovo si rapprende mantenendo una consistenza cremosa.",
+            "Impiattare e cospargere con lo zucchero alla cannella."
           ]
         }
       }
@@ -287,12 +284,12 @@
     function toggleTheme() {
       var isLight = document.body.classList.toggle('light');
       document.getElementById('theme-btn').innerText = isLight ? '☀️' : '🌙';
-      try { localStorage.setItem('sr_theme', isLight ? 'light' : 'dark'); } catch(e){}
+      try { localStorage.setItem('sr_theme_pref', isLight ? 'light' : 'dark'); } catch(e){}
     }
 
     function initTheme() {
       try {
-        var t = localStorage.getItem('sr_theme');
+        var t = localStorage.getItem('sr_theme_pref');
         if (t === 'light') {
           document.body.classList.add('light');
           document.getElementById('theme-btn').innerText = '☀️';
@@ -312,4 +309,26 @@
       document.getElementById('btn-action').innerText = l === 'it' ? '✨ Ricalcola Ingredienti & Procedura' : '✨ Rezept erfassen & Portionen berechnen';
       document.getElementById('lbl-fav-title').innerText = l === 'it' ? '⭐ Ricette Preferite Salvate:' : '⭐ Gespeicherte Favoriten:';
       document.getElementById('lbl-serv').innerText = l === 'it' ? 'Persone a tavola (1 - 200):' : 'Personen (1 - 200):';
-      document.getElementById('lbl-unit-pers').innerTe
+      document.getElementById('lbl-ing').innerText = l === 'it' ? 'Ingredienti dosati:' : 'Zutaten:';
+      document.getElementById('lbl-steps').innerText = l === 'it' ? 'Preparazione dettagliata passo dopo passo:' : 'Zubereitung Schritt für Schritt:';
+
+      document.getElementById('lbl-meta-prep').innerText = l === 'it' ? 'Prep.' : 'Vorbereitung';
+      document.getElementById('lbl-meta-cook').innerText = l === 'it' ? 'Cottura' : 'Kochen';
+      document.getElementById('lbl-meta-total').innerText = l === 'it' ? 'Totale' : 'Gesamt';
+      document.getElementById('lbl-meta-diff').innerText = l === 'it' ? 'Livello' : 'Niveau';
+      
+      renderFavorites();
+      
+      if (document.getElementById('result-area').style.display === 'flex') {
+        renderRecipeUI();
+        scaleServings(document.getElementById('serv-input').value || 4);
+      }
+    }
+
+    function onFilesAdded(e) {
+      var files = e.target.files;
+      if (!files || files.length === 0) return;
+
+      for (var i = 0; i < files.length; i++) {
+        var reader = new FileReader();
+        reader.o
