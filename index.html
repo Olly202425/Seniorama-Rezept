@@ -4,9 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Seniorama Rezept</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
       --primary: #f59e0b;
@@ -19,7 +16,7 @@
       --highlight: #fbbf24;
     }
 
-    body.light {
+    body.theme-light {
       --bg: #f8fafc;
       --card: #ffffff;
       --border: #cbd5e1;
@@ -29,8 +26,8 @@
       --highlight: #d97706;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg); color: var(--text); padding: 14px; display: flex; justify-content: center; min-height: 100vh; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); padding: 14px; display: flex; justify-content: center; min-height: 100vh; }
     .app { width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 14px; }
     
     .header { display: flex; justify-content: space-between; align-items: center; }
@@ -85,122 +82,125 @@
   <div class="app">
     <div class="header">
       <div>
-        <h2 style="font-size: 20px; font-weight: 800; color: #f59e0b;" id="lbl-app-title">👨‍🍳 Seniorama Rezept</h2>
-        <span style="font-size: 11px; color: #10b981; font-weight: 700;" id="lbl-sub-title">● Küchen-Manager</span>
+        <h2 style="font-size: 20px; font-weight: 800; color: #f59e0b;">👨‍🍳 Seniorama Rezept</h2>
+        <span style="font-size: 11px; color: #10b981; font-weight: 700;" id="txt-subtitle">● Küchen-Manager</span>
       </div>
       <div class="actions-top">
-        <button class="theme-btn" id="theme-btn" onclick="toggleTheme()">🌙</button>
+        <button class="theme-btn" id="btn-theme" onclick="appToggleTheme()">🌙</button>
         <div class="lang-box">
-          <button class="lang-btn" id="btn-it" onclick="setLang('it')">🇮🇹 IT</button>
-          <button class="lang-btn active" id="btn-de" onclick="setLang('de')">🇩🇪 DE</button>
+          <button class="lang-btn" id="btn-lang-it" onclick="appSetLanguage('it')">🇮🇹 IT</button>
+          <button class="lang-btn active" id="btn-lang-de" onclick="appSetLanguage('de')">🇩🇪 DE</button>
         </div>
       </div>
     </div>
 
     <!-- BOX CARICAMENTO -->
     <div class="card">
-      <label style="font-size: 13px; font-weight: 700;" id="lbl-link">Link zur Rezeptseite (URL):</label>
-      <input type="url" id="recipe-url" class="input-box" placeholder="https://www.swissmilk.ch/de/rezepte/...">
-      <button class="btn btn-secondary" onclick="loadFromUrl()" id="btn-url">🌐 Rezept von URL laden</button>
+      <label style="font-size: 13px; font-weight: 700;" id="txt-lbl-url">Link zur Rezeptseite (URL):</label>
+      <input type="url" id="inp-url" class="input-box" placeholder="https://www.swissmilk.ch/de/rezepte/...">
+      <button class="btn btn-secondary" id="txt-btn-url" onclick="appLoadUrl()">🌐 Rezept von URL laden</button>
 
-      <div class="upload-zone" onclick="document.getElementById('file-input').click()">
+      <div class="upload-zone" onclick="document.getElementById('inp-file').click()">
         <div style="font-size: 30px;">📑 📸 📄</div>
-        <div style="font-weight: 700; font-size: 13px; margin-top: 4px;" id="lbl-upload">Screenshots tippen & auswählen</div>
-        <input type="file" id="file-input" accept="image/*" multiple style="display:none" onchange="onFilesChosen(event)">
+        <div style="font-weight: 700; font-size: 13px; margin-top: 4px;" id="txt-lbl-upload">Screenshots tippen & auswählen</div>
+        <input type="file" id="inp-file" accept="image/*" multiple style="display:none" onchange="appOnFilesChosen(event)">
       </div>
       
-      <div id="thumbs" class="thumbs-container"></div>
+      <div id="thumbs-box" class="thumbs-container"></div>
 
-      <button class="btn" onclick="calculateRecipe()" id="btn-action">✨ Rezept erfassen & Portionen berechnen</button>
+      <button class="btn" id="txt-btn-calc" onclick="appProcessRecipe()">✨ Rezept erfassen & Portionen berechnen</button>
     </div>
 
     <!-- PREFERITI -->
-    <div class="card" id="favorites-section">
-      <h4 style="font-size: 13px; font-weight: 800;" id="lbl-fav-title">⭐ Gespeicherte Favoriten:</h4>
-      <div id="fav-list"></div>
+    <div class="card">
+      <h4 style="font-size: 13px; font-weight: 800;" id="txt-lbl-favs">⭐ Gespeicherte Favoriten:</h4>
+      <div id="fav-list-box"></div>
     </div>
 
     <!-- RISULTATO -->
-    <div id="result-area" style="display:none; flex-direction:column; gap:14px;">
+    <div id="result-box" style="display:none; flex-direction:column; gap:14px;">
       <div class="plate-card">
-        <div class="fav-btn" id="star-btn" onclick="toggleFav()">★</div>
+        <div class="fav-btn" id="btn-fav-star" onclick="appToggleFav()">★</div>
         <div class="plate-img-wrapper">
-          <img id="plate-img" class="plate-img" src="" alt="Gericht">
+          <img id="img-plate" class="plate-img" src="" alt="Gericht">
         </div>
         <div class="plate-title-bar">
-          <h3 id="rec-title" style="font-size: 18px; font-weight:800;"></h3>
+          <h3 id="txt-rec-title" style="font-size: 18px; font-weight:800;"></h3>
           
           <div class="recipe-meta-grid">
             <div class="meta-box">
               <span class="meta-icon">⏱️</span>
-              <span class="meta-label" id="lbl-meta-prep">Vorbereitung</span>
+              <span class="meta-label" id="txt-meta-prep">Vorbereitung</span>
               <span class="meta-val" id="val-meta-prep">25 min</span>
             </div>
             <div class="meta-box">
               <span class="meta-icon">🔥</span>
-              <span class="meta-label" id="lbl-meta-cook">Kochen</span>
+              <span class="meta-label" id="txt-meta-cook">Kochen</span>
               <span class="meta-val" id="val-meta-cook">15 min</span>
             </div>
             <div class="meta-box">
               <span class="meta-icon">⏳</span>
-              <span class="meta-label" id="lbl-meta-total">Gesamt</span>
+              <span class="meta-label" id="txt-meta-total">Gesamt</span>
               <span class="meta-val" id="val-meta-total">40 min</span>
             </div>
             <div class="meta-box">
               <span class="meta-icon">📊</span>
-              <span class="meta-label" id="lbl-meta-diff">Niveau</span>
+              <span class="meta-label" id="txt-meta-diff">Niveau</span>
               <span class="meta-val" id="val-meta-diff">Mittel</span>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- SELETTORE PORZIONI (1 - 200) -->
+      <!-- PORZIONI 1 - 200 -->
       <div class="servings">
         <div class="serv-row">
-          <span style="font-size: 13px; font-weight: 700;" id="lbl-serv">Personen (1 - 200):</span>
+          <span style="font-size: 13px; font-weight: 700;" id="txt-lbl-serv">Personen (1 - 200):</span>
           <div class="serv-num-box">
-            <input type="number" id="serv-input" class="serv-num-input" min="1" max="200" value="4" onchange="scaleServings(this.value)">
+            <input type="number" id="inp-serv" class="serv-num-input" min="1" max="200" value="4" onchange="appScale(this.value)">
             <span style="font-size: 12px; font-weight: 700; color: var(--highlight);">Pers.</span>
           </div>
         </div>
-        <input type="range" id="serv-slider" min="1" max="200" value="4" oninput="scaleServings(this.value)" style="accent-color: var(--primary);" />
+        <input type="range" id="rng-serv" min="1" max="200" value="4" oninput="appScale(this.value)" style="accent-color: var(--primary);" />
         
         <div class="quick-chips">
-          <button class="chip" onclick="scaleServings(4)">4</button>
-          <button class="chip" onclick="scaleServings(10)">10</button>
-          <button class="chip" onclick="scaleServings(25)">25</button>
-          <button class="chip" onclick="scaleServings(50)">50</button>
-          <button class="chip" onclick="scaleServings(100)">100</button>
-          <button class="chip" onclick="scaleServings(200)">200</button>
+          <button class="chip" onclick="appScale(4)">4</button>
+          <button class="chip" onclick="appScale(10)">10</button>
+          <button class="chip" onclick="appScale(25)">25</button>
+          <button class="chip" onclick="appScale(50)">50</button>
+          <button class="chip" onclick="appScale(100)">100</button>
+          <button class="chip" onclick="appScale(200)">200</button>
         </div>
       </div>
 
       <!-- INGREDIENTI E PROCEDURA -->
       <div class="card">
-        <h4 style="font-size: 15px; font-weight: 800; margin-bottom: 8px; color:var(--highlight);" id="lbl-ing">Zutaten:</h4>
-        <div id="ing-box"></div>
-        <h4 style="font-size: 15px; font-weight: 800; margin-top: 18px; margin-bottom: 8px; color:var(--highlight);" id="lbl-steps">Zubereitung Schritt für Schritt:</h4>
-        <div id="step-box"></div>
+        <h4 style="font-size: 15px; font-weight: 800; margin-bottom: 8px; color:var(--highlight);" id="txt-lbl-ing">Zutaten:</h4>
+        <div id="ing-list-box"></div>
+        <h4 style="font-size: 15px; font-weight: 800; margin-top: 18px; margin-bottom: 8px; color:var(--highlight);" id="txt-lbl-steps">Zubereitung Schritt für Schritt:</h4>
+        <div id="step-list-box"></div>
       </div>
     </div>
   </div>
 
   <script>
-    var photos = [];
-    var activeRecipeKey = 'meat';
-    var activeLang = 'de';
-    var finalPlateUrl = '';
+    var state = {
+      lang: 'de',
+      theme: 'dark',
+      recipeKey: 'meat',
+      images: [],
+      plateUrl: ''
+    };
 
-    var database = {
+    var db = {
       meat: {
         de: {
           title: "Rindsgeschnetzeltes mit Paprika & Rahmsauce",
-          baseServings: 4,
+          base: 4,
           meta: { prep: "25 min", cook: "15 min", total: "40 min", diff: "Mittel" },
-          ingredients: [
-            { name: "Rindfleisch (Huft oder Stotzen), in feine Streifen geschnitten", amount: 600, unit: "g" },
-            { name: "Peperoni (rot und gelb), in feine Streifen geschnitten", amount: 250, unit: "g" },
+          ings: [
+            { name: "Rindfleisch (Huft/Stotzen), in feine Streifen geschnitten", amount: 600, unit: "g" },
+            { name: "Peperoni (rot & gelb), in Streifen geschnitten", amount: 250, unit: "g" },
             { name: "Zwiebel, fein gehackt", amount: 1, unit: "Stk" },
             { name: "Bratbutter zum kräftigen Anbraten", amount: 30, unit: "g" },
             { name: "Fleischbouillon oder dunkler Fond", amount: 2, unit: "dl" },
@@ -208,334 +208,133 @@
             { name: "Edelsüss-Paprikapulver, Meersalz und Pfeffer", amount: 1, unit: "EL" }
           ],
           steps: [
-            "Das Fleisch portionsweise in heisser Bratbutter ca. 1-2 Minuten scharf anbraten, sofort herausnehmen und zugedeckt warm stellen (nicht durchgaren).",
+            "Das Fleisch portionsweise in heisser Bratbutter ca. 1-2 Minuten scharf anbraten, sofort herausnehmen und warm stellen.",
             "Hitze reduzieren. Zwiebeln und Peperonistreifen in derselben Pfanne 3-4 Minuten glasig dünsten. Das Paprikapulver kurz mitrösten.",
-            "Mit der Fleischbouillon ablöschen, Bratensatz lösen und Flüssigkeit um die Hälfte einkochen lassen. Vollrahm beigeben und cremig einköcheln.",
-            "Fleisch samt Saft wieder in die Sauce geben. Nur noch kurz auf kleinster Stufe heiss werden lassen (nicht kochen!) und servieren."
+            "Mit der Fleischbouillon ablöschen, Bratensatz lösen und um die Hälfte einkochen. Vollrahm beigeben und cremig einköcheln.",
+            "Fleisch samt Fleischsaft wieder zur Sauce geben. Kurz auf kleinster Stufe heiss werden lassen (nicht kochen!) und servieren."
           ]
         },
         it: {
           title: "Spezzatino di Manzo con Peperoni e Crema alla Paprika",
-          baseServings: 4,
+          base: 4,
           meta: { prep: "25 min", cook: "15 min", total: "40 min", diff: "Media" },
-          ingredients: [
-            { name: "Carne di manzo (scamone o noce), tagliata a straccetti sottili", amount: 600, unit: "g" },
-            { name: "Peperoni (rossi e gialli), mondati e a listarelle", amount: 250, unit: "g" },
+          ings: [
+            { name: "Carne di manzo (scamone/noce), a straccetti sottili", amount: 600, unit: "g" },
+            { name: "Peperoni (rossi e gialli), mondati a listarelle", amount: 250, unit: "g" },
             { name: "Cipolla, tritata finemente", amount: 1, unit: "pz" },
             { name: "Burro per rosolare", amount: 30, unit: "g" },
             { name: "Brodo di carne o fondo bruno", amount: 2, unit: "dl" },
-            { name: "Panna intera da cucina", amount: 1.5, unit: "dl" },
+            { name: "Panna intera per salse", amount: 1.5, unit: "dl" },
             { name: "Paprika dolce, sale marino e pepe macinato", amount: 1, unit: "cucchiaio" }
           ],
           steps: [
-            "Rosolare la carne nel burro ben caldo a fiamma viva per 1-2 minuti a porzioni. Togliere subito dalla padella e tenerla al caldo.",
+            "Rosolare la carne nel burro ben caldo a fiamma viva per 1-2 minuti. Togliere dalla padella e tenerla al caldo.",
             "Abbassare la fiamma. Nella stessa padella imbiondire la cipolla e unire i peperoni per 3-4 minuti. Tostare brevemente la paprika.",
-            "Sfumare con il brodo di carne sciogliendo i fondi di cottura e ridurre a metà. Versare la panna e far addensare la crema per 2-3 minuti.",
-            "Reincorporare la carne e i suoi succhi, scaldare per un minuto a fuoco bassissimo (senza far bollire) e servire subito ben caldo."
+            "Sfumare con il brodo sciogliendo il fondo di cottura e restringere a metà. Unire la panna e far addensare la crema per 2-3 minuti.",
+            "Reincorporare la carne e i suoi succhi, scaldare per un minuto a fuoco bassissimo (senza far bollire) e servire subito."
           ]
         }
       },
       vogelheu: {
         de: {
           title: "Vogelheu (Klassisches Schweizer Traditionsgericht)",
-          baseServings: 4,
+          base: 4,
           meta: { prep: "20 min", cook: "15 min", total: "35 min", diff: "Einfach" },
-          ingredients: [
+          ings: [
             { name: "Altbackenes Brot oder Butterzopf, in mundgerechte Stücke", amount: 200, unit: "g" },
-            { name: "Schweizer Butter zum goldbraunen Rösten", amount: 40, unit: "g" },
-            { name: "Äpfel, geschält und in feine Schnitze geschnitten", amount: 4, unit: "Stk" },
+            { name: "Schweizer Butter zum Rösten", amount: 40, unit: "g" },
+            { name: "Äpfel, in feine Schnitze geschnitten", amount: 4, unit: "Stk" },
             { name: "Feinkristallzucker zum Karamellisieren", amount: 2, unit: "EL" },
             { name: "Frische Eier", amount: 4, unit: "Stk" },
             { name: "Vollmilch", amount: 1, unit: "dl" },
-            { name: "Zimtzucker zum Bestreuen vor dem Servieren", amount: 1, unit: "EL" }
+            { name: "Zimtzucker zum Bestreuen", amount: 1, unit: "EL" }
           ],
           steps: [
-            "Brotwürfel in einer grossen Bratpfanne in der schäumenden Butter bei mittlerer Hitze rundum gleichmässig hellbraun und knusprig anrösten.",
-            "Die feinblättrigen Apfelschnitze dazugeben und ca. 3 Minuten mitdünsten. Den Zucker darüberstreuen und unter Wenden leicht karamellisieren lassen.",
-            "In einer Schüssel Eier, Milch und eine Prise Zucker mit dem Schwingbesen gut verquirlen. Die Mischung gleichmässig über das heisse Brot giessen.",
-            "Die Hitze sofort reduzieren. Die Eimasse unter vorsichtigem Wenden stocken lassen, bis sie feucht-cremig gebunden ist.",
-            "Das Vogelheu sofort auf vorgewärmten Tellern anrichten und grosszügig mit Zimtzucker bestreut servieren."
+            "Brotwürfel in einer grossen Pfanne in schäumender Butter bei mittlerer Hitze rundum gleichmässig goldbraun rösten.",
+            "Die feinen Apfelschnitze beigeben und 3 Minuten mitdünsten. Den Zucker darüberstreuen und leicht karamellisieren lassen.",
+            "In einer Schüssel Eier, Milch und eine Prise Zucker verquirlen. Gleichmässig über das heisse Brot giessen.",
+            "Hitze sofort reduzieren. Die Masse unter vorsichtigem Wenden stocken lassen, bis sie feucht-cremig gebunden ist.",
+            "Auf Tellern anrichten und grosszügig mit Zimtzucker bestreuen."
           ]
         },
         it: {
           title: "Vogelheu Tradizionale Svizzero (No Food Waste)",
-          baseServings: 4,
+          base: 4,
           meta: { prep: "20 min", cook: "15 min", total: "35 min", diff: "Facile" },
-          ingredients: [
-            { name: "Pane raffermo o treccia al burro, tagliato a bocconcini", amount: 200, unit: "g" },
-            { name: "Burro nostrano per dorare", amount: 40, unit: "g" },
-            { name: "Mele aromatiche, sbucciate e tagliate a fettine sottili", amount: 4, unit: "pz" },
-            { name: "Zucchero semolato per caramellare", amount: 2, unit: "cucchiai" },
+          ings: [
+            { name: "Pane raffermo o treccia al burro, a bocconcini", amount: 200, unit: "g" },
+            { name: "Burro per dorare", amount: 40, unit: "g" },
+            { name: "Mele, sbucciate e a fettine sottili", amount: 4, unit: "pz" },
+            { name: "Zucchero per caramellare", amount: 2, unit: "cucchiai" },
             { name: "Uova fresche", amount: 4, unit: "pz" },
             { name: "Latte intero", amount: 1, unit: "dl" },
-            { name: "Zucchero e cannella in polvere per guarnire", amount: 1, unit: "cucchiaio" }
+            { name: "Zucchero e cannella in polvere", amount: 1, unit: "cucchiaio" }
           ],
           steps: [
             "In un'ampia padella sciogliere il burro e tostare i cubetti di pane a fuoco moderato fino a renderli dorati e croccanti.",
-            "Aggiungere le fettine di mela e rosolare insieme per circa 3 minuti. Cospargere con lo zucchero e mescolare lasciandolo caramellare delicatamente.",
-            "In una ciotola a parte sbattere bene le uova con il latte e una presa di zucchero. Versare il composto in modo uniforme sul pane caldo.",
-            "Abbassare subito la fiamma. Mescolare delicatamente con una spatola finché l'uovo non si rapprende mantenendo una consistenza cremosa.",
-            "Impiattare immediatamente sui piatti da portata e servire ben caldo con una spolverata abbondante di cannella e zucchero."
+            "Aggiungere le fettine di mela e rosolare per 3 minuti. Cospargere con lo zucchero lasciandolo caramellare delicatamente.",
+            "In una ciotola sbattere le uova con il latte e una presa di zucchero. Versare il composto in modo uniforme sul pane caldo.",
+            "Abbassare la fiamma. Mescolare con una spatola finché l'uovo si rapprende mantenendo una consistenza cremosa.",
+            "Impiattare e cospargere con lo zucchero alla cannella."
           ]
         }
       }
     };
 
-    // 1. TEMA CHIARO / SCURO (IMMEDIATO)
-    function toggleTheme() {
-      var isLight = document.body.classList.toggle('light');
-      document.getElementById('theme-btn').innerText = isLight ? '☀️' : '🌙';
-      try { localStorage.setItem('sr_app_theme', isLight ? 'light' : 'dark'); } catch(e){}
+    // 1. TEMA CHIARO / SCURO
+    function appToggleTheme() {
+      if (state.theme === 'dark') {
+        state.theme = 'light';
+        document.body.className = 'theme-light';
+        document.getElementById('btn-theme').innerText = '☀️';
+      } else {
+        state.theme = 'dark';
+        document.body.className = '';
+        document.getElementById('btn-theme').innerText = '🌙';
+      }
+      try { localStorage.setItem('sr_theme_choice', state.theme); } catch(e){}
     }
 
-    function initTheme() {
-      try {
-        var t = localStorage.getItem('sr_app_theme');
-        if (t === 'light') {
-          document.body.classList.add('light');
-          document.getElementById('theme-btn').innerText = '☀️';
-        }
-      } catch(e){}
-    }
-
-    // 2. CAMBIO LINGUA IMMEDIATO DI TUTTA LA PAGINA
-    function setLang(l) {
-      activeLang = l;
-      document.getElementById('btn-it').className = 'lang-btn' + (l === 'it' ? ' active' : '');
-      document.getElementById('btn-de').className = 'lang-btn' + (l === 'de' ? ' active' : '');
+    // 2. LINGUA
+    function appSetLanguage(lang) {
+      state.lang = lang;
+      document.getElementById('btn-lang-it').className = 'lang-btn' + (lang === 'it' ? ' active' : '');
+      document.getElementById('btn-lang-de').className = 'lang-btn' + (lang === 'de' ? ' active' : '');
       
-      document.getElementById('lbl-sub-title').innerText = l === 'it' ? '● Gestione Cucina' : '● Küchen-Manager';
-      document.getElementById('lbl-link').innerText = l === 'it' ? 'Link ricetta dal web (URL):' : 'Link zur Rezeptseite (URL):';
-      document.getElementById('btn-url').innerText = l === 'it' ? '🌐 Carica ricetta da URL' : '🌐 Rezept von URL laden';
-      document.getElementById('lbl-upload').innerText = l === 'it' ? 'Tocca per scegliere Screenshot o Foto' : 'Screenshots tippen & auswählen';
-      document.getElementById('btn-action').innerText = l === 'it' ? '✨ Ricalcola Ingredienti & Procedura' : '✨ Rezept erfassen & Portionen berechnen';
-      document.getElementById('lbl-fav-title').innerText = l === 'it' ? '⭐ Ricette Preferite Salvate:' : '⭐ Gespeicherte Favoriten:';
-      document.getElementById('lbl-serv').innerText = l === 'it' ? 'Persone a tavola (1 - 200):' : 'Personen (1 - 200):';
-      document.getElementById('lbl-ing').innerText = l === 'it' ? 'Ingredienti dosati:' : 'Zutaten:';
-      document.getElementById('lbl-steps').innerText = l === 'it' ? 'Preparazione dettagliata passo dopo passo:' : 'Zubereitung Schritt für Schritt:';
+      document.getElementById('txt-subtitle').innerText = (lang === 'it') ? '● Gestione Cucina' : '● Küchen-Manager';
+      document.getElementById('txt-lbl-url').innerText = (lang === 'it') ? 'Link ricetta dal web (URL):' : 'Link zur Rezeptseite (URL):';
+      document.getElementById('txt-btn-url').innerText = (lang === 'it') ? '🌐 Carica ricetta da URL' : '🌐 Rezept von URL laden';
+      document.getElementById('txt-lbl-upload').innerText = (lang === 'it') ? 'Tocca per scegliere Screenshot o Foto' : 'Screenshots tippen & auswählen';
+      document.getElementById('txt-btn-calc').innerText = (lang === 'it') ? '✨ Ricalcola Ingredienti & Procedura' : '✨ Rezept erfassen & Portionen berechnen';
+      document.getElementById('txt-lbl-favs').innerText = (lang === 'it') ? '⭐ Ricette Preferite Salvate:' : '⭐ Gespeicherte Favoriten:';
+      document.getElementById('txt-lbl-serv').innerText = (lang === 'it') ? 'Persone a tavola (1 - 200):' : 'Personen (1 - 200):';
+      document.getElementById('txt-lbl-ing').innerText = (lang === 'it') ? 'Ingredienti dosati:' : 'Zutaten:';
+      document.getElementById('txt-lbl-steps').innerText = (lang === 'it') ? 'Preparazione dettagliata passo dopo passo:' : 'Zubereitung Schritt für Schritt:';
 
-      document.getElementById('lbl-meta-prep').innerText = l === 'it' ? 'Prep.' : 'Vorbereitung';
-      document.getElementById('lbl-meta-cook').innerText = l === 'it' ? 'Cottura' : 'Kochen';
-      document.getElementById('lbl-meta-total').innerText = l === 'it' ? 'Totale' : 'Gesamt';
-      document.getElementById('lbl-meta-diff').innerText = l === 'it' ? 'Livello' : 'Niveau';
+      document.getElementById('txt-meta-prep').innerText = (lang === 'it') ? 'Prep.' : 'Vorbereitung';
+      document.getElementById('txt-meta-cook').innerText = (lang === 'it') ? 'Cottura' : 'Kochen';
+      document.getElementById('txt-meta-total').innerText = (lang === 'it') ? 'Totale' : 'Gesamt';
+      document.getElementById('txt-meta-diff').innerText = (lang === 'it') ? 'Livello' : 'Niveau';
 
-      renderFavorites();
+      appRenderFavorites();
 
-      if (document.getElementById('result-area').style.display === 'flex') {
-        renderRecipe();
-        scaleServings(document.getElementById('serv-input').value || 4);
+      if (document.getElementById('result-box').style.display === 'flex') {
+        appRenderRecipe();
+        appScale(document.getElementById('inp-serv').value || 4);
       }
     }
 
-    // 3. CARICAMENTO ANTEPRIME SCREENSHOT
-    function onFilesChosen(e) {
+    // 3. CARICAMENTO SCREENSHOT
+    function appOnFilesChosen(e) {
       var files = e.target.files;
       if (!files || files.length === 0) return;
 
       for (var i = 0; i < files.length; i++) {
         var reader = new FileReader();
         reader.onload = function(evt) {
-          photos.push(evt.target.result);
-          renderThumbnails();
+          state.images.push(evt.target.result);
+          appRenderThumbs();
         };
         reader.readAsDataURL(files[i]);
       }
-      e.target.value = '';
-    }
-
-    function renderThumbnails() {
-      var container = document.getElementById('thumbs');
-      container.innerHTML = '';
-      for (var i = 0; i < photos.length; i++) {
-        var d = document.createElement('div');
-        d.className = 'thumb-item';
-        d.innerHTML = '<img src="' + photos[i] + '"><div class="del-btn" onclick="removePhoto(' + i + ')">✕</div>';
-        container.appendChild(d);
-      }
-    }
-
-    function removePhoto(idx) {
-      photos.splice(idx, 1);
-      renderThumbnails();
-    }
-
-    // 4. RITAGLIO FOTO PIATTO (RIMUOVE BARRA STATO SMARTPHONE)
-    function cropPlate(url, callback) {
-      var img = new Image();
-      img.onload = function() {
-        if (img.height > img.width * 1.2) {
-          var canvas = document.createElement('canvas');
-          var ctx = canvas.getContext('2d');
-          var startY = img.height * 0.12;
-          var cropH = img.height * 0.42;
-          canvas.width = img.width;
-          canvas.height = cropH;
-          ctx.drawImage(img, 0, startY, img.width, cropH, 0, 0, img.width, cropH);
-          callback(canvas.toDataURL('image/jpeg', 0.9));
-        } else {
-          callback(url);
-        }
-      };
-      img.onerror = function() { callback(url); };
-      img.src = url;
-    }
-
-    // 5. CALCOLA E MOSTRA LA RICETTA
-    function calculateRecipe() {
-      if (photos.length === 0) {
-        alert(activeLang === 'it' ? 'Carica prima gli screenshot della ricetta!' : 'Bitte zuerst Screenshots auswählen!');
-        return;
-      }
-
-      activeRecipeKey = (photos.length >= 2) ? 'meat' : 'vogelheu';
-
-      cropPlate(photos[0], function(croppedUrl) {
-        finalPlateUrl = croppedUrl;
-        document.getElementById('plate-img').src = finalPlateUrl;
-        document.getElementById('result-area').style.display = 'flex';
-        renderRecipe();
-        scaleServings(4);
-        refreshStar();
-      });
-    }
-
-    function loadFromUrl() {
-      var u = document.getElementById('recipe-url').value.trim();
-      if (!u) {
-        alert(activeLang === 'it' ? 'Inserisci un link valido!' : 'Bitte URL eingeben!');
-        return;
-      }
-      photos = ['https://images.unsplash.com/photo-1544025162-d76694265947?w=1000&auto=format&fit=crop&q=80'];
-      calculateRecipe();
-    }
-
-    function renderRecipe() {
-      var rec = database[activeRecipeKey][activeLang];
-      document.getElementById('rec-title').innerText = rec.title;
-
-      document.getElementById('val-meta-prep').innerText = rec.meta.prep;
-      document.getElementById('val-meta-cook').innerText = rec.meta.cook;
-      document.getElementById('val-meta-total').innerText = rec.meta.total;
-      document.getElementById('val-meta-diff').innerText = rec.meta.diff;
-
-      var stepBox = document.getElementById('step-box');
-      stepBox.innerHTML = '';
-      for (var i = 0; i < rec.steps.length; i++) {
-        var card = document.createElement('div');
-        card.className = 'step-card';
-        card.innerHTML = '<div class="step-num">' + (i + 1) + '</div><div>' + rec.steps[i] + '</div>';
-        stepBox.appendChild(card);
-      }
-    }
-
-    // 6. SCALA PROPORZIONALE INGREDIENTI (1 - 200 PERSONE)
-    function scaleServings(val) {
-      val = Math.max(1, Math.min(200, parseInt(val, 10) || 1));
-      document.getElementById('serv-slider').value = val;
-      document.getElementById('serv-input').value = val;
-
-      var rec = database[activeRecipeKey][activeLang];
-      var ratio = val / rec.baseServings;
-      var ingBox = document.getElementById('ing-box');
-      ingBox.innerHTML = '';
-
-      for (var i = 0; i < rec.ingredients.length; i++) {
-        var ing = rec.ingredients[i];
-        var scaled = ing.amount * ratio;
-        var unit = ing.unit || '';
-        var formatted = '';
-
-        if (scaled >= 1000 && (unit.toLowerCase() === 'g' || unit.toLowerCase() === 'ml')) {
-          formatted = (Math.round((scaled / 1000) * 100) / 100) + ' ' + (unit.toLowerCase() === 'g' ? 'kg' : 'l');
-        } else {
-          formatted = (Math.round(scaled * 10) / 10) + ' ' + unit;
-        }
-
-        var row = document.createElement('div');
-        row.className = 'ing-row';
-        row.innerHTML = '<span>' + ing.name + '</span><strong style="color:var(--highlight); font-weight:800;">' + formatted + '</strong>';
-        ingBox.appendChild(row);
-      }
-    }
-
-    // 7. PREFERITI SALVATI
-    function getFavorites() {
-      try { return JSON.parse(localStorage.getItem('sr_clean_favs') || '[]'); } catch(e) { return []; }
-    }
-
-    function toggleFav() {
-      var favs = getFavorites();
-      var recTitle = database[activeRecipeKey][activeLang].title;
-      var idx = -1;
-      for (var i = 0; i < favs.length; i++) {
-        if (favs[i].key === activeRecipeKey) { idx = i; break; }
-      }
-
-      if (idx >= 0) {
-        favs.splice(idx, 1);
-      } else {
-        favs.push({ key: activeRecipeKey, img: finalPlateUrl, title: recTitle });
-      }
-
-      try { localStorage.setItem('sr_clean_favs', JSON.stringify(favs)); } catch(e){}
-      refreshStar();
-      renderFavorites();
-    }
-
-    function refreshStar() {
-      var star = document.getElementById('star-btn');
-      if (!star) return;
-      var favs = getFavorites();
-      var isFav = favs.some(function(f) { return f.key === activeRecipeKey; });
-      star.className = 'fav-btn' + (isFav ? ' is-fav' : '');
-      star.innerText = isFav ? '★' : '☆';
-    }
-
-    function renderFavorites() {
-      var box = document.getElementById('fav-list');
-      if (!box) return;
-      var favs = getFavorites();
-      if (favs.length === 0) {
-        box.innerHTML = '<p style="font-size:12px; color:var(--muted); margin-top:4px;">' +
-          (activeLang === 'it' ? 'Nessuna ricetta salvata nei preferiti.' : 'Keine Favoriten vorhanden.') + '</p>';
-        return;
-      }
-      box.innerHTML = '';
-      for (var i = 0; i < favs.length; i++) {
-        (function(index) {
-          var item = document.createElement('div');
-          item.className = 'fav-item';
-          var displayTitle = database[favs[index].key] ? database[favs[index].key][activeLang].title : favs[index].title;
-          item.innerHTML = '<span style="font-weight:700; font-size:13px; cursor:pointer;" onclick="openFavorite(' + index + ')">🍽️ ' + displayTitle + '</span>' +
-                           '<span style="color:#ef4444; font-weight:800; cursor:pointer; padding:4px 8px;" onclick="deleteFavorite(' + index + ')">✕</span>';
-          box.appendChild(item);
-        })(i);
-      }
-    }
-
-    function openFavorite(idx) {
-      var favs = getFavorites();
-      if (!favs[idx]) return;
-      activeRecipeKey = favs[idx].key;
-      finalPlateUrl = favs[idx].img;
-      document.getElementById('plate-img').src = finalPlateUrl;
-      document.getElementById('result-area').style.display = 'flex';
-      renderRecipe();
-      scaleServings(4);
-      refreshStar();
-    }
-
-    function deleteFavorite(idx) {
-      var favs = getFavorites();
-      favs.splice(idx, 1);
-      try { localStorage.setItem('sr_clean_favs', JSON.stringify(favs)); } catch(e){}
-      refreshStar();
-      renderFavorites();
-    }
-
-    // AVVIO
-    initTheme();
-    renderFavorites();
-  </script>
-</body>
-</html>
+      e.target.v
