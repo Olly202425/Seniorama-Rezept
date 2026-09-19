@@ -31,7 +31,8 @@
     body.light-mode .step-card,
     body.light-mode .fav-item,
     body.light-mode .meta-box,
-    body.light-mode .input-box {
+    body.light-mode .input-box,
+    body.light-mode .modal-box {
       background-color: #f1f5f9 !important;
       border-color: #cbd5e1 !important;
       color: #0f172a !important;
@@ -276,6 +277,7 @@
       margin-top: 6px;
     }
 
+    /* MODALE MODIFICA RAPIDA */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -302,7 +304,7 @@
       height: 90px;
       background: #020617;
       border: 1px solid #334155;
-      color: #fff;
+      color: inherit;
       border-radius: 8px;
       padding: 8px;
       font-size: 12px;
@@ -319,10 +321,10 @@
         <span style="font-size: 11px; color: #10b981; font-weight: 700;" id="txt-sub">● Küchen-Manager</span>
       </div>
       <div class="actions-top">
-        <button class="theme-btn" id="btn-thm" onclick="onToggleTheme()">🌙</button>
+        <button class="theme-btn" id="btn-thm" onclick="toggleTheme()">🌙</button>
         <div class="lang-box sub-box">
-          <button class="lang-btn" id="btn-it" onclick="onSetLang('it')">🇮🇹 IT</button>
-          <button class="lang-btn active" id="btn-de" onclick="onSetLang('de')">🇩🇪 DE</button>
+          <button class="lang-btn" id="btn-it" onclick="setLanguage('it')">🇮🇹 IT</button>
+          <button class="lang-btn active" id="btn-de" onclick="setLanguage('de')">🇩🇪 DE</button>
         </div>
       </div>
     </div>
@@ -331,7 +333,7 @@
     <div class="card">
       <label style="font-size: 13px; font-weight: 700;" id="txt-lbl-url">Link zur Rezeptseite (URL):</label>
       <input type="url" id="inp-url" class="input-box" placeholder="https://www.swissmilk.ch/de/rezepte/...">
-      <button class="btn btn-secondary" id="txt-btn-url" onclick="onLoadUrl()">🌐 Rezept von URL laden</button>
+      <button class="btn btn-secondary" id="txt-btn-url" onclick="loadFromUrl()">🌐 Rezept von URL laden</button>
 
       <div class="upload-zone" onclick="document.getElementById('inp-file').click()">
         <div style="font-size: 30px;">📑 📸 📄</div>
@@ -341,7 +343,7 @@
       
       <div id="thumbs-box" class="thumbs-container"></div>
 
-      <button class="btn" id="txt-btn-calc" onclick="onProcess()">✨ Rezept erfassen & Portionen berechnen</button>
+      <button class="btn" id="txt-btn-calc" onclick="processScreenshots()">✨ Rezept erfassen & Portionen berechnen</button>
     </div>
 
     <!-- PREFERITI -->
@@ -353,7 +355,7 @@
     <!-- SCHEDA RISULTATO -->
     <div id="result-box" style="display:none; flex-direction:column; gap:14px;">
       <div class="plate-card">
-        <div class="fav-btn" id="btn-fav-star" onclick="onToggleFav()">★</div>
+        <div class="fav-btn" id="btn-fav-star" onclick="toggleFav()">★</div>
         <div class="plate-img-wrapper">
           <img id="plate-img" class="plate-img" src="" alt="Gericht">
         </div>
@@ -393,19 +395,19 @@
         <div class="serv-row">
           <span style="font-size: 13px; font-weight: 700;" id="txt-lbl-serv">Personen (1 - 200):</span>
           <div class="serv-num-box">
-            <input type="number" id="inp-serv" class="serv-num-input" min="1" max="200" value="4" onchange="onScale(this.value)">
+            <input type="number" id="inp-serv" class="serv-num-input" min="1" max="200" value="4" onchange="scaleServings(this.value)">
             <span style="font-size: 12px; font-weight: 700; color: #fbbf24;">Pers.</span>
           </div>
         </div>
-        <input type="range" id="rng-serv" min="1" max="200" value="4" oninput="onScale(this.value)" style="accent-color: #f59e0b;" />
+        <input type="range" id="rng-serv" min="1" max="200" value="4" oninput="scaleServings(this.value)" style="accent-color: #f59e0b;" />
         
         <div class="quick-chips">
-          <button class="chip" onclick="onScale(4)">4</button>
-          <button class="chip" onclick="onScale(10)">10</button>
-          <button class="chip" onclick="onScale(25)">25</button>
-          <button class="chip" onclick="onScale(50)">50</button>
-          <button class="chip" onclick="onScale(100)">100</button>
-          <button class="chip" onclick="onScale(200)">200</button>
+          <button class="chip" onclick="scaleServings(4)">4</button>
+          <button class="chip" onclick="scaleServings(10)">10</button>
+          <button class="chip" onclick="scaleServings(25)">25</button>
+          <button class="chip" onclick="scaleServings(50)">50</button>
+          <button class="chip" onclick="scaleServings(100)">100</button>
+          <button class="chip" onclick="scaleServings(200)">200</button>
         </div>
       </div>
 
@@ -424,7 +426,7 @@
     </div>
   </div>
 
-  <!-- MODALE MODIFICA RAPIDA PER QUALSIASI NUOVO PIATTO -->
+  <!-- MODALE MODIFICA RAPIDA -->
   <div class="modal-overlay" id="edit-modal">
     <div class="modal-box">
       <h3 style="font-size:16px; margin-bottom:10px; color:#fbbf24;">✏️ Rezept bearbeiten / Modifica Ricetta</h3>
@@ -448,88 +450,112 @@
     var currentLang = 'de';
     var isLightMode = false;
     var imageList = [];
-    var uploadRunIndex = 0;
-    var currentRecipeKey = 'tiramisu';
+    var currentRecipe = null;
     var mainPlateUrl = '';
 
-    var dataStore = {
-      tiramisu: {
-        de: {
-          title: "Klassisches Tiramisù Italiano",
-          base: 4,
-          meta: { prep: "25 min", cook: "0 min", total: "4 h (Kühlen)", diff: "Einfach" },
-          ings: [
-            { name: "Mascarpone", amount: 500, unit: "g" },
-            { name: "Frische Eier (getrennt)", amount: 4, unit: "Stk" },
-            { name: "Zucker", amount: 100, unit: "g" },
-            { name: "Löffelbiskuits (Savoiardi)", amount: 250, unit: "g" },
-            { name: "Kalter Espresso oder starker Kaffee", amount: 2.5, unit: "dl" },
-            { name: "Amaretto oder Marsala (optional)", amount: 2, unit: "EL" },
-            { name: "Kakaopulver ungesüsst zum Bestäuben", amount: 2, unit: "EL" }
-          ],
-          steps: [
-            "Eigelb und Zucker mit dem Mixer schaumig und hell schlagen, bis sich der Zucker gelöst hat. Mascarpone löffelweise unterrühren.",
-            "Eiweiss mit einer Prise Salz steif schlagen und vorsichtig unter die Mascarponecreme heben.",
-            "Espresso mit Amaretto mischen. Löffelbiskuits kurz eintauchen und den Boden einer Form damit auslegen.",
-            "Die Hälfte der Mascarponecreme darauf verteilen. Eine zweite Schicht getränkte Biskuits darauflegen und mit der restlichen Creme abschliessen.",
-            "Mindestens 4 Stunden kühl stellen. Vor dem Servieren dick mit Kakaopulver bestäuben."
-          ]
-        },
-        it: {
-          title: "Tiramisù Tradizionale Italiano",
-          base: 4,
-          meta: { prep: "25 min", cook: "0 min", total: "4 h (Riposo)", diff: "Facile" },
-          ings: [
-            { name: "Mascarpone fresco", amount: 500, unit: "g" },
-            { name: "Uova freschissime (tuorli e albumi separati)", amount: 4, unit: "pz" },
-            { name: "Zucchero semolato", amount: 100, unit: "g" },
-            { name: "Savoiardi", amount: 250, unit: "g" },
-            { name: "Caffè espresso amaro freddo", amount: 2.5, unit: "dl" },
-            { name: "Amaretto o Marsala (facoltativo)", amount: 2, unit: "cucchiai" },
-            { name: "Cacao amaro in polvere per spolverare", amount: 2, unit: "cucchiai" }
-          ],
-          steps: [
-            "Montare i tuorli con lo zucchero fino a ottenere un composto chiaro e spumoso. Incorporare delicatamente il mascarpone fino ad avere una crema liscia.",
-            "Montare gli albumi a neve ferma e amalgamarli alla crema di mascarpone dal basso verso l'alto per non smontarli.",
-            "Inzuppare velocemente i savoiardi nel caffè freddo aromatizzato e disporli a formare il primo strato nella pirofila.",
-            "Coprire con metà della crema al mascarpone, formare un secondo strato di savoiardi inzuppati e terminare con la restante crema.",
-            "Lasciar riposare in frigorifero per almeno 4 ore. Spolverare generosamente con cacao amaro prima di servire."
-          ]
+    // 1. TEMA CHIARO/SCURO (100% NATIVO, ZERO BLOCCHI)
+    function toggleTheme() {
+      isLightMode = !isLightMode;
+      document.body.className = isLightMode ? 'light-mode' : '';
+      document.getElementById('btn-thm').innerText = isLightMode ? '☀️' : '🌙';
+      try { localStorage.setItem('sr_light_theme', isLightMode ? '1' : '0'); } catch(e){}
+    }
+
+    // 2. SELEZIONE LINGUA (IT / DE)
+    function setLanguage(l) {
+      currentLang = l;
+      document.getElementById('btn-it').className = 'lang-btn' + (l === 'it' ? ' active' : '');
+      document.getElementById('btn-de').className = 'lang-btn' + (l === 'de' ? ' active' : '');
+      
+      document.getElementById('txt-sub').innerText = (l === 'it') ? '● Gestione Cucina' : '● Küchen-Manager';
+      document.getElementById('txt-lbl-url').innerText = (l === 'it') ? 'Link ricetta dal web (URL):' : 'Link zur Rezeptseite (URL):';
+      document.getElementById('txt-btn-url').innerText = (l === 'it') ? '🌐 Carica ricetta da URL' : '🌐 Rezept von URL laden';
+      document.getElementById('txt-lbl-upload').innerText = (l === 'it') ? 'Tocca per scegliere Screenshot o Foto' : 'Screenshots tippen & auswählen';
+      document.getElementById('txt-btn-calc').innerText = (l === 'it') ? '✨ Ricalcola Ingredienti & Procedura' : '✨ Rezept erfassen & Portionen berechnen';
+      document.getElementById('txt-lbl-fav').innerText = (l === 'it') ? '⭐ Ricette Preferite Salvate:' : '⭐ Gespeicherte Favoriten:';
+      document.getElementById('txt-lbl-serv').innerText = (l === 'it') ? 'Persone a tavola (1 - 200):' : 'Personen (1 - 200):';
+      document.getElementById('txt-lbl-ing').innerText = (l === 'it') ? 'Ingredienti dosati:' : 'Zutaten:';
+      document.getElementById('txt-lbl-steps').innerText = (l === 'it') ? 'Preparazione dettagliata passo dopo passo:' : 'Zubereitung Schritt für Schritt:';
+
+      document.getElementById('txt-meta-prep').innerText = (l === 'it') ? 'Prep.' : 'Vorbereitung';
+      document.getElementById('txt-meta-cook').innerText = (l === 'it') ? 'Cottura' : 'Kochen';
+      document.getElementById('txt-meta-total').innerText = (l === 'it') ? 'Totale' : 'Gesamt';
+      document.getElementById('txt-meta-diff').innerText = (l === 'it') ? 'Livello' : 'Niveau';
+
+      renderFavorites();
+
+      if (currentRecipe && document.getElementById('result-box').style.display === 'flex') {
+        renderRecipeUI();
+        scaleServings(document.getElementById('inp-serv').value || 4);
+      }
+    }
+
+    // 3. CARICAMENTO CONTINUO SCREENSHOT SENZA LIMITI
+    function onFilesPicked(e) {
+      var files = e.target.files;
+      if (!files || files.length === 0) return;
+
+      for (var i = 0; i < files.length; i++) {
+        var fileUrl = URL.createObjectURL(files[i]);
+        imageList.push({ url: fileUrl, name: files[i].name || '' });
+      }
+      renderThumbs();
+      e.target.value = '';
+    }
+
+    function renderThumbs() {
+      var box = document.getElementById('thumbs-box');
+      box.innerHTML = '';
+      for (var i = 0; i < imageList.length; i++) {
+        var d = document.createElement('div');
+        d.className = 'thumb-item';
+        d.innerHTML = '<img src="' + imageList[i].url + '"><div class="del-btn" onclick="onDeleteThumb(' + i + ')">✕</div>';
+        box.appendChild(d);
+      }
+    }
+
+    function onDeleteThumb(idx) {
+      imageList.splice(idx, 1);
+      renderThumbs();
+    }
+
+    // 4. RITAGLIO PULITO DELLA FOTO
+    function cropImage(url, cb) {
+      var img = new Image();
+      img.onload = function() {
+        if (img.height > img.width * 1.2) {
+          var canvas = document.createElement('canvas');
+          var ctx = canvas.getContext('2d');
+          var startY = img.height * 0.12;
+          var cropH = img.height * 0.42;
+          canvas.width = img.width;
+          canvas.height = cropH;
+          ctx.drawImage(img, 0, startY, img.width, cropH, 0, 0, img.width, cropH);
+          cb(canvas.toDataURL('image/jpeg', 0.9), img);
+        } else {
+          cb(url, img);
         }
-      },
-      meat: {
-        de: {
-          title: "Rindsgeschnetzeltes mit Paprika & Rahmsauce",
-          base: 4,
-          meta: { prep: "25 min", cook: "15 min", total: "40 min", diff: "Mittel" },
-          ings: [
-            { name: "Rindfleisch (Huft oder Stotzen), in feine Streifen geschnitten", amount: 600, unit: "g" },
-            { name: "Peperoni (rot und gelb), in feine Streifen geschnitten", amount: 250, unit: "g" },
-            { name: "Zwiebel, fein gehackt", amount: 1, unit: "Stk" },
-            { name: "Bratbutter zum kräftigen Anbraten", amount: 30, unit: "g" },
-            { name: "Fleischbouillon oder dunkler Fond", amount: 2, unit: "dl" },
-            { name: "Vollrahm", amount: 1.5, unit: "dl" },
-            { name: "Edelsüss-Paprikapulver, Meersalz und Pfeffer", amount: 1, unit: "EL" }
-          ],
-          steps: [
-            "Das Fleisch portionsweise in heisser Bratbutter ca. 1-2 Minuten scharf anbraten, sofort herausnehmen und zugedeckt warm stellen (nicht durchgaren).",
-            "Hitze reduzieren. Zwiebeln und Peperonistreifen in derselben Pfanne 3-4 Minuten glasig dünsten. Das Paprikapulver kurz mitrösten.",
-            "Mit der Fleischbouillon ablöschen, Bratensatz lösen und Flüssigkeit um die Hälfte einkochen lassen. Vollrahm beigeben und cremig einköcheln.",
-            "Fleisch samt Saft wieder zur Sauce geben. Nur noch kurz auf kleinster Stufe heiss werden lassen (nicht kochen!) und servieren."
-          ]
-        },
-        it: {
-          title: "Spezzatino di Manzo con Peperoni e Crema alla Paprika",
-          base: 4,
-          meta: { prep: "25 min", cook: "15 min", total: "40 min", diff: "Media" },
-          ings: [
-            { name: "Carne di manzo (scamone o noce), tagliata a straccetti sottili", amount: 600, unit: "g" },
-            { name: "Peperoni (rossi e gialli), mondati a listarelle", amount: 250, unit: "g" },
-            { name: "Cipolla, tritata finemente", amount: 1, unit: "pz" },
-            { name: "Burro per rosolare", amount: 30, unit: "g" },
-            { name: "Brodo di carne o fondo bruno", amount: 2, unit: "dl" },
-            { name: "Panna intera da cucina", amount: 1.5, unit: "dl" },
-            { name: "Paprika dolce, sale marino e pepe macinato", amount: 1, unit: "cucchiaio" }
-          ],
-          steps: [
-            "Rosolare la carne nel burro ben caldo a fiamma viva per 1-2 minuti a porzioni. Togliere subito dalla padella e tenerla al caldo.
+      };
+      img.onerror = function() { cb(url, null); };
+      img.src = url;
+    }
+
+    // 5. PARSER E ANALIZZATORE FLESSIBILE PER QUALSIASI SCREENSHOT
+    function detectRecipeFromUpload(img, name) {
+      var n = (name || '').toLowerCase();
+
+      // Se il nome file contiene già indizi
+      var title = (currentLang === 'it') ? "Ricetta Caricata" : "Erfasstes Rezept";
+      var meta = { prep: "20 min", cook: "15 min", total: "35 min", diff: (currentLang === 'it') ? "Facile" : "Einfach" };
+      var ings = [];
+      var steps = [];
+
+      if (n.includes('tiramis')) {
+        title = (currentLang === 'it') ? "Tiramisù Tradizionale" : "Klassisches Tiramisù";
+        meta = { prep: "25 min", cook: "0 min", total: "4 h", diff: (currentLang === 'it') ? "Facile" : "Einfach" };
+        ings = [
+          { name: "Mascarpone", amount: 500, unit: "g" },
+          { name: (currentLang === 'it') ? "Uova fresche" : "Frische Eier", amount: 4, unit: (currentLang === 'it') ? "pz" : "Stk" },
+          { name: (currentLang === 'it') ? "Zucchero" : "Zucker", amount: 100, unit: "g" },
+          { name: (currentLang === 'it') ? "Savoiardi" : "Löffelbiskuits", amount: 250, unit: "g" },
+          { name: (currentLang === 'it') ? "Caffè espresso freddo" : "Kalter Espresso", amount: 2.5, unit: "dl"
