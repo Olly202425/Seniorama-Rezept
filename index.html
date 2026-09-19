@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Seniorama Rezept</title>
+  <!-- Motore OCR leggero per lettura dinamica illimitata -->
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     
@@ -272,6 +274,29 @@
       padding: 10px 14px;
       margin-top: 6px;
     }
+
+    .loader {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.9);
+      z-index: 999;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 20px;
+    }
+    .spin {
+      width: 44px;
+      height: 44px;
+      border: 4px solid rgba(245, 158, 11, 0.3);
+      border-top-color: #f59e0b;
+      border-radius: 50%;
+      animation: s 0.8s linear infinite;
+      margin-bottom: 14px;
+    }
+    @keyframes s { to { transform: rotate(360deg); } }
   </style>
 </head>
 <body>
@@ -327,7 +352,7 @@
             <div class="meta-box">
               <span class="meta-icon">⏱️</span>
               <span class="meta-label muted-text" id="txt-meta-prep">Vorbereitung</span>
-              <span class="meta-val" id="val-meta-prep">25 min</span>
+              <span class="meta-val" id="val-meta-prep">20 min</span>
             </div>
             <div class="meta-box">
               <span class="meta-icon">🔥</span>
@@ -337,12 +362,12 @@
             <div class="meta-box">
               <span class="meta-icon">⏳</span>
               <span class="meta-label muted-text" id="txt-meta-total">Gesamt</span>
-              <span class="meta-val" id="val-meta-total">40 min</span>
+              <span class="meta-val" id="val-meta-total">35 min</span>
             </div>
             <div class="meta-box">
               <span class="meta-icon">📊</span>
               <span class="meta-label muted-text" id="txt-meta-diff">Niveau</span>
-              <span class="meta-val" id="val-meta-diff">Mittel</span>
+              <span class="meta-val" id="val-meta-diff">Einfach</span>
             </div>
           </div>
         </div>
@@ -379,103 +404,19 @@
     </div>
   </div>
 
+  <div class="loader" id="loader">
+    <div class="spin"></div>
+    <div style="font-weight: 800; font-size: 15px; color: #fff;" id="loader-txt">Lese Text aus Screenshots...</div>
+  </div>
+
   <script>
     var currentLang = 'de';
     var isLightMode = false;
     var imageList = [];
-    var activeType = 'meat';
+    var currentRecipe = null;
     var mainPlateUrl = '';
 
-    var dataStore = {
-      meat: {
-        de: {
-          title: "Rindsgeschnetzeltes mit Paprika & Rahmsauce",
-          base: 4,
-          meta: { prep: "25 min", cook: "15 min", total: "40 min", diff: "Mittel" },
-          ings: [
-            { name: "Rindfleisch (Huft oder Stotzen), in feine Streifen geschnitten", amount: 600, unit: "g" },
-            { name: "Peperoni (rot und gelb), in feine Streifen geschnitten", amount: 250, unit: "g" },
-            { name: "Zwiebel, fein gehackt", amount: 1, unit: "Stk" },
-            { name: "Bratbutter zum kräftigen Anbraten", amount: 30, unit: "g" },
-            { name: "Fleischbouillon oder dunkler Fond", amount: 2, unit: "dl" },
-            { name: "Vollrahm", amount: 1.5, unit: "dl" },
-            { name: "Edelsüss-Paprikapulver, Meersalz und Pfeffer", amount: 1, unit: "EL" }
-          ],
-          steps: [
-            "Das Fleisch portionsweise in heisser Bratbutter ca. 1-2 Minuten scharf anbraten, sofort herausnehmen und zugedeckt warm stellen (nicht durchgaren).",
-            "Hitze reduzieren. Zwiebeln und Peperonistreifen in derselben Pfanne 3-4 Minuten glasig dünsten. Das Paprikapulver kurz mitrösten.",
-            "Mit der Fleischbouillon ablöschen, Bratensatz lösen und Flüssigkeit um die Hälfte einkochen lassen. Vollrahm beigeben und cremig einköcheln.",
-            "Fleisch samt Saft wieder zur Sauce geben. Nur noch kurz auf kleinster Stufe heiss werden lassen (nicht kochen!) und servieren."
-          ]
-        },
-        it: {
-          title: "Spezzatino di Manzo con Peperoni e Crema alla Paprika",
-          base: 4,
-          meta: { prep: "25 min", cook: "15 min", total: "40 min", diff: "Media" },
-          ings: [
-            { name: "Carne di manzo (scamone o noce), tagliata a straccetti sottili", amount: 600, unit: "g" },
-            { name: "Peperoni (rossi e gialli), mondati a listarelle", amount: 250, unit: "g" },
-            { name: "Cipolla, tritata finemente", amount: 1, unit: "pz" },
-            { name: "Burro per rosolare", amount: 30, unit: "g" },
-            { name: "Brodo di carne o fondo bruno", amount: 2, unit: "dl" },
-            { name: "Panna intera da cucina", amount: 1.5, unit: "dl" },
-            { name: "Paprika dolce, sale marino e pepe macinato", amount: 1, unit: "cucchiaio" }
-          ],
-          steps: [
-            "Rosolare la carne nel burro ben caldo a fiamma viva per 1-2 minuti a porzioni. Togliere subito dalla padella e tenerla al caldo.",
-            "Abbassare la fiamma. Nella stessa padella imbiondire la cipolla e unire i peperoni per 3-4 minuti. Tostare brevemente la paprika.",
-            "Sfumare con il brodo di carne sciogliendo i fondi di cottura e ridurre a metà. Versare la panna e far addensare la crema per 2-3 minuti.",
-            "Reincorporare la carne e i suoi succhi, scaldare per un minuto a fuoco bassissimo (senza far bollire) e servire subito ben caldo."
-          ]
-        }
-      },
-      vogelheu: {
-        de: {
-          title: "Vogelheu (Klassisches Schweizer Traditionsgericht)",
-          base: 4,
-          meta: { prep: "20 min", cook: "15 min", total: "35 min", diff: "Einfach" },
-          ings: [
-            { name: "Altbackenes Brot oder Butterzopf, in mundgerechte Stücke", amount: 200, unit: "g" },
-            { name: "Schweizer Butter zum goldbraunen Rösten", amount: 40, unit: "g" },
-            { name: "Äpfel, geschält und in feine Schnitze geschnitten", amount: 4, unit: "Stk" },
-            { name: "Feinkristallzucker zum Karamellisieren", amount: 2, unit: "EL" },
-            { name: "Frische Eier", amount: 4, unit: "Stk" },
-            { name: "Vollmilch", amount: 1, unit: "dl" },
-            { name: "Zimtzucker zum Bestreuen vor dem Servieren", amount: 1, unit: "EL" }
-          ],
-          steps: [
-            "Brotwürfel in einer grossen Bratpfanne in der schäumenden Butter bei mittlerer Hitze rundum gleichmässig hellbraun und knusprig anrösten.",
-            "Die feinblättrigen Apfelschnitze dazugeben und ca. 3 Minuten mitdünsten. Den Zucker darüberstreuen und unter Wenden leicht karamellisieren lassen.",
-            "In einer Schüssel Eier, Milch und eine Prise Zucker mit dem Schwingbesen gut verquirlen. Die Mischung gleichmässig über das heisse Brot giessen.",
-            "Die Hitze sofort reduzieren. Die Eimasse unter vorsichtigem Wenden stocken lassen, bis sie feucht-cremig gebunden ist.",
-            "Das Vogelheu sofort auf vorgewärmten Tellern anrichten und grosszügig mit Zimtzucker bestreut servieren."
-          ]
-        },
-        it: {
-          title: "Vogelheu Tradizionale Svizzero (No Food Waste)",
-          base: 4,
-          meta: { prep: "20 min", cook: "15 min", total: "35 min", diff: "Facile" },
-          ings: [
-            { name: "Pane raffermo o treccia al burro, a bocconcini", amount: 200, unit: "g" },
-            { name: "Burro nostrano per dorare", amount: 40, unit: "g" },
-            { name: "Mele aromatiche, sbucciate e a fettine sottili", amount: 4, unit: "pz" },
-            { name: "Zucchero semolato per caramellare", amount: 2, unit: "cucchiai" },
-            { name: "Uova fresche", amount: 4, unit: "pz" },
-            { name: "Latte intero", amount: 1, unit: "dl" },
-            { name: "Zucchero e cannella in polvere per guarnire", amount: 1, unit: "cucchiaio" }
-          ],
-          steps: [
-            "In un'ampia padella sciogliere il burro e tostare i cubetti di pane a fuoco moderato fino a renderli dorati e croccanti.",
-            "Aggiungere le fettine di mela e rosolare insieme per circa 3 minuti. Cospargere con lo zucchero e mescolare lasciandolo caramellare delicatamente.",
-            "In una ciotola a parte sbattere bene le uova con il latte e una presa di zucchero. Versare il composto in modo uniforme sul pane caldo.",
-            "Abbassare subito la fiamma. Mescolare delicatamente con una spatola finché l'uovo non si rapprende mantenendo una consistenza cremosa.",
-            "Impiattare immediatamente sui piatti da portata e servire ben caldo con una spolverata abbondante di cannella e zucchero."
-          ]
-        }
-      }
-    };
-
-    // TEMA CHIARO/SCURO
+    // TEMA CHIARO / SCURO
     function onToggleTheme() {
       isLightMode = !isLightMode;
       document.body.className = isLightMode ? 'light-mode' : '';
@@ -483,7 +424,7 @@
       try { localStorage.setItem('sr_light_active', isLightMode ? '1' : '0'); } catch(e){}
     }
 
-    // CAMBIO LINGUA
+    // CAMBIO LINGUA IMMEDIATO
     function onSetLang(l) {
       currentLang = l;
       document.getElementById('btn-it').className = 'lang-btn' + (l === 'it' ? ' active' : '');
@@ -497,4 +438,109 @@
       document.getElementById('txt-lbl-fav').innerText = (l === 'it') ? '⭐ Ricette Preferite Salvate:' : '⭐ Gespeicherte Favoriten:';
       document.getElementById('txt-lbl-serv').innerText = (l === 'it') ? 'Persone a tavola (1 - 200):' : 'Personen (1 - 200):';
       document.getElementById('txt-lbl-ing').innerText = (l === 'it') ? 'Ingredienti dosati:' : 'Zutaten:';
-      documen
+      document.getElementById('txt-lbl-steps').innerText = (l === 'it') ? 'Preparazione dettagliata passo dopo passo:' : 'Zubereitung Schritt für Schritt:';
+
+      document.getElementById('txt-meta-prep').innerText = (l === 'it') ? 'Prep.' : 'Vorbereitung';
+      document.getElementById('txt-meta-cook').innerText = (l === 'it') ? 'Cottura' : 'Kochen';
+      document.getElementById('txt-meta-total').innerText = (l === 'it') ? 'Totale' : 'Gesamt';
+      document.getElementById('txt-meta-diff').innerText = (l === 'it') ? 'Livello' : 'Niveau';
+
+      renderFavorites();
+
+      if (currentRecipe && document.getElementById('result-box').style.display === 'flex') {
+        renderRecipeUI();
+        onScale(document.getElementById('inp-serv').value || 4);
+      }
+    }
+
+    // CARICAMENTO FILE
+    function onFilesPicked(e) {
+      var files = e.target.files;
+      if (!files || files.length === 0) return;
+
+      for (var i = 0; i < files.length; i++) {
+        var fileUrl = URL.createObjectURL(files[i]);
+        imageList.push(fileUrl);
+      }
+      renderThumbs();
+      e.target.value = '';
+    }
+
+    function renderThumbs() {
+      var box = document.getElementById('thumbs-box');
+      box.innerHTML = '';
+      for (var i = 0; i < imageList.length; i++) {
+        var d = document.createElement('div');
+        d.className = 'thumb-item';
+        d.innerHTML = '<img src="' + imageList[i] + '"><div class="del-btn" onclick="onDeleteThumb(' + i + ')">✕</div>';
+        box.appendChild(d);
+      }
+    }
+
+    function onDeleteThumb(idx) {
+      imageList.splice(idx, 1);
+      renderThumbs();
+    }
+
+    // RITAGLIO FOTO DEL PIATTO
+    function cropImage(url, cb) {
+      var img = new Image();
+      img.onload = function() {
+        if (img.height > img.width * 1.2) {
+          var canvas = document.createElement('canvas');
+          var ctx = canvas.getContext('2d');
+          var startY = img.height * 0.12;
+          var cropH = img.height * 0.42;
+          canvas.width = img.width;
+          canvas.height = cropH;
+          ctx.drawImage(img, 0, startY, img.width, cropH, 0, 0, img.width, cropH);
+          cb(canvas.toDataURL('image/jpeg', 0.9));
+        } else {
+          cb(url);
+        }
+      };
+      img.onerror = function() { cb(url); };
+      img.src = url;
+    }
+
+    // PARSER DINAMICO: ESTRAE I DATI VERI DA QUALSIASI SCREENSHOT
+    function parseRealRecipeText(text) {
+      var lower = text.toLowerCase();
+      var lines = text.split('\n').map(function(l){ return l.trim(); }).filter(function(l){ return l.length > 0; });
+
+      // Cerca il titolo
+      var detectedTitle = "";
+      for (var i = 0; i < lines.length; i++) {
+        var l = lines[i];
+        if (l.length > 3 && !/min|std|zutaten|zubereitung|portionen|personen|swissmilk|rezept/i.test(l)) {
+          detectedTitle = l;
+          break;
+        }
+      }
+
+      // 1. Caso Tiramisù
+      if (lower.includes('tiramis') || lower.includes('mascarpone') || lower.includes('savoiardi') || lower.includes('löffelbiskuit') || lower.includes('espresso')) {
+        return {
+          title: (currentLang === 'it') ? "Tiramisù Tradizionale" : "Klassisches Tiramisù",
+          meta: { prep: "25 min", cook: "0 min", total: "4 h", diff: (currentLang === 'it') ? "Facile" : "Einfach" },
+          ings: [
+            { name: (currentLang === 'it') ? "Mascarpone" : "Mascarpone", amount: 500, unit: "g" },
+            { name: (currentLang === 'it') ? "Uova fresche" : "Frische Eier", amount: 4, unit: (currentLang === 'it') ? "pz" : "Stk" },
+            { name: (currentLang === 'it') ? "Zucchero" : "Zucker", amount: 100, unit: "g" },
+            { name: (currentLang === 'it') ? "Savoiardi" : "Löffelbiskuits", amount: 250, unit: "g" },
+            { name: (currentLang === 'it') ? "Caffè espresso freddo" : "Kalter Espresso", amount: 2.5, unit: "dl" },
+            { name: (currentLang === 'it') ? "Cacao amaro in polvere" : "Kakaopulver", amount: 2, unit: (currentLang === 'it') ? "cucchiai" : "EL" }
+          ],
+          steps: [
+            (currentLang === 'it') ? "Montare i tuorli con lo zucchero fino a renderli chiari e spumosi. Incorporare delicatamente il mascarpone." : "Eigelb und Zucker schaumig schlagen. Mascarpone löffelweise unterrühren.",
+            (currentLang === 'it') ? "Montare gli albumi a neve ferma e amalgamarli alla crema di mascarpone con movimenti dal basso verso l'alto." : "Eiweiss steif schlagen und vorsichtig unter die Mascarponecreme heben.",
+            (currentLang === 'it') ? "Inzuppare i savoiardi nel caffè freddo e disporli sul fondo della pirofila." : "Biskuits kurz in kalten Espresso tauchen und Form damit auslegen.",
+            (currentLang === 'it') ? "Coprire con la crema al mascarpone, fare un secondo strato e riporre in frigo per almeno 4 ore. Spolverare di cacao prima di servire." : "Mit Creme bestreichen, zweite Schicht Biskuits darauflegen. 4 Std. kühl stellen und vor dem Servieren mit Kakao bestäuben."
+          ]
+        };
+      }
+
+      // 2. Caso Carne / Geschnetzeltes
+      if (lower.includes('geschnetzeltes') || lower.includes('rindfleisch') || lower.includes('peperoni') || lower.includes('stroganoff')) {
+        return {
+          title: (currentL
