@@ -48,6 +48,10 @@
     .thumb-item img { width: 100%; height: 100%; object-fit: cover; }
     .thumb-item .del-btn { position: absolute; top: 2px; right: 2px; background: rgba(0,0,0,0.85); color: #fff; border-radius: 50%; width: 22px; height: 22px; font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center; cursor: pointer; }
 
+    .recipe-selector-row { display: flex; gap: 8px; margin-top: 12px; }
+    .type-btn { flex: 1; padding: 10px 6px; border: 1px solid var(--border); background-color: var(--subcard); color: var(--text); font-size: 12px; font-weight: 700; border-radius: 8px; cursor: pointer; text-align: center; }
+    .type-btn.active { border-color: var(--primary); background-color: rgba(245, 158, 11, 0.15); color: var(--highlight); }
+
     .btn { width: 100%; background-color: var(--primary); color: #fff; border: none; padding: 13px; border-radius: 10px; font-weight: 700; font-size: 14px; cursor: pointer; margin-top: 12px; }
     .btn-secondary { background-color: var(--card); border: 1px solid var(--border); color: var(--text); margin-top: 8px; }
     
@@ -107,6 +111,12 @@
       </div>
       
       <div id="thumbs-box" class="thumbs-container"></div>
+
+      <!-- SELETTORE MANUALE RAPIDO PIATTO (GARANTISCE IL CAMBIO IMMEDIATO) -->
+      <div class="recipe-selector-row">
+        <button class="type-btn active" id="btn-type-meat" onclick="appSetRecipeType('meat')">🥩 Fleisch / Stroganoff</button>
+        <button class="type-btn" id="btn-type-vogelheu" onclick="appSetRecipeType('vogelheu')">🍎 Vogelheu / Süss</button>
+      </div>
 
       <button class="btn" id="txt-btn-calc" onclick="appProcessRecipe()">✨ Rezept erfassen & Portionen berechnen</button>
     </div>
@@ -208,7 +218,7 @@
             { name: "Edelsüss-Paprikapulver, Meersalz und Pfeffer", amount: 1, unit: "EL" }
           ],
           steps: [
-            "Das Fleisch portionsweise in heisser Bratbutter ca. 1-2 Minuten scharf anbraten, sofort herausnehmen und warm stellen.",
+            "Das Fleisch portionsweise in heisser Bratbutter ca. 1-2 Minuten scharf anbraten, sofort herausnehmen und warm stellen (nicht durchgaren).",
             "Hitze reduzieren. Zwiebeln und Peperonistreifen in derselben Pfanne 3-4 Minuten glasig dünsten. Das Paprikapulver kurz mitrösten.",
             "Mit der Fleischbouillon ablöschen, Bratensatz lösen und um die Hälfte einkochen. Vollrahm beigeben und cremig einköcheln.",
             "Fleisch samt Fleischsaft wieder zur Sauce geben. Kurz auf kleinster Stufe heiss werden lassen (nicht kochen!) und servieren."
@@ -281,60 +291,38 @@
       }
     };
 
-    // 1. TEMA CHIARO / SCURO
+    // 1. TEMA CHIARO / SCURO (SICURO)
     function appToggleTheme() {
-      if (state.theme === 'dark') {
-        state.theme = 'light';
-        document.body.className = 'theme-light';
-        document.getElementById('btn-theme').innerText = '☀️';
-      } else {
-        state.theme = 'dark';
-        document.body.className = '';
-        document.getElementById('btn-theme').innerText = '🌙';
-      }
-      try { localStorage.setItem('sr_theme_choice', state.theme); } catch(e){}
+      try {
+        if (state.theme === 'dark') {
+          state.theme = 'light';
+          document.body.className = 'theme-light';
+          document.getElementById('btn-theme').innerText = '☀️';
+        } else {
+          state.theme = 'dark';
+          document.body.className = '';
+          document.getElementById('btn-theme').innerText = '🌙';
+        }
+        localStorage.setItem('sr_theme_choice', state.theme);
+      } catch(e) {}
     }
 
     // 2. LINGUA
     function appSetLanguage(lang) {
-      state.lang = lang;
-      document.getElementById('btn-lang-it').className = 'lang-btn' + (lang === 'it' ? ' active' : '');
-      document.getElementById('btn-lang-de').className = 'lang-btn' + (lang === 'de' ? ' active' : '');
-      
-      document.getElementById('txt-subtitle').innerText = (lang === 'it') ? '● Gestione Cucina' : '● Küchen-Manager';
-      document.getElementById('txt-lbl-url').innerText = (lang === 'it') ? 'Link ricetta dal web (URL):' : 'Link zur Rezeptseite (URL):';
-      document.getElementById('txt-btn-url').innerText = (lang === 'it') ? '🌐 Carica ricetta da URL' : '🌐 Rezept von URL laden';
-      document.getElementById('txt-lbl-upload').innerText = (lang === 'it') ? 'Tocca per scegliere Screenshot o Foto' : 'Screenshots tippen & auswählen';
-      document.getElementById('txt-btn-calc').innerText = (lang === 'it') ? '✨ Ricalcola Ingredienti & Procedura' : '✨ Rezept erfassen & Portionen berechnen';
-      document.getElementById('txt-lbl-favs').innerText = (lang === 'it') ? '⭐ Ricette Preferite Salvate:' : '⭐ Gespeicherte Favoriten:';
-      document.getElementById('txt-lbl-serv').innerText = (lang === 'it') ? 'Persone a tavola (1 - 200):' : 'Personen (1 - 200):';
-      document.getElementById('txt-lbl-ing').innerText = (lang === 'it') ? 'Ingredienti dosati:' : 'Zutaten:';
-      document.getElementById('txt-lbl-steps').innerText = (lang === 'it') ? 'Preparazione dettagliata passo dopo passo:' : 'Zubereitung Schritt für Schritt:';
+      try {
+        state.lang = lang;
+        document.getElementById('btn-lang-it').className = 'lang-btn' + (lang === 'it' ? ' active' : '');
+        document.getElementById('btn-lang-de').className = 'lang-btn' + (lang === 'de' ? ' active' : '');
+        
+        document.getElementById('txt-subtitle').innerText = (lang === 'it') ? '● Gestione Cucina' : '● Küchen-Manager';
+        document.getElementById('txt-lbl-url').innerText = (lang === 'it') ? 'Link ricetta dal web (URL):' : 'Link zur Rezeptseite (URL):';
+        document.getElementById('txt-btn-url').innerText = (lang === 'it') ? '🌐 Carica ricetta da URL' : '🌐 Rezept von URL laden';
+        document.getElementById('txt-lbl-upload').innerText = (lang === 'it') ? 'Tocca per scegliere Screenshot o Foto' : 'Screenshots tippen & auswählen';
+        document.getElementById('txt-btn-calc').innerText = (lang === 'it') ? '✨ Ricalcola Ingredienti & Procedura' : '✨ Rezept erfassen & Portionen berechnen';
+        document.getElementById('txt-lbl-favs').innerText = (lang === 'it') ? '⭐ Ricette Preferite Salvate:' : '⭐ Gespeicherte Favoriten:';
+        document.getElementById('txt-lbl-serv').innerText = (lang === 'it') ? 'Persone a tavola (1 - 200):' : 'Personen (1 - 200):';
+        document.getElementById('txt-lbl-ing').innerText = (lang === 'it') ? 'Ingredienti dosati:' : 'Zutaten:';
+        document.getElementById('txt-lbl-steps').innerText = (lang === 'it') ? 'Preparazione dettagliata passo dopo passo:' : 'Zubereitung Schritt für Schritt:';
 
-      document.getElementById('txt-meta-prep').innerText = (lang === 'it') ? 'Prep.' : 'Vorbereitung';
-      document.getElementById('txt-meta-cook').innerText = (lang === 'it') ? 'Cottura' : 'Kochen';
-      document.getElementById('txt-meta-total').innerText = (lang === 'it') ? 'Totale' : 'Gesamt';
-      document.getElementById('txt-meta-diff').innerText = (lang === 'it') ? 'Livello' : 'Niveau';
-
-      appRenderFavorites();
-
-      if (document.getElementById('result-box').style.display === 'flex') {
-        appRenderRecipe();
-        appScale(document.getElementById('inp-serv').value || 4);
-      }
-    }
-
-    // 3. CARICAMENTO SCREENSHOT
-    function appOnFilesChosen(e) {
-      var files = e.target.files;
-      if (!files || files.length === 0) return;
-
-      for (var i = 0; i < files.length; i++) {
-        var reader = new FileReader();
-        reader.onload = function(evt) {
-          state.images.push(evt.target.result);
-          appRenderThumbs();
-        };
-        reader.readAsDataURL(files[i]);
-      }
-      e.target.v
+        document.getElementById('txt-meta-prep').innerText = (lang === 'it') ? 'Prep.' : 'Vorbereitung';
+        document.getElementById('
