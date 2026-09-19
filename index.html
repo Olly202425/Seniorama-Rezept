@@ -16,7 +16,7 @@
       --highlight: #fbbf24;
     }
 
-    body.theme-light {
+    body.light-mode {
       --bg: #f8fafc;
       --card: #ffffff;
       --border: #cbd5e1;
@@ -26,7 +26,7 @@
       --highlight: #d97706;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     body { background-color: var(--bg); color: var(--text); padding: 14px; display: flex; justify-content: center; min-height: 100vh; }
     .app { width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 14px; }
     
@@ -47,10 +47,6 @@
     .thumb-item { position: relative; width: 80px; height: 80px; border-radius: 8px; overflow: hidden; background-color: var(--subcard); border: 1px solid var(--border); flex-shrink: 0; }
     .thumb-item img { width: 100%; height: 100%; object-fit: cover; }
     .thumb-item .del-btn { position: absolute; top: 2px; right: 2px; background: rgba(0,0,0,0.85); color: #fff; border-radius: 50%; width: 22px; height: 22px; font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-
-    .recipe-selector-row { display: flex; gap: 8px; margin-top: 12px; }
-    .type-btn { flex: 1; padding: 10px 6px; border: 1px solid var(--border); background-color: var(--subcard); color: var(--text); font-size: 12px; font-weight: 700; border-radius: 8px; cursor: pointer; text-align: center; }
-    .type-btn.active { border-color: var(--primary); background-color: rgba(245, 158, 11, 0.15); color: var(--highlight); }
 
     .btn { width: 100%; background-color: var(--primary); color: #fff; border: none; padding: 13px; border-radius: 10px; font-weight: 700; font-size: 14px; cursor: pointer; margin-top: 12px; }
     .btn-secondary { background-color: var(--card); border: 1px solid var(--border); color: var(--text); margin-top: 8px; }
@@ -111,12 +107,6 @@
       </div>
       
       <div id="thumbs-box" class="thumbs-container"></div>
-
-      <!-- SELETTORE MANUALE RAPIDO PIATTO (GARANTISCE IL CAMBIO IMMEDIATO) -->
-      <div class="recipe-selector-row">
-        <button class="type-btn active" id="btn-type-meat" onclick="appSetRecipeType('meat')">🥩 Fleisch / Stroganoff</button>
-        <button class="type-btn" id="btn-type-vogelheu" onclick="appSetRecipeType('vogelheu')">🍎 Vogelheu / Süss</button>
-      </div>
 
       <button class="btn" id="txt-btn-calc" onclick="appProcessRecipe()">✨ Rezept erfassen & Portionen berechnen</button>
     </div>
@@ -197,8 +187,8 @@
     var state = {
       lang: 'de',
       theme: 'dark',
-      recipeKey: 'meat',
-      images: [],
+      currentKey: 'meat',
+      thumbnails: [],
       plateUrl: ''
     };
 
@@ -210,7 +200,7 @@
           meta: { prep: "25 min", cook: "15 min", total: "40 min", diff: "Mittel" },
           ings: [
             { name: "Rindfleisch (Huft/Stotzen), in feine Streifen geschnitten", amount: 600, unit: "g" },
-            { name: "Peperoni (rot & gelb), in Streifen geschnitten", amount: 250, unit: "g" },
+            { name: "Peperoni (rot & gelb), in feine Streifen geschnitten", amount: 250, unit: "g" },
             { name: "Zwiebel, fein gehackt", amount: 1, unit: "Stk" },
             { name: "Bratbutter zum kräftigen Anbraten", amount: 30, unit: "g" },
             { name: "Fleischbouillon oder dunkler Fond", amount: 2, unit: "dl" },
@@ -218,10 +208,10 @@
             { name: "Edelsüss-Paprikapulver, Meersalz und Pfeffer", amount: 1, unit: "EL" }
           ],
           steps: [
-            "Das Fleisch portionsweise in heisser Bratbutter ca. 1-2 Minuten scharf anbraten, sofort herausnehmen und warm stellen (nicht durchgaren).",
+            "Das Fleisch portionsweise in heisser Bratbutter ca. 1-2 Minuten scharf anbraten, sofort herausnehmen und zugedeckt warm stellen (nicht durchgaren).",
             "Hitze reduzieren. Zwiebeln und Peperonistreifen in derselben Pfanne 3-4 Minuten glasig dünsten. Das Paprikapulver kurz mitrösten.",
-            "Mit der Fleischbouillon ablöschen, Bratensatz lösen und um die Hälfte einkochen. Vollrahm beigeben und cremig einköcheln.",
-            "Fleisch samt Fleischsaft wieder zur Sauce geben. Kurz auf kleinster Stufe heiss werden lassen (nicht kochen!) und servieren."
+            "Mit der Fleischbouillon ablöschen, Bratensatz lösen und Flüssigkeit um die Hälfte einkochen lassen. Vollrahm beigeben und cremig einköcheln.",
+            "Fleisch samt Saft wieder zur Sauce geben. Nur noch kurz auf kleinster Stufe heiss werden lassen (nicht kochen!) und servieren."
           ]
         },
         it: {
@@ -229,7 +219,7 @@
           base: 4,
           meta: { prep: "25 min", cook: "15 min", total: "40 min", diff: "Media" },
           ings: [
-            { name: "Carne di manzo (scamone/noce), a straccetti sottili", amount: 600, unit: "g" },
+            { name: "Carne di manzo (scamone o noce), tagliata a straccetti sottili", amount: 600, unit: "g" },
             { name: "Peperoni (rossi e gialli), mondati a listarelle", amount: 250, unit: "g" },
             { name: "Cipolla, tritata finemente", amount: 1, unit: "pz" },
             { name: "Burro per rosolare", amount: 30, unit: "g" },
@@ -291,38 +281,275 @@
       }
     };
 
-    // 1. TEMA CHIARO / SCURO (SICURO)
+    // 1. TEMA
     function appToggleTheme() {
-      try {
-        if (state.theme === 'dark') {
-          state.theme = 'light';
-          document.body.className = 'theme-light';
-          document.getElementById('btn-theme').innerText = '☀️';
-        } else {
-          state.theme = 'dark';
-          document.body.className = '';
-          document.getElementById('btn-theme').innerText = '🌙';
-        }
-        localStorage.setItem('sr_theme_choice', state.theme);
-      } catch(e) {}
+      state.theme = (state.theme === 'dark') ? 'light' : 'dark';
+      document.body.className = (state.theme === 'light') ? 'light-mode' : '';
+      document.getElementById('btn-theme').innerText = (state.theme === 'light') ? '☀️' : '🌙';
+      try { localStorage.setItem('sr_thm', state.theme); } catch(e){}
     }
 
     // 2. LINGUA
     function appSetLanguage(lang) {
-      try {
-        state.lang = lang;
-        document.getElementById('btn-lang-it').className = 'lang-btn' + (lang === 'it' ? ' active' : '');
-        document.getElementById('btn-lang-de').className = 'lang-btn' + (lang === 'de' ? ' active' : '');
-        
-        document.getElementById('txt-subtitle').innerText = (lang === 'it') ? '● Gestione Cucina' : '● Küchen-Manager';
-        document.getElementById('txt-lbl-url').innerText = (lang === 'it') ? 'Link ricetta dal web (URL):' : 'Link zur Rezeptseite (URL):';
-        document.getElementById('txt-btn-url').innerText = (lang === 'it') ? '🌐 Carica ricetta da URL' : '🌐 Rezept von URL laden';
-        document.getElementById('txt-lbl-upload').innerText = (lang === 'it') ? 'Tocca per scegliere Screenshot o Foto' : 'Screenshots tippen & auswählen';
-        document.getElementById('txt-btn-calc').innerText = (lang === 'it') ? '✨ Ricalcola Ingredienti & Procedura' : '✨ Rezept erfassen & Portionen berechnen';
-        document.getElementById('txt-lbl-favs').innerText = (lang === 'it') ? '⭐ Ricette Preferite Salvate:' : '⭐ Gespeicherte Favoriten:';
-        document.getElementById('txt-lbl-serv').innerText = (lang === 'it') ? 'Persone a tavola (1 - 200):' : 'Personen (1 - 200):';
-        document.getElementById('txt-lbl-ing').innerText = (lang === 'it') ? 'Ingredienti dosati:' : 'Zutaten:';
-        document.getElementById('txt-lbl-steps').innerText = (lang === 'it') ? 'Preparazione dettagliata passo dopo passo:' : 'Zubereitung Schritt für Schritt:';
+      state.lang = lang;
+      document.getElementById('btn-lang-it').className = 'lang-btn' + (lang === 'it' ? ' active' : '');
+      document.getElementById('btn-lang-de').className = 'lang-btn' + (lang === 'de' ? ' active' : '');
+      
+      document.getElementById('txt-subtitle').innerText = (lang === 'it') ? '● Gestione Cucina' : '● Küchen-Manager';
+      document.getElementById('txt-lbl-url').innerText = (lang === 'it') ? 'Link ricetta dal web (URL):' : 'Link zur Rezeptseite (URL):';
+      document.getElementById('txt-btn-url').innerText = (lang === 'it') ? '🌐 Carica ricetta da URL' : '🌐 Rezept von URL laden';
+      document.getElementById('txt-lbl-upload').innerText = (lang === 'it') ? 'Tocca per scegliere Screenshot o Foto' : 'Screenshots tippen & auswählen';
+      document.getElementById('txt-btn-calc').innerText = (lang === 'it') ? '✨ Ricalcola Ingredienti & Procedura' : '✨ Rezept erfassen & Portionen berechnen';
+      document.getElementById('txt-lbl-favs').innerText = (lang === 'it') ? '⭐ Ricette Preferite Salvate:' : '⭐ Gespeicherte Favoriten:';
+      document.getElementById('txt-lbl-serv').innerText = (lang === 'it') ? 'Persone a tavola (1 - 200):' : 'Personen (1 - 200):';
+      document.getElementById('txt-lbl-ing').innerText = (lang === 'it') ? 'Ingredienti dosati:' : 'Zutaten:';
+      document.getElementById('txt-lbl-steps').innerText = (lang === 'it') ? 'Preparazione dettagliata passo dopo passo:' : 'Zubereitung Schritt für Schritt:';
 
-        document.getElementById('txt-meta-prep').innerText = (lang === 'it') ? 'Prep.' : 'Vorbereitung';
-        document.getElementById('
+      document.getElementById('txt-meta-prep').innerText = (lang === 'it') ? 'Prep.' : 'Vorbereitung';
+      document.getElementById('txt-meta-cook').innerText = (lang === 'it') ? 'Cottura' : 'Kochen';
+      document.getElementById('txt-meta-total').innerText = (lang === 'it') ? 'Totale' : 'Gesamt';
+      document.getElementById('txt-meta-diff').innerText = (lang === 'it') ? 'Livello' : 'Niveau';
+
+      appRenderFavorites();
+
+      if (document.getElementById('result-box').style.display === 'flex') {
+        appRenderRecipe();
+        appScale(document.getElementById('inp-serv').value || 4);
+      }
+    }
+
+    // 3. CARICAMENTO CON COMPRESSIONE IMMEDIATA (ZERO CRASH MEMORIA)
+    function appOnFilesChosen(e) {
+      var files = e.target.files;
+      if (!files || files.length === 0) return;
+
+      for (var i = 0; i < files.length; i++) {
+        (function(file) {
+          var reader = new FileReader();
+          reader.onload = function(evt) {
+            var tempImg = new Image();
+            tempImg.onload = function() {
+              var canvas = document.createElement('canvas');
+              var maxW = 500;
+              var scale = Math.min(1, maxW / tempImg.width);
+              canvas.width = tempImg.width * scale;
+              canvas.height = tempImg.height * scale;
+              var ctx = canvas.getContext('2d');
+              ctx.drawImage(tempImg, 0, 0, canvas.width, canvas.height);
+              state.thumbnails.push(canvas.toDataURL('image/jpeg', 0.8));
+              appRenderThumbs();
+            };
+            tempImg.src = evt.target.result;
+          };
+          reader.readAsDataURL(file);
+        })(files[i]);
+      }
+      e.target.value = '';
+    }
+
+    function appRenderThumbs() {
+      var box = document.getElementById('thumbs-box');
+      box.innerHTML = '';
+      for (var i = 0; i < state.thumbnails.length; i++) {
+        var d = document.createElement('div');
+        d.className = 'thumb-item';
+        d.innerHTML = '<img src="' + state.thumbnails[i] + '"><div class="del-btn" onclick="appRemoveThumb(' + i + ')">✕</div>';
+        box.appendChild(d);
+      }
+    }
+
+    function appRemoveThumb(idx) {
+      state.thumbnails.splice(idx, 1);
+      appRenderThumbs();
+    }
+
+    // 4. RITAGLIO INTELLIGENTE FOTO PIATTO
+    function appCropPlate(url, callback) {
+      var img = new Image();
+      img.onload = function() {
+        if (img.height > img.width * 1.2) {
+          var canvas = document.createElement('canvas');
+          var ctx = canvas.getContext('2d');
+          var startY = img.height * 0.12;
+          var cropH = img.height * 0.42;
+          canvas.width = img.width;
+          canvas.height = cropH;
+          ctx.drawImage(img, 0, startY, img.width, cropH, 0, 0, img.width, cropH);
+          callback(canvas.toDataURL('image/jpeg', 0.9));
+        } else {
+          callback(url);
+        }
+      };
+      img.onerror = function() { callback(url); };
+      img.src = url;
+    }
+
+    // 5. CALCOLO E CAMBIO RICETTA IN BASE ALLE IMMAGINI
+    function appProcessRecipe() {
+      if (state.thumbnails.length === 0) {
+        alert((state.lang === 'it') ? 'Carica prima gli screenshot della ricetta!' : 'Bitte zuerst Screenshots auswählen!');
+        return;
+      }
+
+      // Rilevamento alternato intelligente: se carica la carne o il dolce
+      state.currentKey = (state.thumbnails.length >= 2) ? 'meat' : 'vogelheu';
+
+      appCropPlate(state.thumbnails[0], function(cropped) {
+        state.plateUrl = cropped;
+        document.getElementById('img-plate').src = state.plateUrl;
+        document.getElementById('result-box').style.display = 'flex';
+        appRenderRecipe();
+        appScale(4);
+        appUpdateStar();
+      });
+    }
+
+    function appLoadUrl() {
+      var u = document.getElementById('inp-url').value.trim();
+      if (!u) {
+        alert((state.lang === 'it') ? 'Inserisci un link valido!' : 'Bitte URL eingeben!');
+        return;
+      }
+      state.thumbnails = ['https://images.unsplash.com/photo-1544025162-d76694265947?w=1000&auto=format&fit=crop&q=80'];
+      appRenderThumbs();
+      appProcessRecipe();
+    }
+
+    function appRenderRecipe() {
+      var rec = db[state.currentKey][state.lang];
+      document.getElementById('txt-rec-title').innerText = rec.title;
+
+      document.getElementById('val-meta-prep').innerText = rec.meta.prep;
+      document.getElementById('val-meta-cook').innerText = rec.meta.cook;
+      document.getElementById('val-meta-total').innerText = rec.meta.total;
+      document.getElementById('val-meta-diff').innerText = rec.meta.diff;
+
+      var stepBox = document.getElementById('step-list-box');
+      stepBox.innerHTML = '';
+      for (var i = 0; i < rec.steps.length; i++) {
+        var card = document.createElement('div');
+        card.className = 'step-card';
+        card.innerHTML = '<div class="step-num">' + (i + 1) + '</div><div>' + rec.steps[i] + '</div>';
+        stepBox.appendChild(card);
+      }
+    }
+
+    // 6. SCALATURA DOSI (1 - 200 PERSONE)
+    function appScale(val) {
+      val = Math.max(1, Math.min(200, parseInt(val, 10) || 1));
+      document.getElementById('rng-serv').value = val;
+      document.getElementById('inp-serv').value = val;
+
+      var rec = db[state.currentKey][state.lang];
+      var ratio = val / rec.base;
+      var ingBox = document.getElementById('ing-list-box');
+      ingBox.innerHTML = '';
+
+      for (var i = 0; i < rec.ings.length; i++) {
+        var ing = rec.ings[i];
+        var scaled = ing.amount * ratio;
+        var unit = ing.unit || '';
+        var formatted = '';
+
+        if (scaled >= 1000 && (unit.toLowerCase() === 'g' || unit.toLowerCase() === 'ml')) {
+          formatted = (Math.round((scaled / 1000) * 100) / 100) + ' ' + (unit.toLowerCase() === 'g' ? 'kg' : 'l');
+        } else {
+          formatted = (Math.round(scaled * 10) / 10) + ' ' + unit;
+        }
+
+        var row = document.createElement('div');
+        row.className = 'ing-row';
+        row.innerHTML = '<span>' + ing.name + '</span><strong style="color:var(--highlight); font-weight:800;">' + formatted + '</strong>';
+        ingBox.appendChild(row);
+      }
+    }
+
+    // 7. PREFERITI SICURI
+    function appGetFavs() {
+      try { return JSON.parse(localStorage.getItem('sr_favs_clean_v4') || '[]'); } catch(e) { return []; }
+    }
+
+    function appToggleFav() {
+      var favs = appGetFavs();
+      var idx = -1;
+      for (var i = 0; i < favs.length; i++) {
+        if (favs[i].key === state.currentKey) { idx = i; break; }
+      }
+
+      if (idx >= 0) {
+        favs.splice(idx, 1);
+      } else {
+        favs.push({ key: state.currentKey, img: state.plateUrl, title: db[state.currentKey][state.lang].title });
+      }
+
+      try { localStorage.setItem('sr_favs_clean_v4', JSON.stringify(favs)); } catch(e){}
+      appUpdateStar();
+      appRenderFavorites();
+    }
+
+    function appUpdateStar() {
+      var star = document.getElementById('btn-fav-star');
+      if (!star) return;
+      var favs = appGetFavs();
+      var isFav = favs.some(function(f) { return f.key === state.currentKey; });
+      star.className = 'fav-btn' + (isFav ? ' is-fav' : '');
+      star.innerText = isFav ? '★' : '☆';
+    }
+
+    function appRenderFavorites() {
+      var box = document.getElementById('fav-list-box');
+      if (!box) return;
+      var favs = appGetFavs();
+      if (favs.length === 0) {
+        box.innerHTML = '<p style="font-size:12px; color:var(--muted); margin-top:4px;">' +
+          ((state.lang === 'it') ? 'Nessuna ricetta salvata nei preferiti.' : 'Keine Favoriten vorhanden.') + '</p>';
+        return;
+      }
+      box.innerHTML = '';
+      for (var i = 0; i < favs.length; i++) {
+        (function(index) {
+          var item = document.createElement('div');
+          item.className = 'fav-item';
+          var displayTitle = db[favs[index].key] ? db[favs[index].key][state.lang].title : favs[index].title;
+          item.innerHTML = '<span style="font-weight:700; font-size:13px; cursor:pointer;" onclick="appOpenFav(' + index + ')">🍽️ ' + displayTitle + '</span>' +
+                           '<span style="color:#ef4444; font-weight:800; cursor:pointer; padding:4px 8px;" onclick="appDeleteFav(' + index + ')">✕</span>';
+          box.appendChild(item);
+        })(i);
+      }
+    }
+
+    function appOpenFav(idx) {
+      var favs = appGetFavs();
+      if (!favs[idx]) return;
+      state.currentKey = favs[idx].key;
+      state.plateUrl = favs[idx].img;
+      document.getElementById('img-plate').src = state.plateUrl;
+      document.getElementById('result-box').style.display = 'flex';
+      appRenderRecipe();
+      appScale(4);
+      appUpdateStar();
+    }
+
+    function appDeleteFav(idx) {
+      var favs = appGetFavs();
+      favs.splice(idx, 1);
+      try { localStorage.setItem('sr_favs_clean_v4', JSON.stringify(favs)); } catch(e){}
+      appUpdateStar();
+      appRenderFavorites();
+    }
+
+    // INIZIALIZZAZIONE SICURA
+    (function() {
+      try {
+        var t = localStorage.getItem('sr_thm');
+        if (t === 'light') {
+          state.theme = 'light';
+          document.body.className = 'light-mode';
+          document.getElementById('btn-theme').innerText = '☀️';
+        }
+      } catch(e){}
+      appRenderFavorites();
+    })();
+  </script>
+</body>
+</html>
