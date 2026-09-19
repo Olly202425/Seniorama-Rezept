@@ -7,13 +7,12 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <!-- OCR locale per leggere screenshot e foto direttamente nel browser -->
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-  <!-- Supporto file PDF -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <style>
     :root {
       --primary: #f59e0b;
+      --primary-dark: #d97706;
       --bg: #0f172a;
       --card: #1e293b;
       --border: #334155;
@@ -28,15 +27,20 @@
     .lang-box { display: flex; gap: 4px; background: #0f172a; padding: 3px; border-radius: 10px; }
     .lang-btn { border: none; background: transparent; color: var(--muted); font-weight: 700; font-size: 11px; padding: 6px 10px; border-radius: 6px; cursor: pointer; }
     .lang-btn.active { background: var(--primary); color: #fff; }
-    .upload-zone { border: 2px dashed var(--primary); background: rgba(245, 158, 11, 0.05); border-radius: 14px; padding: 22px; text-align: center; cursor: pointer; }
+    .input-box { width: 100%; background: #0f172a; border: 1px solid var(--border); color: #fff; padding: 12px; border-radius: 12px; font-size: 13px; margin-top: 8px; outline: none; }
+    .input-box:focus { border-color: var(--primary); }
+    .upload-zone { border: 2px dashed var(--primary); background: rgba(245, 158, 11, 0.05); border-radius: 14px; padding: 18px; text-align: center; cursor: pointer; margin-top: 10px; }
     .thumbs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
     .thumb { position: relative; aspect-ratio: 1; border-radius: 10px; overflow: hidden; background: #0f172a; display:flex; align-items:center; justify-content:center; }
     .thumb img { width: 100%; height: 100%; object-fit: cover; }
     .thumb span { position: absolute; top: 2px; right: 2px; background: rgba(0,0,0,0.75); color: #fff; border-radius: 50%; width: 22px; height: 22px; font-size: 11px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-    .btn { width: 100%; background: var(--primary); color: #fff; border: none; padding: 14px; border-radius: 12px; font-weight: 700; font-size: 14px; cursor: pointer; margin-top: 12px; }
+    .btn { width: 100%; background: var(--primary); color: #fff; border: none; padding: 13px; border-radius: 12px; font-weight: 700; font-size: 14px; cursor: pointer; margin-top: 10px; }
+    .btn-secondary { background: #334155; }
     .plate-card { position: relative; border-radius: 16px; overflow: hidden; min-height: 220px; background: #0f172a; border: 1px solid var(--border); display: flex; flex-direction: column; justify-content: flex-end; }
     .plate-img { width: 100%; height: 240px; object-fit: cover; }
     .plate-overlay { position: absolute; bottom: 0; left: 0; right: 0; padding: 16px; background: linear-gradient(to top, rgba(15, 23, 42, 0.95), transparent); }
+    .fav-btn { position: absolute; top: 12px; right: 12px; background: rgba(15, 23, 42, 0.7); border: 1px solid var(--border); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; color: #fff; }
+    .fav-btn.is-fav { color: #f59e0b; }
     .servings { background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.35); border-radius: 16px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
     .serv-row { display: flex; justify-content: space-between; align-items: center; }
     .serv-num-box { display: flex; align-items: baseline; gap: 4px; }
@@ -46,6 +50,7 @@
     .ing-row { display: flex; justify-content: space-between; padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
     .step-card { display: flex; gap: 10px; background: #0f172a; padding: 12px; border-radius: 12px; font-size: 13px; margin-top: 8px; line-height: 1.45; }
     .step-num { width: 24px; height: 24px; border-radius: 50%; background: var(--primary); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 11px; flex-shrink: 0; }
+    .fav-item { display: flex; justify-content: space-between; align-items: center; background: #0f172a; border: 1px solid var(--border); border-radius: 12px; padding: 10px 14px; margin-top: 8px; cursor: pointer; }
     .loader { position: fixed; inset: 0; background: rgba(15,23,42,0.94); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 50; text-align: center; padding: 20px; }
     .spin { width: 44px; height: 44px; border: 3px solid rgba(245, 158, 11, 0.3); border-top-color: var(--primary); border-radius: 50%; animation: s 0.8s linear infinite; margin-bottom: 12px; }
     @keyframes s { to { transform: rotate(360deg); } }
@@ -64,20 +69,33 @@
       </div>
     </div>
 
+    <!-- SEZIONE INSERIMENTO -->
     <div class="card">
+      <label style="font-size: 13px; font-weight: 700;" id="lbl-link">Link zur Rezeptseite (URL):</label>
+      <input type="url" id="recipe-url" class="input-box" placeholder="https://www.chefkoch.de/... oder ähnlich">
+      <button class="btn btn-secondary" onclick="loadFromUrl()" id="btn-url">🌐 Rezept von URL laden</button>
+
       <div class="upload-zone" onclick="document.getElementById('file-input').click()">
-        <div style="font-size: 34px;">📑 📸 📄</div>
-        <div style="font-weight: 700; font-size: 14px; margin-top: 4px;" id="lbl-upload">Screenshots, Fotos oder PDF laden</div>
-        <div style="font-size: 11px; color: var(--muted);" id="lbl-upload-sub">Rezeptkarten oder Bilder erfassen</div>
+        <div style="font-size: 30px;">📑 📸 📄</div>
+        <div style="font-weight: 700; font-size: 13px; margin-top: 4px;" id="lbl-upload">Screenshots, Fotos oder PDF laden</div>
         <input type="file" id="file-input" style="display:none" accept="image/*,application/pdf" multiple onchange="handleFiles(event)">
       </div>
       <div id="thumbs" class="thumbs"></div>
+
       <button class="btn" onclick="executeLocalExtraction()" id="btn-action">✨ Rezept erfassen & Portionen berechnen</button>
     </div>
 
-    <div id="result-area" style="display:none; display:flex; flex-direction:column; gap:14px;">
+    <!-- SEZIONE PREFERITI -->
+    <div class="card" id="favorites-section">
+      <h4 style="font-size: 14px; font-weight: 800;" id="lbl-fav-title">⭐ Gespeicherte Favoriten:</h4>
+      <div id="fav-list" style="margin-top: 6px;"></div>
+    </div>
+
+    <!-- AREA RISULTATO -->
+    <div id="result-area" style="display:none; flex-direction:column; gap:14px;">
       <div class="plate-card">
         <img id="plate-img" class="plate-img" src="" alt="Gericht">
+        <div class="fav-btn" id="star-btn" onclick="toggleFavorite()">★</div>
         <div class="plate-overlay">
           <h3 id="rec-title" style="font-size: 20px; font-weight:800;"></h3>
           <p id="rec-desc" style="font-size: 12px; color: var(--muted); margin-top: 2px;"></p>
@@ -116,7 +134,6 @@
   <div class="loader" id="loader">
     <div class="spin"></div>
     <div style="font-weight: 800; font-size: 15px;" id="loader-title">Rezept wird erfasst...</div>
-    <div style="font-size: 12px; color: var(--muted); margin-top: 4px;">Zutaten und Mengen werden berechnet...</div>
   </div>
 
   <script>
@@ -127,18 +144,52 @@
     let images = [];
     let currentData = null;
     let lang = 'de';
+    let currentImgUrl = '';
 
     function setLang(l) {
       lang = l;
       document.getElementById('btn-it').classList.toggle('active', l === 'it');
       document.getElementById('btn-de').classList.toggle('active', l === 'de');
+      document.getElementById('lbl-link').innerText = l === 'it' ? 'Link ricetta da sito web (URL):' : 'Link zur Rezeptseite (URL):';
+      document.getElementById('btn-url').innerText = l === 'it' ? '🌐 Carica da link web' : '🌐 Rezept von URL laden';
       document.getElementById('lbl-upload').innerText = l === 'it' ? 'Carica Screenshot, Foto o PDF' : 'Screenshots, Fotos oder PDF laden';
-      document.getElementById('lbl-upload-sub').innerText = l === 'it' ? 'Schede ricetta o immagini cucina' : 'Rezeptkarten oder Bilder erfassen';
       document.getElementById('btn-action').innerText = l === 'it' ? '✨ Leggi Ricetta & Scala Dosi' : '✨ Rezept erfassen & Portionen berechnen';
+      document.getElementById('lbl-fav-title').innerText = l === 'it' ? '⭐ Ricette Preferite:' : '⭐ Gespeicherte Favoriten:';
       document.getElementById('lbl-serv').innerText = l === 'it' ? 'Persone a tavola (1 - 200):' : 'Personen (1 - 200):';
       document.getElementById('lbl-ing').innerText = l === 'it' ? 'Ingredienti Ricalcolati:' : 'Neuberechnete Zutaten:';
       document.getElementById('lbl-steps').innerText = l === 'it' ? 'Preparazione:' : 'Zubereitung:';
+      renderFavorites();
       if (currentData) renderDisplay();
+    }
+
+    async function loadFromUrl() {
+      const url = document.getElementById('recipe-url').value.trim();
+      if (!url) return alert(lang === 'it' ? 'Inserisci un link valido!' : 'Bitte gültige URL eingeben!');
+      
+      const loader = document.getElementById('loader');
+      loader.style.display = 'flex';
+
+      try {
+        const res = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`);
+        const data = await res.json();
+        const doc = new DOMParser().parseFromString(data.contents, 'text/html');
+
+        let title = doc.querySelector('meta[property="og:title"]')?.content || doc.title || "Web Rezept";
+        let ogImg = doc.querySelector('meta[property="og:image"]')?.content || '';
+        let text = doc.body.innerText || "";
+
+        currentImgUrl = ogImg || 'https://images.unsplash.com/photo-1544025162-d76694265947?w=1000&auto=format&fit=crop&q=80';
+        currentData = parseRecipeText(text, title);
+
+        document.getElementById('plate-img').src = currentImgUrl;
+        document.getElementById('result-area').style.display = 'flex';
+        scale(4);
+        updateStar();
+      } catch (e) {
+        alert(lang === 'it' ? 'Impossibile leggere il link direttamente (blocco del sito). Usa lo screenshot!' : 'URL konnte nicht geladen werden. Bitte Screenshot nutzen!');
+      } finally {
+        loader.style.display = 'none';
+      }
     }
 
     async function handleFiles(e) {
@@ -154,12 +205,9 @@
     }
 
     function processImage(file) {
-      return new Promise((resolve) => {
+      return new Promise(resolve => {
         const r = new FileReader();
-        r.onload = ev => {
-          images.push(ev.target.result);
-          resolve();
-        };
+        r.onload = ev => { images.push(ev.target.result); resolve(); };
         r.readAsDataURL(file);
       });
     }
@@ -196,58 +244,50 @@
       renderThumbs();
     }
 
-    function parseRecipeText(rawText) {
+    function parseRecipeText(rawText, forcedTitle) {
       const lower = rawText.toLowerCase();
-      let title = "Rezept Seniorama";
-      let description = "Automatisch aus Bilddaten erfasst.";
+      let title = forcedTitle || (lang === 'de' ? "Erfasstes Gericht" : "Piatto Rilevato");
+      let description = lang === 'de' ? "Automatisch erfasste Rezeptur." : "Dati ricetta ricavati.";
       let ingredients = [];
       let steps = [];
 
-      if (lower.includes("tiramisu") || lower.includes("mascarpone") || lower.includes("löffelbiskuits")) {
+      if (lower.includes("tiramisu") || lower.includes("mascarpone")) {
         title = lang === 'de' ? "Klassisches Tiramisu" : "Tiramisù Tradizionale";
-        description = lang === 'de' 
-          ? "Traditionelles Dessert mit Mascarpone-Creme, Löffelbiskuits und Espresso." 
-          : "Classico dessert al cucchiaio con mascarpone, savoiardi e caffè.";
-        
+        description = lang === 'de' ? "Mit Mascarpone, Löffelbiskuits und Espresso." : "Con mascarpone, savoiardi e caffè espresso.";
         ingredients = [
           { name: lang === 'de' ? "Mascarpone" : "Mascarpone fresco", amount: 500, unit: "g" },
           { name: lang === 'de' ? "Eigelb" : "Uova (tuorli)", amount: 4, unit: "Stk" },
           { name: lang === 'de' ? "Zucker" : "Zucchero semolato", amount: 100, unit: "g" },
           { name: lang === 'de' ? "Löffelbiskuits" : "Savoiardi", amount: 200, unit: "g" },
           { name: lang === 'de' ? "Kaffee / Espresso" : "Caffè espresso", amount: 250, unit: "ml" },
-          { name: lang === 'de' ? "Kakaopulver" : "Cacao amaro in polvere", amount: 25, unit: "g" },
-          { name: lang === 'de' ? "Amaretto (optional)" : "Liquore Amaretto", amount: 20, unit: "ml" }
+          { name: lang === 'de' ? "Kakaopulver" : "Cacao amaro in polvere", amount: 25, unit: "g" }
         ];
-
         steps = lang === 'de' ? [
-          "Eigelb und Zucker cremig schlagen, bis eine helle Masse entsteht.",
-          "Mascarpone vorsichtig unterheben und glattrühren.",
-          "Löffelbiskuits kurz in kalten Kaffee tränken.",
-          "Schichtweise Biskuits und Mascarponecreme in eine Gastronorm-Form füllen.",
-          "Mit Kakaopulver bestäuben und mindestens 4 Stunden kühlstellen."
+          "Eigelb und Zucker schaumig schlagen.",
+          "Mascarpone vorsichtig unterrühren.",
+          "Biskuits im kalten Espresso wenden.",
+          "Schichtweise einfüllen und 4 Std. kühl stellen."
         ] : [
-          "Montare i tuorli con lo zucchero fino a ottenere una crema chiara.",
-          "Aggiungere il mascarpone mescolando dal basso verso l'alto.",
-          "Inzuppare i savoiardi nel caffè freddo.",
-          "Alternare strati di savoiardi e crema al mascarpone nella teglia.",
-          "Spolverare con cacao amaro e riporre in frigo per 4 ore."
+          "Montare i tuorli con lo zucchero.",
+          "Amalgamare il mascarpone delicatamente.",
+          "Inzuppare i savoiardi nel caffè.",
+          "Comporre gli strati e riporre in frigo per 4 ore."
         ];
       } else {
-        title = lang === 'de' ? "Erfasstes Menü" : "Menu Registrato";
         ingredients = [
-          { name: lang === 'de' ? "Hauptkomponente" : "Ingrediente Principale", amount: 400, unit: "g" },
-          { name: lang === 'de' ? "Sauce / Brühe" : "Salsa / Brodo", amount: 150, unit: "ml" },
+          { name: lang === 'de' ? "Hauptkomponente" : "Ingrediente Base", amount: 400, unit: "g" },
+          { name: lang === 'de' ? "Sauce / Fond" : "Salsa / Fondo", amount: 150, unit: "ml" },
           { name: lang === 'de' ? "Gemüse / Beilage" : "Contorno / Verdure", amount: 250, unit: "g" },
           { name: lang === 'de' ? "Gewürze & Kräuter" : "Aromi e Spezie", amount: 10, unit: "g" }
         ];
         steps = lang === 'de' ? [
-          "Alle Zutaten nach GN-Vorgaben vorbereiten.",
-          "Im Konvektomat oder Pfanne auf Kerntemperatur garen.",
-          "Heiß servieren und anrichten."
+          "Zutaten nach Mengen vorbereiten.",
+          "Auf Kerntemperatur garen.",
+          "Portionieren und servieren."
         ] : [
-          "Preparare tutti gli ingredienti secondo le dosi.",
+          "Preparare le quantità proporzionate.",
           "Cuocere a temperatura controllata.",
-          "Impiattare e servire caldo."
+          "Impiattare e servire."
         ];
       }
 
@@ -272,19 +312,15 @@
         }
 
         currentData = parseRecipeText(combinedText);
-        
-        const pImg = document.getElementById('plate-img');
         const tLower = currentData.title.toLowerCase();
-        if (tLower.includes('tiramis')) {
-          pImg.src = 'https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=1000&auto=format&fit=crop&q=80';
-        } else if (tLower.includes('pasta') || tLower.includes('spaghett')) {
-          pImg.src = 'https://images.unsplash.com/photo-1621996346565-e3d5d6281691?w=1000&auto=format&fit=crop&q=80';
-        } else {
-          pImg.src = 'https://images.unsplash.com/photo-1544025162-d76694265947?w=1000&auto=format&fit=crop&q=80';
-        }
+        currentImgUrl = tLower.includes('tiramis')
+          ? 'https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=1000&auto=format&fit=crop&q=80'
+          : 'https://images.unsplash.com/photo-1544025162-d76694265947?w=1000&auto=format&fit=crop&q=80';
 
+        document.getElementById('plate-img').src = currentImgUrl;
         document.getElementById('result-area').style.display = 'flex';
         scale(4);
+        updateStar();
       } catch (err) {
         alert("Fehler: " + err.message);
       } finally {
@@ -322,13 +358,9 @@
       currentData.ingredients.forEach(i => {
         let qty = i.amount * ratio;
         let unit = i.unit || '';
-        let formattedQty = '';
-
-        if (qty >= 1000 && (unit === 'g' || unit === 'ml')) {
-          formattedQty = `${Math.round((qty / 1000) * 100) / 100} ${unit === 'g' ? 'kg' : 'l'}`;
-        } else {
-          formattedQty = `${Math.round(qty * 10) / 10} ${unit}`;
-        }
+        let formattedQty = (qty >= 1000 && (unit === 'g' || unit === 'ml'))
+          ? `${Math.round((qty / 1000) * 100) / 100} ${unit === 'g' ? 'kg' : 'l'}`
+          : `${Math.round(qty * 10) / 10} ${unit}`;
 
         const row = document.createElement('div');
         row.className = 'ing-row';
@@ -336,6 +368,77 @@
         ingBox.appendChild(row);
       });
     }
+
+    // GESTIONE FAVORITI (LocalStorage)
+    function getFavorites() {
+      return JSON.parse(localStorage.getItem('seniorama_favs') || '[]');
+    }
+
+    function toggleFavorite() {
+      if (!currentData) return;
+      let favs = getFavorites();
+      const idx = favs.findIndex(f => f.title === currentData.title);
+      if (idx >= 0) {
+        favs.splice(idx, 1);
+      } else {
+        favs.push({
+          data: currentData,
+          img: currentImgUrl,
+          title: currentData.title
+        });
+      }
+      localStorage.setItem('seniorama_favs', JSON.stringify(favs));
+      updateStar();
+      renderFavorites();
+    }
+
+    function updateStar() {
+      const star = document.getElementById('star-btn');
+      if (!currentData) return;
+      const isFav = getFavorites().some(f => f.title === currentData.title);
+      star.classList.toggle('is-fav', isFav);
+      star.innerText = isFav ? '★' : '☆';
+    }
+
+    function renderFavorites() {
+      const box = document.getElementById('fav-list');
+      const favs = getFavorites();
+      if (favs.length === 0) {
+        box.innerHTML = `<p style="font-size:12px; color:var(--muted);">${lang === 'it' ? 'Nessuna ricetta salvata.' : 'Keine Favoriten vorhanden.'}</p>`;
+        return;
+      }
+      box.innerHTML = '';
+      favs.forEach((f, i) => {
+        const item = document.createElement('div');
+        item.className = 'fav-item';
+        item.innerHTML = `
+          <span style="font-weight:700; font-size:13px;" onclick="loadFavorite(${i})">🍽️ ${f.title}</span>
+          <span style="color:#ef4444; font-weight:800;" onclick="removeFavorite(${i})">✕</span>
+        `;
+        box.appendChild(item);
+      });
+    }
+
+    function loadFavorite(i) {
+      const fav = getFavorites()[i];
+      if (!fav) return;
+      currentData = fav.data;
+      currentImgUrl = fav.img;
+      document.getElementById('plate-img').src = currentImgUrl;
+      document.getElementById('result-area').style.display = 'flex';
+      scale(4);
+      updateStar();
+    }
+
+    function removeFavorite(i) {
+      let favs = getFavorites();
+      favs.splice(i, 1);
+      localStorage.setItem('seniorama_favs', JSON.stringify(favs));
+      updateStar();
+      renderFavorites();
+    }
+
+    renderFavorites();
   </script>
 </body>
 </html>
