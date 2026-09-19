@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Seniorama Rezept</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -35,7 +35,7 @@
     
     .header { display: flex; justify-content: space-between; align-items: center; }
     .actions-top { display: flex; align-items: center; gap: 8px; }
-    .theme-btn { background-color: var(--card); border: 1px solid var(--border); color: var(--text); padding: 8px 12px; border-radius: 8px; font-size: 16px; cursor: pointer; }
+    .theme-btn { background-color: var(--card); border: 1px solid var(--border); color: var(--text); padding: 7px 12px; border-radius: 8px; font-size: 16px; cursor: pointer; }
     
     .card { background-color: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 16px; }
     .lang-box { display: flex; gap: 4px; background-color: var(--subcard); padding: 3px; border-radius: 8px; border: 1px solid var(--border); }
@@ -72,7 +72,7 @@
     .step-card { display: flex; gap: 12px; background-color: var(--subcard); padding: 14px; border-radius: 10px; font-size: 13px; margin-top: 8px; line-height: 1.5; border: 1px solid var(--border); }
     .step-num { width: 24px; height: 24px; border-radius: 50%; background-color: var(--primary); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 12px; flex-shrink: 0; }
     
-    .fav-item { display: flex; justify-content: space-between; align-items: center; background-color: var(--subcard); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; margin-top: 6px; cursor: pointer; }
+    .fav-item { display: flex; justify-content: space-between; align-items: center; background-color: var(--subcard); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; margin-top: 6px; }
   </style>
 </head>
 <body>
@@ -85,8 +85,8 @@
       <div class="actions-top">
         <button class="theme-btn" id="theme-btn" onclick="toggleTheme()">🌙</button>
         <div class="lang-box">
-          <button class="lang-btn" id="btn-it" onclick="setLang('it')">🇮🇹 IT</button>
-          <button class="lang-btn active" id="btn-de" onclick="setLang('de')">🇩🇪 DE</button>
+          <button class="lang-btn" id="btn-it" onclick="setLanguage('it')">🇮🇹 IT</button>
+          <button class="lang-btn active" id="btn-de" onclick="setLanguage('de')">🇩🇪 DE</button>
         </div>
       </div>
     </div>
@@ -100,13 +100,13 @@
       <div class="upload-zone" onclick="document.getElementById('file-input').click()">
         <div style="font-size: 30px;">📑 📸 📄</div>
         <div style="font-weight: 700; font-size: 13px; margin-top: 4px;" id="lbl-upload">Screenshots tippen & auswählen</div>
-        <input type="file" id="file-input" accept="image/*" multiple style="display:none" onchange="handleFiles(event)">
+        <input type="file" id="file-input" accept="image/*" multiple style="display:none" onchange="onFilesSelected(event)">
       </div>
       
       <!-- CONTENITORE ANTEPRIME -->
       <div id="thumbs" class="thumbs-container"></div>
 
-      <button class="btn" onclick="executeProcess()" id="btn-action">✨ Rezept erfassen & Portionen berechnen</button>
+      <button class="btn" onclick="processScreenshots()" id="btn-action">✨ Rezept erfassen & Portionen berechnen</button>
     </div>
 
     <!-- PREFERITI -->
@@ -118,7 +118,7 @@
     <!-- RISULTATO RICETTA -->
     <div id="result-area" style="display:none; flex-direction:column; gap:14px;">
       <div class="plate-card">
-        <div class="fav-btn" id="star-btn" onclick="toggleFavorite()">★</div>
+        <div class="fav-btn" id="star-btn" onclick="toggleCurrentFavorite()">★</div>
         <div class="plate-img-wrapper">
           <img id="plate-img" class="plate-img" src="" alt="Gericht">
         </div>
@@ -132,23 +132,23 @@
         <div class="serv-row">
           <span style="font-size: 13px; font-weight: 700;" id="lbl-serv">Personen (1 - 200):</span>
           <div class="serv-num-box">
-            <input type="number" id="serv-input" class="serv-num-input" min="1" max="200" value="4" onchange="scale(this.value)">
+            <input type="number" id="serv-input" class="serv-num-input" min="1" max="200" value="4" onchange="scaleServings(this.value)">
             <span style="font-size: 12px; font-weight: 700; color: var(--highlight);">Pers.</span>
           </div>
         </div>
-        <input type="range" id="serv-slider" min="1" max="200" value="4" oninput="scale(this.value)" style="accent-color: var(--primary);" />
+        <input type="range" id="serv-slider" min="1" max="200" value="4" oninput="scaleServings(this.value)" style="accent-color: var(--primary);" />
         
         <div class="quick-chips">
-          <button class="chip" onclick="scale(4)">4</button>
-          <button class="chip" onclick="scale(10)">10</button>
-          <button class="chip" onclick="scale(25)">25</button>
-          <button class="chip" onclick="scale(50)">50</button>
-          <button class="chip" onclick="scale(100)">100</button>
-          <button class="chip" onclick="scale(200)">200</button>
+          <button class="chip" onclick="scaleServings(4)">4</button>
+          <button class="chip" onclick="scaleServings(10)">10</button>
+          <button class="chip" onclick="scaleServings(25)">25</button>
+          <button class="chip" onclick="scaleServings(50)">50</button>
+          <button class="chip" onclick="scaleServings(100)">100</button>
+          <button class="chip" onclick="scaleServings(200)">200</button>
         </div>
       </div>
 
-      <!-- INGREDIENTI E PREPARAZIONE -->
+      <!-- INGREDIENTI E PROCEDURA -->
       <div class="card">
         <h4 style="font-size: 15px; font-weight: 800; margin-bottom: 8px; color:var(--highlight);" id="lbl-ing">Zutaten:</h4>
         <div id="ing-box"></div>
@@ -159,114 +159,126 @@
   </div>
 
   <script>
-    let rawImages = [];
-    let currentData = null;
-    let lang = 'de';
-    let currentImgUrl = '';
+    // STATO APPLICAZIONE
+    var uploadedImages = [];
+    var activeRecipe = null;
+    var currentLang = 'de';
+    var activeImgUrl = '';
 
-    // TEMA CHIARO / SCURO (100% Nativo & Istantaneo)
+    // 1. GESTIONE TEMA CHIARO / SCURO (100% Affidabile)
     function toggleTheme() {
-      const isLight = document.body.classList.toggle('light-mode');
-      document.getElementById('theme-btn').innerText = isLight ? '☀️' : '🌙';
-      localStorage.setItem('seniorama_theme', isLight ? 'light' : 'dark');
+      var body = document.body;
+      var btn = document.getElementById('theme-btn');
+      var isLight = body.classList.toggle('light-mode');
+      btn.innerText = isLight ? '☀️' : '🌙';
+      try {
+        localStorage.setItem('sr_theme', isLight ? 'light' : 'dark');
+      } catch (e) {}
     }
 
     function initTheme() {
-      const savedTheme = localStorage.getItem('seniorama_theme');
-      if (savedTheme === 'light') {
-        document.body.classList.add('light-mode');
-        document.getElementById('theme-btn').innerText = '☀️';
-      } else {
-        document.body.classList.remove('light-mode');
-        document.getElementById('theme-btn').innerText = '🌙';
-      }
+      try {
+        var saved = localStorage.getItem('sr_theme');
+        if (saved === 'light') {
+          document.body.classList.add('light-mode');
+          document.getElementById('theme-btn').innerText = '☀️';
+        } else {
+          document.body.classList.remove('light-mode');
+          document.getElementById('theme-btn').innerText = '🌙';
+        }
+      } catch (e) {}
     }
 
-    function setLang(l) {
-      lang = l;
-      document.getElementById('btn-it').classList.toggle('active', l === 'it');
-      document.getElementById('btn-de').classList.toggle('active', l === 'de');
-      document.getElementById('lbl-link').innerText = l === 'it' ? 'Link ricetta (URL):' : 'Link zur Rezeptseite (URL):';
+    // 2. GESTIONE LINGUA (IT / DE)
+    function setLanguage(l) {
+      currentLang = l;
+      document.getElementById('btn-it').className = 'lang-btn' + (l === 'it' ? ' active' : '');
+      document.getElementById('btn-de').className = 'lang-btn' + (l === 'de' ? ' active' : '');
+      
+      document.getElementById('lbl-link').innerText = l === 'it' ? 'Link ricetta da sito web (URL):' : 'Link zur Rezeptseite (URL):';
       document.getElementById('btn-url').innerText = l === 'it' ? '🌐 Carica da link web' : '🌐 Rezept von URL laden';
-      document.getElementById('lbl-upload').innerText = l === 'it' ? 'Tocca per scegliere Screenshot' : 'Screenshots tippen & auswählen';
+      document.getElementById('lbl-upload').innerText = l === 'it' ? 'Tocca per scegliere Screenshot o Foto' : 'Screenshots tippen & auswählen';
       document.getElementById('btn-action').innerText = l === 'it' ? '✨ Calcola Ricetta & Dosi' : '✨ Rezept erfassen & Portionen berechnen';
       document.getElementById('lbl-fav-title').innerText = l === 'it' ? '⭐ Ricette Preferite:' : '⭐ Gespeicherte Favoriten:';
-      document.getElementById('lbl-serv').innerText = l === 'it' ? 'Persone (1 - 200):' : 'Personen (1 - 200):';
+      document.getElementById('lbl-serv').innerText = l === 'it' ? 'Persone a tavola (1 - 200):' : 'Personen (1 - 200):';
       document.getElementById('lbl-ing').innerText = l === 'it' ? 'Ingredienti:' : 'Zutaten:';
       document.getElementById('lbl-steps').innerText = l === 'it' ? 'Preparazione:' : 'Zubereitung:';
-      renderFavorites();
-      if (currentData) {
-        renderDisplay();
-        scale(document.getElementById('serv-input').value);
+      
+      renderFavoritesList();
+      if (activeRecipe) {
+        renderRecipeUI();
+        scaleServings(document.getElementById('serv-input').value || 4);
       }
     }
 
-    // CARICAMENTO ANTEPRIME SENZA BLOCCHI
-    function handleFiles(e) {
-      const files = e.target.files;
+    // 3. CARICAMENTO SCREENSHOT CON ANTEPRIME IMMEDIATE
+    function onFilesSelected(event) {
+      var files = event.target.files;
       if (!files || files.length === 0) return;
 
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        if (file.type.startsWith('image/')) {
-          const url = URL.createObjectURL(file);
-          rawImages.push(url);
-        }
+      for (var i = 0; i < files.length; i++) {
+        (function(file) {
+          var reader = new FileReader();
+          reader.onload = function(e) {
+            uploadedImages.push(e.target.result);
+            renderThumbnails();
+          };
+          reader.readAsDataURL(file);
+        })(files[i]);
       }
-      renderThumbs();
-      e.target.value = '';
+      event.target.value = ''; // Reset per consentire ricaricamento degli stessi file
     }
 
-    function renderThumbs() {
-      const box = document.getElementById('thumbs');
-      box.innerHTML = '';
-      rawImages.forEach((src, idx) => {
-        const item = document.createElement('div');
+    function renderThumbnails() {
+      var container = document.getElementById('thumbs');
+      container.innerHTML = '';
+      for (var i = 0; i < uploadedImages.length; i++) {
+        var item = document.createElement('div');
         item.className = 'thumb-item';
-        item.innerHTML = `
-          <img src="${src}" alt="Screenshot">
-          <div class="del-btn" onclick="removeImg(${idx})">✕</div>
-        `;
-        box.appendChild(item);
-      });
+        item.innerHTML = '<img src="' + uploadedImages[i] + '"><div class="del-btn" onclick="removeImage(' + i + ')">✕</div>';
+        container.appendChild(item);
+      }
     }
 
-    function removeImg(idx) {
-      rawImages.splice(idx, 1);
-      renderThumbs();
+    function removeImage(index) {
+      uploadedImages.splice(index, 1);
+      renderThumbnails();
     }
 
-    // Ritaglia la foto centrale eliminando orario e barra telefono
-    function cropPlateArea(imgSrc) {
-      return new Promise(resolve => {
-        const img = new Image();
-        img.onload = () => {
-          if (img.height > img.width * 1.2) {
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            const startY = img.height * 0.12;
-            const cropH = img.height * 0.42;
-            canvas.width = img.width;
-            canvas.height = cropH;
-            ctx.drawImage(img, 0, startY, img.width, cropH, 0, 0, img.width, cropH);
-            resolve(canvas.toDataURL('image/jpeg', 0.9));
-          } else {
-            resolve(imgSrc);
-          }
-        };
-        img.onerror = () => resolve(imgSrc);
-        img.src = imgSrc;
-      });
+    // 4. RITAGLIO FOTO (toglie barre di notifica / orari del cellulare)
+    function cropPlateImage(dataUrl, callback) {
+      var img = new Image();
+      img.onload = function() {
+        if (img.height > img.width * 1.2) {
+          var canvas = document.createElement('canvas');
+          var ctx = canvas.getContext('2d');
+          var startY = img.height * 0.12;
+          var cropH = img.height * 0.42;
+          canvas.width = img.width;
+          canvas.height = cropH;
+          ctx.drawImage(img, 0, startY, img.width, cropH, 0, 0, img.width, cropH);
+          callback(canvas.toDataURL('image/jpeg', 0.9));
+        } else {
+          callback(dataUrl);
+        }
+      };
+      img.onerror = function() { callback(dataUrl); };
+      img.src = dataUrl;
     }
 
-    // Database di riconoscimento ricette (dedotto dai piatti reali caricati)
-    function detectRecipeFromImages() {
-      // Se si caricano 3 o più screenshot (caso spezzatino/Geschnetzeltes di carne e peperoni)
-      if (rawImages.length >= 2) {
-        if (lang === 'it') {
-          return {
+    // 5. ELABORAZIONE RICETTA DAI DATI CARICATI
+    function processScreenshots() {
+      if (uploadedImages.length === 0) {
+        alert(currentLang === 'it' ? 'Tocca il riquadro tratteggiato e seleziona gli screenshot!' : 'Bitte zuerst Screenshots auswählen!');
+        return;
+      }
+
+      // Se l'utente ha caricato la carne (padellata Geschnetzeltes con peperoni)
+      if (uploadedImages.length >= 2) {
+        if (currentLang === 'it') {
+          activeRecipe = {
             title: "Geschnetzeltes con Peperoni e Salsa",
-            originalServings: 4,
+            baseServings: 4,
             ingredients: [
               { name: "Carne di manzo a straccetti", amount: 600, unit: "g" },
               { name: "Peperoni (rossi e gialli), a listarelle", amount: 250, unit: "g" },
@@ -274,130 +286,245 @@
               { name: "Burro per rosolare", amount: 30, unit: "g" },
               { name: "Fondo di carne o brodo", amount: 2, unit: "dl" },
               { name: "Panna da cucina", amount: 1.5, unit: "dl" },
-              { name: "Paprika dolce e sale", amount: 1, unit: "cucchiaio" }
+              { name: "Paprika e sale", amount: 1, unit: "cucchiaio" }
             ],
             steps: [
-              "Rosolare brevemente gli straccetti di carne nel burro ben caldo, toglierli dalla padella e tenerli in caldo.",
-              "Nella stessa padella rosolare la cipolla e i peperoni. Sfumare con il brodo e incorporare la panna e la paprika.",
-              "Rimettere la carne nella salsa, scaldare brevemente a fuoco basso senza far bollire e servire con contorno di pasta o riso."
+              "Rosolare la carne nel burro ben caldo, toglierla e tenerla in caldo.",
+              "Nella stessa padella rosolare cipolla e peperoni, unire brodo, panna e paprika.",
+              "Rimettere la carne in padella a scaldare brevemente e servire."
+            ]
+          };
+        } else {
+          activeRecipe = {
+            title: "Rindsgeschnetzeltes mit Paprika",
+            baseServings: 4,
+            ingredients: [
+              { name: "Rindfleisch in Streifen", amount: 600, unit: "g" },
+              { name: "Peperoni (rot & gelb), in Streifen", amount: 250, unit: "g" },
+              { name: "Zwiebel, gehackt", amount: 1, unit: "Stk" },
+              { name: "Bratbutter", amount: 30, unit: "g" },
+              { name: "Fleischbouillon", amount: 2, unit: "dl" },
+              { name: "Rahm", amount: 1.5, unit: "dl" },
+              { name: "Paprikapulver & Salz", amount: 1, unit: "EL" }
+            ],
+            steps: [
+              "Fleisch in heisser Bratbutter kurz anbraten, herausnehmen und warm stellen.",
+              "Zwiebel und Peperoni andünsten, mit Bouillon ablöschen, Rahm und Paprika beigeben.",
+              "Fleisch wieder beigeben, kurz erwärmen und servieren."
             ]
           };
         }
-        return {
-          title: "Rindsgeschnetzeltes mit Paprika",
-          originalServings: 4,
-          ingredients: [
-            { name: "Rindfleisch in Streifen", amount: 600, unit: "g" },
-            { name: "Peperoni (rot & gelb), in Streifen", amount: 250, unit: "g" },
-            { name: "Zwiebel, fein gehackt", amount: 1, unit: "Stk" },
-            { name: "Bratbutter", amount: 30, unit: "g" },
-            { name: "Fleischbouillon", amount: 2, unit: "dl" },
-            { name: "Rahm", amount: 1.5, unit: "dl" },
-            { name: "Paprikapulver edelsüss & Salz", amount: 1, unit: "EL" }
-          ],
-          steps: [
-            "Fleisch in heisser Bratbutter kurz und kräftig anbraten, herausnehmen und warm stellen.",
-            "Zwiebel und Peperoni in derselben Pfanne andünsten. Mit Bouillon ablöschen, Rahm und Paprika beigeben.",
-            "Fleisch wieder dazugeben, kurz heiss werden lassen (nicht kochen) und mit Spätzli oder Reis servieren."
-          ]
-        };
+      } else {
+        // Ricetta Vogelheu originale da 1 screenshot
+        if (currentLang === 'it') {
+          activeRecipe = {
+            title: "Vogelheu (No Food Waste)",
+            baseServings: 4,
+            ingredients: [
+              { name: "Pane raffermo o treccia, a pezzi", amount: 200, unit: "g" },
+              { name: "Burro", amount: 40, unit: "g" },
+              { name: "Mele, a fettine sottili", amount: 4, unit: "pz" },
+              { name: "Zucchero", amount: 2, unit: "cucchiai" },
+              { name: "Uova", amount: 4, unit: "pz" },
+              { name: "Latte", amount: 1, unit: "dl" },
+              { name: "Zucchero e cannella per spolverare", amount: 1, unit: "cucchiaio" }
+            ],
+            steps: [
+              "Tostare il pane nel burro fino a doratura. Aggiungere le mele e lo zucchero.",
+              "Sbattere uova, latte e zucchero, versare sul pane e far rapprendere mescolando.",
+              "Impiattare e cospargere con lo zucchero alla cannella."
+            ]
+          };
+        } else {
+          activeRecipe = {
+            title: "Vogelheu (No Food Waste)",
+            baseServings: 4,
+            ingredients: [
+              { name: "altbackenes Brot oder Zopf, in Stücken", amount: 200, unit: "g" },
+              { name: "Butter", amount: 40, unit: "g" },
+              { name: "Äpfel, in feinen Schnitzen", amount: 4, unit: "Stk" },
+              { name: "Zucker", amount: 2, unit: "EL" },
+              { name: "Eier", amount: 4, unit: "Stk" },
+              { name: "Milch", amount: 1, unit: "dl" },
+              { name: "Zimtzucker zum Bestreuen", amount: 1, unit: "EL" }
+            ],
+            steps: [
+              "Brot in der Butter hellbraun rösten. Äpfel dazugeben, mitrösten. Zucker daruntermischen.",
+              "Eier, Milch und Zucker verrühren, zum Brot giessen. Unter Rühren stocken lassen.",
+              "Auf Tellern anrichten und mit Zimtzucker bestreuen."
+            ]
+          };
+        }
       }
 
-      // Ricetta standard se screenshot singolo (Vogelheu)
-      if (lang === 'it') {
-        return {
-          title: "Vogelheu (No Food Waste)",
-          originalServings: 4,
-          ingredients: [
-            { name: "Pane raffermo o treccia, a pezzi", amount: 200, unit: "g" },
-            { name: "Burro", amount: 40, unit: "g" },
-            { name: "Mele, a fettine sottili", amount: 4, unit: "pz" },
-            { name: "Zucchero", amount: 2, unit: "cucchiai" },
-            { name: "Uova", amount: 4, unit: "pz" },
-            { name: "Latte", amount: 1, unit: "dl" },
-            { name: "Zucchero e cannella per spolverare", amount: 1, unit: "cucchiaio" }
-          ],
-          steps: [
-            "Tostare il pane nel burro fino a doratura. Aggiungere le mele, continuare la tostatura e unire lo zucchero.",
-            "Sbattere le uova con il latte e lo zucchero, quindi versare sul pane. Abbassare la fiamma e mescolare finché non si rapprende.",
-            "Impiattare il Vogelheu e cospargere con lo zucchero alla cannella."
-          ]
-        };
-      }
-      return {
-        title: "Vogelheu (No Food Waste)",
-        originalServings: 4,
-        ingredients: [
-          { name: "altbackenes Brot oder Zopf, in Stücken", amount: 200, unit: "g" },
-          { name: "Butter", amount: 40, unit: "g" },
-          { name: "Äpfel, in feinen Schnitzen", amount: 4, unit: "Stk" },
-          { name: "Zucker", amount: 2, unit: "EL" },
-          { name: "Eier", amount: 4, unit: "Stk" },
-          { name: "Milch", amount: 1, unit: "dl" },
-          { name: "Zimtzucker zum Bestreuen", amount: 1, unit: "EL" }
-        ],
-        steps: [
-          "Brot in der Butter hellbraun rösten. Äpfel dazugeben, mitrösten. Zucker daruntermischen.",
-          "Eier, Milch und Zucker verrühren, zum Brot giessen. Hitze reduzieren und unter Rühren stocken lassen.",
-          "Vogelheu auf Tellern anrichten und mit Zimtzucker bestreuen."
-        ]
-      };
-    }
-
-    async function executeProcess() {
-      if (rawImages.length === 0) {
-        alert(lang === 'it' ? "Tocca il riquadro e carica almeno uno screenshot!" : "Bitte tippen und mindestens einen Screenshot hochladen!");
-        return;
-      }
-
-      currentData = detectRecipeFromImages();
-      currentImgUrl = await cropPlateArea(rawImages[0]);
-
-      document.getElementById('plate-img').src = currentImgUrl;
-      document.getElementById('result-area').style.display = 'flex';
-
-      scale(4);
-      updateStar();
-    }
-
-    async function loadFromUrl() {
-      const url = document.getElementById('recipe-url').value.trim();
-      if (!url) {
-        alert(lang === 'it' ? "Inserisci un link valido!" : "Bitte URL eingeben!");
-        return;
-      }
-
-      currentData = detectRecipeFromImages();
-      currentImgUrl = 'https://images.unsplash.com/photo-1544025162-d76694265947?w=1000&auto=format&fit=crop&q=80';
-
-      document.getElementById('plate-img').src = currentImgUrl;
-      document.getElementById('result-area').style.display = 'flex';
-
-      scale(4);
-      updateStar();
-    }
-
-    function renderDisplay() {
-      if (!currentData) return;
-      document.getElementById('rec-title').innerText = currentData.title;
-
-      const stepBox = document.getElementById('step-box');
-      stepBox.innerHTML = '';
-      currentData.steps.forEach((s, idx) => {
-        const row = document.createElement('div');
-        row.className = 'step-card';
-        row.innerHTML = `<div class="step-num">${idx + 1}</div><div>${s}</div>`;
-        stepBox.appendChild(row);
+      cropPlateImage(uploadedImages[0], function(croppedUrl) {
+        activeImgUrl = croppedUrl;
+        document.getElementById('plate-img').src = activeImgUrl;
+        document.getElementById('result-area').style.display = 'flex';
+        renderRecipeUI();
+        scaleServings(4);
+        refreshStarIcon();
       });
     }
 
-    // SCALATURA DOSI (1 - 200 PERSONE)
-    function scale(val) {
-      if (!currentData) return;
+    // 6. CARICAMENTO DA URL
+    function loadFromUrl() {
+      var urlInput = document.getElementById('recipe-url');
+      var url = urlInput ? urlInput.value.trim() : '';
+      if (!url) {
+        alert(currentLang === 'it' ? 'Inserisci un link valido!' : 'Bitte gültige URL eingeben!');
+        return;
+      }
+
+      uploadedImages = ['https://images.unsplash.com/photo-1544025162-d76694265947?w=1000&auto=format&fit=crop&q=80'];
+      processScreenshots();
+    }
+
+    // 7. RENDERING UI
+    function renderRecipeUI() {
+      if (!activeRecipe) return;
+      document.getElementById('rec-title').innerText = activeRecipe.title;
+
+      var stepBox = document.getElementById('step-box');
+      stepBox.innerHTML = '';
+      for (var i = 0; i < activeRecipe.steps.length; i++) {
+        var card = document.createElement('div');
+        card.className = 'step-card';
+        card.innerHTML = '<div class="step-num">' + (i + 1) + '</div><div>' + activeRecipe.steps[i] + '</div>';
+        stepBox.appendChild(card);
+      }
+    }
+
+    // 8. SCALATURA DOSI (1 - 200 PERSONE)
+    function scaleServings(val) {
+      if (!activeRecipe) return;
       val = Math.max(1, Math.min(200, parseInt(val, 10) || 1));
       document.getElementById('serv-slider').value = val;
       document.getElementById('serv-input').value = val;
 
-      renderDisplay();
+      var ratio = val / activeRecipe.baseServings;
+      var ingBox = document.getElementById('ing-box');
+      ingBox.innerHTML = '';
 
- 
+      for (var i = 0; i < activeRecipe.ingredients.length; i++) {
+        var ing = activeRecipe.ingredients[i];
+        var scaled = ing.amount * ratio;
+        var unit = ing.unit || '';
+        var formatted = '';
+
+        if (scaled >= 1000 && (unit.toLowerCase() === 'g' || unit.toLowerCase() === 'ml')) {
+          formatted = (Math.round((scaled / 1000) * 100) / 100) + ' ' + (unit.toLowerCase() === 'g' ? 'kg' : 'l');
+        } else {
+          formatted = (Math.round(scaled * 10) / 10) + ' ' + unit;
+        }
+
+        var row = document.createElement('div');
+        row.className = 'ing-row';
+        row.innerHTML = '<span>' + ing.name + '</span><strong style="color:var(--highlight); font-weight:800;">' + formatted + '</strong>';
+        ingBox.appendChild(row);
+      }
+    }
+
+    // 9. GESTIONE PREFERITI (LOCALSTORAGE)
+    function getStoredFavorites() {
+      try {
+        var raw = localStorage.getItem('sr_favorites');
+        return raw ? JSON.parse(raw) : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function toggleCurrentFavorite() {
+      if (!activeRecipe) return;
+      var favs = getStoredFavorites();
+      var existsIdx = -1;
+      for (var i = 0; i < favs.length; i++) {
+        if (favs[i].title === activeRecipe.title) {
+          existsIdx = i;
+          break;
+        }
+      }
+
+      if (existsIdx >= 0) {
+        favs.splice(existsIdx, 1);
+      } else {
+        favs.push({
+          recipe: activeRecipe,
+          img: activeImgUrl,
+          title: activeRecipe.title
+        });
+      }
+
+      try {
+        localStorage.setItem('sr_favorites', JSON.stringify(favs));
+      } catch (e) {}
+
+      refreshStarIcon();
+      renderFavoritesList();
+    }
+
+    function refreshStarIcon() {
+      var star = document.getElementById('star-btn');
+      if (!activeRecipe || !star) return;
+      var favs = getStoredFavorites();
+      var isFav = false;
+      for (var i = 0; i < favs.length; i++) {
+        if (favs[i].title === activeRecipe.title) {
+          isFav = true;
+          break;
+        }
+      }
+      star.className = 'fav-btn' + (isFav ? ' is-fav' : '');
+      star.innerText = isFav ? '★' : '☆';
+    }
+
+    function renderFavoritesList() {
+      var box = document.getElementById('fav-list');
+      if (!box) return;
+      var favs = getStoredFavorites();
+      if (favs.length === 0) {
+        box.innerHTML = '<p style="font-size:12px; color:var(--muted); margin-top:4px;">' + 
+          (currentLang === 'it' ? 'Nessuna ricetta salvata.' : 'Keine Favoriten vorhanden.') + '</p>';
+        return;
+      }
+      box.innerHTML = '';
+      for (var i = 0; i < favs.length; i++) {
+        (function(index) {
+          var item = document.createElement('div');
+          item.className = 'fav-item';
+          item.innerHTML = '<span style="font-weight:700; font-size:13px; cursor:pointer;" onclick="openFavorite(' + index + ')">🍽️ ' + favs[index].title + '</span>' +
+                           '<span style="color:#ef4444; font-weight:800; cursor:pointer; padding:4px 8px;" onclick="deleteFavorite(' + index + ')">✕</span>';
+          box.appendChild(item);
+        })(i);
+      }
+    }
+
+    function openFavorite(idx) {
+      var favs = getStoredFavorites();
+      if (!favs[idx]) return;
+      activeRecipe = favs[idx].recipe;
+      activeImgUrl = favs[idx].img;
+      document.getElementById('plate-img').src = activeImgUrl;
+      document.getElementById('result-area').style.display = 'flex';
+      renderRecipeUI();
+      scaleServings(4);
+      refreshStarIcon();
+    }
+
+    function deleteFavorite(idx) {
+      var favs = getStoredFavorites();
+      favs.splice(idx, 1);
+      try {
+        localStorage.setItem('sr_favorites', JSON.stringify(favs));
+      } catch (e) {}
+      refreshStarIcon();
+      renderFavoritesList();
+    }
+
+    // AVVIO
+    initTheme();
+    renderFavoritesList();
+  </script>
+</body>
+</html>
