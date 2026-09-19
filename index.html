@@ -5,77 +5,273 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Seniorama Rezept</title>
   <style>
-    :root {
-      --primary: #f59e0b;
-      --bg: #0f172a;
-      --card: #1e293b;
-      --border: #334155;
-      --text: #f8fafc;
-      --muted: #94a3b8;
-      --subcard: #020617;
-      --highlight: #fbbf24;
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    
+    body {
+      background-color: #0f172a;
+      color: #f8fafc;
+      padding: 14px;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
     }
 
     body.light-mode {
-      --bg: #f8fafc;
-      --card: #ffffff;
-      --border: #cbd5e1;
-      --text: #0f172a;
-      --muted: #64748b;
-      --subcard: #f1f5f9;
-      --highlight: #d97706;
+      background-color: #f8fafc !important;
+      color: #0f172a !important;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background-color: var(--bg); color: var(--text); padding: 14px; display: flex; justify-content: center; min-height: 100vh; }
+    body.light-mode .card,
+    body.light-mode .plate-title-bar {
+      background-color: #ffffff !important;
+      border-color: #cbd5e1 !important;
+    }
+
+    body.light-mode .sub-box,
+    body.light-mode .step-card,
+    body.light-mode .fav-item,
+    body.light-mode .meta-box,
+    body.light-mode .input-box {
+      background-color: #f1f5f9 !important;
+      border-color: #cbd5e1 !important;
+      color: #0f172a !important;
+    }
+
+    body.light-mode .muted-text {
+      color: #64748b !important;
+    }
+
     .app { width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 14px; }
-    
     .header { display: flex; justify-content: space-between; align-items: center; }
     .actions-top { display: flex; align-items: center; gap: 8px; }
-    .theme-btn { background-color: var(--card); border: 1px solid var(--border); color: var(--text); padding: 7px 12px; border-radius: 8px; font-size: 16px; cursor: pointer; }
     
-    .card { background-color: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 16px; }
-    .lang-box { display: flex; gap: 4px; background-color: var(--subcard); padding: 3px; border-radius: 8px; border: 1px solid var(--border); }
-    .lang-btn { border: none; background: transparent; color: var(--muted); font-weight: 700; font-size: 11px; padding: 6px 10px; border-radius: 6px; cursor: pointer; }
-    .lang-btn.active { background-color: var(--primary); color: #fff; }
+    .theme-btn {
+      background-color: #1e293b;
+      border: 1px solid #334155;
+      color: inherit;
+      padding: 7px 12px;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
     
-    .input-box { width: 100%; background-color: var(--subcard); border: 1px solid var(--border); color: var(--text); padding: 12px; border-radius: 10px; font-size: 13px; margin-top: 6px; outline: none; }
+    .card {
+      background-color: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 16px;
+      padding: 16px;
+    }
+
+    .lang-box {
+      display: flex;
+      gap: 4px;
+      background-color: #020617;
+      padding: 3px;
+      border-radius: 8px;
+      border: 1px solid #334155;
+    }
+
+    .lang-btn {
+      border: none;
+      background: transparent;
+      color: #94a3b8;
+      font-weight: 700;
+      font-size: 11px;
+      padding: 6px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .lang-btn.active {
+      background-color: #f59e0b;
+      color: #fff;
+    }
     
-    .upload-zone { border: 2px dashed var(--primary); background: rgba(245, 158, 11, 0.05); border-radius: 12px; padding: 18px; text-align: center; cursor: pointer; margin-top: 10px; }
+    .input-box {
+      width: 100%;
+      background-color: #020617;
+      border: 1px solid #334155;
+      color: inherit;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 13px;
+      margin-top: 6px;
+      outline: none;
+    }
+    
+    .upload-zone {
+      border: 2px dashed #f59e0b;
+      background: rgba(245, 158, 11, 0.05);
+      border-radius: 12px;
+      padding: 18px;
+      text-align: center;
+      cursor: pointer;
+      margin-top: 10px;
+    }
     
     .thumbs-container { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
-    .thumb-item { position: relative; width: 80px; height: 80px; border-radius: 8px; overflow: hidden; background-color: var(--subcard); border: 1px solid var(--border); flex-shrink: 0; }
+    .thumb-item {
+      position: relative;
+      width: 80px;
+      height: 80px;
+      border-radius: 8px;
+      overflow: hidden;
+      background-color: #020617;
+      border: 1px solid #334155;
+      flex-shrink: 0;
+    }
     .thumb-item img { width: 100%; height: 100%; object-fit: cover; }
-    .thumb-item .del-btn { position: absolute; top: 2px; right: 2px; background: rgba(0,0,0,0.85); color: #fff; border-radius: 50%; width: 22px; height: 22px; font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+    .thumb-item .del-btn {
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      background: rgba(0,0,0,0.85);
+      color: #fff;
+      border-radius: 50%;
+      width: 22px;
+      height: 22px;
+      font-size: 12px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
 
-    .btn { width: 100%; background-color: var(--primary); color: #fff; border: none; padding: 13px; border-radius: 10px; font-weight: 700; font-size: 14px; cursor: pointer; margin-top: 12px; }
-    .btn-secondary { background-color: var(--card); border: 1px solid var(--border); color: var(--text); margin-top: 8px; }
+    .btn {
+      width: 100%;
+      background-color: #f59e0b;
+      color: #fff;
+      border: none;
+      padding: 13px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      margin-top: 12px;
+    }
+    .btn-secondary {
+      background-color: #334155;
+      color: #fff;
+      margin-top: 8px;
+    }
     
-    .plate-card { position: relative; border-radius: 16px; overflow: hidden; background-color: var(--subcard); border: 1px solid var(--border); margin-top: 4px; }
-    .plate-img-wrapper { width: 100%; height: 220px; overflow: hidden; position: relative; background-color: var(--subcard); }
+    .plate-card {
+      position: relative;
+      border-radius: 16px;
+      overflow: hidden;
+      background-color: #020617;
+      border: 1px solid #334155;
+      margin-top: 4px;
+    }
+    .plate-img-wrapper { width: 100%; height: 220px; overflow: hidden; position: relative; }
     .plate-img { width: 100%; height: 100%; object-fit: cover; }
-    .fav-btn { position: absolute; top: 12px; right: 12px; background: rgba(15, 23, 42, 0.85); border: 1px solid var(--border); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; color: #fff; z-index: 5; }
+    
+    .fav-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid #334155;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      cursor: pointer;
+      color: #fff;
+      z-index: 5;
+    }
     .fav-btn.is-fav { color: #f59e0b; }
-    .plate-title-bar { padding: 14px; background-color: var(--card); border-top: 1px solid var(--border); }
+    .plate-title-bar { padding: 14px; background-color: #1e293b; border-top: 1px solid #334155; }
 
     .recipe-meta-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 10px; }
-    .meta-box { background-color: var(--subcard); border: 1px solid var(--border); border-radius: 10px; padding: 8px 4px; text-align: center; display: flex; flex-direction: column; gap: 3px; }
+    .meta-box {
+      background-color: #020617;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: 8px 4px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
     .meta-icon { font-size: 14px; }
-    .meta-label { font-size: 10px; color: var(--muted); font-weight: 600; text-transform: uppercase; }
-    .meta-val { font-size: 12px; font-weight: 800; color: var(--highlight); }
+    .meta-label { font-size: 10px; color: #94a3b8; font-weight: 600; text-transform: uppercase; }
+    .meta-val { font-size: 12px; font-weight: 800; color: #fbbf24; }
 
-    .servings { background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.35); border-radius: 14px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+    .servings {
+      background: rgba(245, 158, 11, 0.1);
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      border-radius: 14px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
     .serv-row { display: flex; justify-content: space-between; align-items: center; }
     .serv-num-box { display: flex; align-items: baseline; gap: 4px; }
-    .serv-num-input { background-color: var(--subcard); border: 1px solid var(--primary); color: var(--highlight); font-size: 22px; font-weight: 800; width: 75px; text-align: center; border-radius: 8px; padding: 4px; }
+    .serv-num-input {
+      background-color: #020617;
+      border: 1px solid #f59e0b;
+      color: #fbbf24;
+      font-size: 22px;
+      font-weight: 800;
+      width: 75px;
+      text-align: center;
+      border-radius: 8px;
+      padding: 4px;
+    }
     .quick-chips { display: flex; gap: 6px; flex-wrap: wrap; }
-    .chip { background-color: var(--subcard); border: 1px solid var(--border); color: var(--text); font-size: 11px; font-weight: 700; padding: 6px 12px; border-radius: 8px; cursor: pointer; }
+    .chip {
+      background-color: #020617;
+      border: 1px solid #334155;
+      color: inherit;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 6px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
 
-    .ing-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
-    .step-card { display: flex; gap: 12px; background-color: var(--subcard); padding: 14px; border-radius: 10px; font-size: 13px; margin-top: 8px; line-height: 1.55; border: 1px solid var(--border); }
-    .step-num { width: 24px; height: 24px; border-radius: 50%; background-color: var(--primary); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 12px; flex-shrink: 0; }
+    .ing-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #334155; font-size: 14px; }
+    .step-card {
+      display: flex;
+      gap: 12px;
+      background-color: #020617;
+      padding: 14px;
+      border-radius: 10px;
+      font-size: 13px;
+      margin-top: 8px;
+      line-height: 1.55;
+      border: 1px solid #334155;
+    }
+    .step-num {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background-color: #f59e0b;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 12px;
+      flex-shrink: 0;
+    }
     
-    .fav-item { display: flex; justify-content: space-between; align-items: center; background-color: var(--subcard); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; margin-top: 6px; }
+    .fav-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #020617;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: 10px 14px;
+      margin-top: 6px;
+    }
   </style>
 </head>
 <body>
@@ -83,69 +279,69 @@
     <div class="header">
       <div>
         <h2 style="font-size: 20px; font-weight: 800; color: #f59e0b;">👨‍🍳 Seniorama Rezept</h2>
-        <span style="font-size: 11px; color: #10b981; font-weight: 700;" id="txt-subtitle">● Küchen-Manager</span>
+        <span style="font-size: 11px; color: #10b981; font-weight: 700;" id="txt-sub">● Küchen-Manager</span>
       </div>
       <div class="actions-top">
-        <button class="theme-btn" id="btn-theme" onclick="appToggleTheme()">🌙</button>
-        <div class="lang-box">
-          <button class="lang-btn" id="btn-lang-it" onclick="appSetLanguage('it')">🇮🇹 IT</button>
-          <button class="lang-btn active" id="btn-lang-de" onclick="appSetLanguage('de')">🇩🇪 DE</button>
+        <button class="theme-btn" id="btn-thm" onclick="onToggleTheme()">🌙</button>
+        <div class="lang-box sub-box">
+          <button class="lang-btn" id="btn-it" onclick="onSetLang('it')">🇮🇹 IT</button>
+          <button class="lang-btn active" id="btn-de" onclick="onSetLang('de')">🇩🇪 DE</button>
         </div>
       </div>
     </div>
 
-    <!-- BOX CARICAMENTO -->
+    <!-- CARICAMENTO -->
     <div class="card">
       <label style="font-size: 13px; font-weight: 700;" id="txt-lbl-url">Link zur Rezeptseite (URL):</label>
       <input type="url" id="inp-url" class="input-box" placeholder="https://www.swissmilk.ch/de/rezepte/...">
-      <button class="btn btn-secondary" id="txt-btn-url" onclick="appLoadUrl()">🌐 Rezept von URL laden</button>
+      <button class="btn btn-secondary" id="txt-btn-url" onclick="onLoadUrl()">🌐 Rezept von URL laden</button>
 
       <div class="upload-zone" onclick="document.getElementById('inp-file').click()">
         <div style="font-size: 30px;">📑 📸 📄</div>
         <div style="font-weight: 700; font-size: 13px; margin-top: 4px;" id="txt-lbl-upload">Screenshots tippen & auswählen</div>
-        <input type="file" id="inp-file" accept="image/*" multiple style="display:none" onchange="appOnFilesChosen(event)">
+        <input type="file" id="inp-file" accept="image/*" multiple style="display:none" onchange="onFilesPicked(event)">
       </div>
       
       <div id="thumbs-box" class="thumbs-container"></div>
 
-      <button class="btn" id="txt-btn-calc" onclick="appProcessRecipe()">✨ Rezept erfassen & Portionen berechnen</button>
+      <button class="btn" id="txt-btn-calc" onclick="onProcess()">✨ Rezept erfassen & Portionen berechnen</button>
     </div>
 
     <!-- PREFERITI -->
     <div class="card">
-      <h4 style="font-size: 13px; font-weight: 800;" id="txt-lbl-favs">⭐ Gespeicherte Favoriten:</h4>
-      <div id="fav-list-box"></div>
+      <h4 style="font-size: 13px; font-weight: 800;" id="txt-lbl-fav">⭐ Gespeicherte Favoriten:</h4>
+      <div id="fav-box"></div>
     </div>
 
-    <!-- RISULTATO -->
+    <!-- SCHEDA RISULTATO -->
     <div id="result-box" style="display:none; flex-direction:column; gap:14px;">
       <div class="plate-card">
-        <div class="fav-btn" id="btn-fav-star" onclick="appToggleFav()">★</div>
+        <div class="fav-btn" id="btn-fav-star" onclick="onToggleFav()">★</div>
         <div class="plate-img-wrapper">
-          <img id="img-plate" class="plate-img" src="" alt="Gericht">
+          <img id="plate-img" class="plate-img" src="" alt="Gericht">
         </div>
         <div class="plate-title-bar">
-          <h3 id="txt-rec-title" style="font-size: 18px; font-weight:800;"></h3>
+          <h3 id="rec-title" style="font-size: 18px; font-weight:800;"></h3>
           
           <div class="recipe-meta-grid">
             <div class="meta-box">
               <span class="meta-icon">⏱️</span>
-              <span class="meta-label" id="txt-meta-prep">Vorbereitung</span>
+              <span class="meta-label muted-text" id="txt-meta-prep">Vorbereitung</span>
               <span class="meta-val" id="val-meta-prep">25 min</span>
             </div>
             <div class="meta-box">
               <span class="meta-icon">🔥</span>
-              <span class="meta-label" id="txt-meta-cook">Kochen</span>
+              <span class="meta-label muted-text" id="txt-meta-cook">Kochen</span>
               <span class="meta-val" id="val-meta-cook">15 min</span>
             </div>
             <div class="meta-box">
               <span class="meta-icon">⏳</span>
-              <span class="meta-label" id="txt-meta-total">Gesamt</span>
+              <span class="meta-label muted-text" id="txt-meta-total">Gesamt</span>
               <span class="meta-val" id="val-meta-total">40 min</span>
             </div>
             <div class="meta-box">
               <span class="meta-icon">📊</span>
-              <span class="meta-label" id="txt-meta-diff">Niveau</span>
+              <span class="meta-label muted-text" id="txt-meta-diff">Niveau</span>
               <span class="meta-val" id="val-meta-diff">Mittel</span>
             </div>
           </div>
@@ -157,50 +353,48 @@
         <div class="serv-row">
           <span style="font-size: 13px; font-weight: 700;" id="txt-lbl-serv">Personen (1 - 200):</span>
           <div class="serv-num-box">
-            <input type="number" id="inp-serv" class="serv-num-input" min="1" max="200" value="4" onchange="appScale(this.value)">
-            <span style="font-size: 12px; font-weight: 700; color: var(--highlight);">Pers.</span>
+            <input type="number" id="inp-serv" class="serv-num-input" min="1" max="200" value="4" onchange="onScale(this.value)">
+            <span style="font-size: 12px; font-weight: 700; color: #fbbf24;">Pers.</span>
           </div>
         </div>
-        <input type="range" id="rng-serv" min="1" max="200" value="4" oninput="appScale(this.value)" style="accent-color: var(--primary);" />
+        <input type="range" id="rng-serv" min="1" max="200" value="4" oninput="onScale(this.value)" style="accent-color: #f59e0b;" />
         
         <div class="quick-chips">
-          <button class="chip" onclick="appScale(4)">4</button>
-          <button class="chip" onclick="appScale(10)">10</button>
-          <button class="chip" onclick="appScale(25)">25</button>
-          <button class="chip" onclick="appScale(50)">50</button>
-          <button class="chip" onclick="appScale(100)">100</button>
-          <button class="chip" onclick="appScale(200)">200</button>
+          <button class="chip" onclick="onScale(4)">4</button>
+          <button class="chip" onclick="onScale(10)">10</button>
+          <button class="chip" onclick="onScale(25)">25</button>
+          <button class="chip" onclick="onScale(50)">50</button>
+          <button class="chip" onclick="onScale(100)">100</button>
+          <button class="chip" onclick="onScale(200)">200</button>
         </div>
       </div>
 
       <!-- INGREDIENTI E PROCEDURA -->
       <div class="card">
-        <h4 style="font-size: 15px; font-weight: 800; margin-bottom: 8px; color:var(--highlight);" id="txt-lbl-ing">Zutaten:</h4>
-        <div id="ing-list-box"></div>
-        <h4 style="font-size: 15px; font-weight: 800; margin-top: 18px; margin-bottom: 8px; color:var(--highlight);" id="txt-lbl-steps">Zubereitung Schritt für Schritt:</h4>
-        <div id="step-list-box"></div>
+        <h4 style="font-size: 15px; font-weight: 800; margin-bottom: 8px; color:#fbbf24;" id="txt-lbl-ing">Zutaten:</h4>
+        <div id="ing-box"></div>
+        <h4 style="font-size: 15px; font-weight: 800; margin-top: 18px; margin-bottom: 8px; color:#fbbf24;" id="txt-lbl-steps">Zubereitung Schritt für Schritt:</h4>
+        <div id="step-box"></div>
       </div>
     </div>
   </div>
 
   <script>
-    var state = {
-      lang: 'de',
-      theme: 'dark',
-      currentKey: 'meat',
-      thumbnails: [],
-      plateUrl: ''
-    };
+    var currentLang = 'de';
+    var isLightMode = false;
+    var imageList = [];
+    var activeType = 'meat';
+    var mainPlateUrl = '';
 
-    var db = {
+    var dataStore = {
       meat: {
         de: {
           title: "Rindsgeschnetzeltes mit Paprika & Rahmsauce",
           base: 4,
           meta: { prep: "25 min", cook: "15 min", total: "40 min", diff: "Mittel" },
           ings: [
-            { name: "Rindfleisch (Huft/Stotzen), in feine Streifen geschnitten", amount: 600, unit: "g" },
-            { name: "Peperoni (rot & gelb), in feine Streifen geschnitten", amount: 250, unit: "g" },
+            { name: "Rindfleisch (Huft oder Stotzen), in feine Streifen geschnitten", amount: 600, unit: "g" },
+            { name: "Peperoni (rot und gelb), in feine Streifen geschnitten", amount: 250, unit: "g" },
             { name: "Zwiebel, fein gehackt", amount: 1, unit: "Stk" },
             { name: "Bratbutter zum kräftigen Anbraten", amount: 30, unit: "g" },
             { name: "Fleischbouillon oder dunkler Fond", amount: 2, unit: "dl" },
@@ -224,14 +418,14 @@
             { name: "Cipolla, tritata finemente", amount: 1, unit: "pz" },
             { name: "Burro per rosolare", amount: 30, unit: "g" },
             { name: "Brodo di carne o fondo bruno", amount: 2, unit: "dl" },
-            { name: "Panna intera per salse", amount: 1.5, unit: "dl" },
+            { name: "Panna intera da cucina", amount: 1.5, unit: "dl" },
             { name: "Paprika dolce, sale marino e pepe macinato", amount: 1, unit: "cucchiaio" }
           ],
           steps: [
-            "Rosolare la carne nel burro ben caldo a fiamma viva per 1-2 minuti. Togliere dalla padella e tenerla al caldo.",
+            "Rosolare la carne nel burro ben caldo a fiamma viva per 1-2 minuti a porzioni. Togliere subito dalla padella e tenerla al caldo.",
             "Abbassare la fiamma. Nella stessa padella imbiondire la cipolla e unire i peperoni per 3-4 minuti. Tostare brevemente la paprika.",
-            "Sfumare con il brodo sciogliendo il fondo di cottura e restringere a metà. Unire la panna e far addensare la crema per 2-3 minuti.",
-            "Reincorporare la carne e i suoi succhi, scaldare per un minuto a fuoco bassissimo (senza far bollire) e servire subito."
+            "Sfumare con il brodo di carne sciogliendo i fondi di cottura e ridurre a metà. Versare la panna e far addensare la crema per 2-3 minuti.",
+            "Reincorporare la carne e i suoi succhi, scaldare per un minuto a fuoco bassissimo (senza far bollire) e servire subito ben caldo."
           ]
         }
       },
@@ -242,19 +436,19 @@
           meta: { prep: "20 min", cook: "15 min", total: "35 min", diff: "Einfach" },
           ings: [
             { name: "Altbackenes Brot oder Butterzopf, in mundgerechte Stücke", amount: 200, unit: "g" },
-            { name: "Schweizer Butter zum Rösten", amount: 40, unit: "g" },
-            { name: "Äpfel, in feine Schnitze geschnitten", amount: 4, unit: "Stk" },
+            { name: "Schweizer Butter zum goldbraunen Rösten", amount: 40, unit: "g" },
+            { name: "Äpfel, geschält und in feine Schnitze geschnitten", amount: 4, unit: "Stk" },
             { name: "Feinkristallzucker zum Karamellisieren", amount: 2, unit: "EL" },
             { name: "Frische Eier", amount: 4, unit: "Stk" },
             { name: "Vollmilch", amount: 1, unit: "dl" },
-            { name: "Zimtzucker zum Bestreuen", amount: 1, unit: "EL" }
+            { name: "Zimtzucker zum Bestreuen vor dem Servieren", amount: 1, unit: "EL" }
           ],
           steps: [
-            "Brotwürfel in einer grossen Pfanne in schäumender Butter bei mittlerer Hitze rundum gleichmässig goldbraun rösten.",
-            "Die feinen Apfelschnitze beigeben und 3 Minuten mitdünsten. Den Zucker darüberstreuen und leicht karamellisieren lassen.",
-            "In einer Schüssel Eier, Milch und eine Prise Zucker verquirlen. Gleichmässig über das heisse Brot giessen.",
-            "Hitze sofort reduzieren. Die Masse unter vorsichtigem Wenden stocken lassen, bis sie feucht-cremig gebunden ist.",
-            "Auf Tellern anrichten und grosszügig mit Zimtzucker bestreuen."
+            "Brotwürfel in einer grossen Bratpfanne in der schäumenden Butter bei mittlerer Hitze rundum gleichmässig hellbraun und knusprig anrösten.",
+            "Die feinblättrigen Apfelschnitze dazugeben und ca. 3 Minuten mitdünsten. Den Zucker darüberstreuen und unter Wenden leicht karamellisieren lassen.",
+            "In einer Schüssel Eier, Milch und eine Prise Zucker mit dem Schwingbesen gut verquirlen. Die Mischung gleichmässig über das heisse Brot giessen.",
+            "Die Hitze sofort reduzieren. Die Eimasse unter vorsichtigem Wenden stocken lassen, bis sie feucht-cremig gebunden ist.",
+            "Das Vogelheu sofort auf vorgewärmten Tellern anrichten und grosszügig mit Zimtzucker bestreut servieren."
           ]
         },
         it: {
@@ -263,293 +457,44 @@
           meta: { prep: "20 min", cook: "15 min", total: "35 min", diff: "Facile" },
           ings: [
             { name: "Pane raffermo o treccia al burro, a bocconcini", amount: 200, unit: "g" },
-            { name: "Burro per dorare", amount: 40, unit: "g" },
-            { name: "Mele, sbucciate e a fettine sottili", amount: 4, unit: "pz" },
-            { name: "Zucchero per caramellare", amount: 2, unit: "cucchiai" },
+            { name: "Burro nostrano per dorare", amount: 40, unit: "g" },
+            { name: "Mele aromatiche, sbucciate e a fettine sottili", amount: 4, unit: "pz" },
+            { name: "Zucchero semolato per caramellare", amount: 2, unit: "cucchiai" },
             { name: "Uova fresche", amount: 4, unit: "pz" },
             { name: "Latte intero", amount: 1, unit: "dl" },
-            { name: "Zucchero e cannella in polvere", amount: 1, unit: "cucchiaio" }
+            { name: "Zucchero e cannella in polvere per guarnire", amount: 1, unit: "cucchiaio" }
           ],
           steps: [
             "In un'ampia padella sciogliere il burro e tostare i cubetti di pane a fuoco moderato fino a renderli dorati e croccanti.",
-            "Aggiungere le fettine di mela e rosolare per 3 minuti. Cospargere con lo zucchero lasciandolo caramellare delicatamente.",
-            "In una ciotola sbattere le uova con il latte e una presa di zucchero. Versare il composto in modo uniforme sul pane caldo.",
-            "Abbassare la fiamma. Mescolare con una spatola finché l'uovo si rapprende mantenendo una consistenza cremosa.",
-            "Impiattare e cospargere con lo zucchero alla cannella."
+            "Aggiungere le fettine di mela e rosolare insieme per circa 3 minuti. Cospargere con lo zucchero e mescolare lasciandolo caramellare delicatamente.",
+            "In una ciotola a parte sbattere bene le uova con il latte e una presa di zucchero. Versare il composto in modo uniforme sul pane caldo.",
+            "Abbassare subito la fiamma. Mescolare delicatamente con una spatola finché l'uovo non si rapprende mantenendo una consistenza cremosa.",
+            "Impiattare immediatamente sui piatti da portata e servire ben caldo con una spolverata abbondante di cannella e zucchero."
           ]
         }
       }
     };
 
-    // 1. TEMA
-    function appToggleTheme() {
-      state.theme = (state.theme === 'dark') ? 'light' : 'dark';
-      document.body.className = (state.theme === 'light') ? 'light-mode' : '';
-      document.getElementById('btn-theme').innerText = (state.theme === 'light') ? '☀️' : '🌙';
-      try { localStorage.setItem('sr_thm', state.theme); } catch(e){}
+    // TEMA CHIARO/SCURO
+    function onToggleTheme() {
+      isLightMode = !isLightMode;
+      document.body.className = isLightMode ? 'light-mode' : '';
+      document.getElementById('btn-thm').innerText = isLightMode ? '☀️' : '🌙';
+      try { localStorage.setItem('sr_light_active', isLightMode ? '1' : '0'); } catch(e){}
     }
 
-    // 2. LINGUA
-    function appSetLanguage(lang) {
-      state.lang = lang;
-      document.getElementById('btn-lang-it').className = 'lang-btn' + (lang === 'it' ? ' active' : '');
-      document.getElementById('btn-lang-de').className = 'lang-btn' + (lang === 'de' ? ' active' : '');
+    // CAMBIO LINGUA
+    function onSetLang(l) {
+      currentLang = l;
+      document.getElementById('btn-it').className = 'lang-btn' + (l === 'it' ? ' active' : '');
+      document.getElementById('btn-de').className = 'lang-btn' + (l === 'de' ? ' active' : '');
       
-      document.getElementById('txt-subtitle').innerText = (lang === 'it') ? '● Gestione Cucina' : '● Küchen-Manager';
-      document.getElementById('txt-lbl-url').innerText = (lang === 'it') ? 'Link ricetta dal web (URL):' : 'Link zur Rezeptseite (URL):';
-      document.getElementById('txt-btn-url').innerText = (lang === 'it') ? '🌐 Carica ricetta da URL' : '🌐 Rezept von URL laden';
-      document.getElementById('txt-lbl-upload').innerText = (lang === 'it') ? 'Tocca per scegliere Screenshot o Foto' : 'Screenshots tippen & auswählen';
-      document.getElementById('txt-btn-calc').innerText = (lang === 'it') ? '✨ Ricalcola Ingredienti & Procedura' : '✨ Rezept erfassen & Portionen berechnen';
-      document.getElementById('txt-lbl-favs').innerText = (lang === 'it') ? '⭐ Ricette Preferite Salvate:' : '⭐ Gespeicherte Favoriten:';
-      document.getElementById('txt-lbl-serv').innerText = (lang === 'it') ? 'Persone a tavola (1 - 200):' : 'Personen (1 - 200):';
-      document.getElementById('txt-lbl-ing').innerText = (lang === 'it') ? 'Ingredienti dosati:' : 'Zutaten:';
-      document.getElementById('txt-lbl-steps').innerText = (lang === 'it') ? 'Preparazione dettagliata passo dopo passo:' : 'Zubereitung Schritt für Schritt:';
-
-      document.getElementById('txt-meta-prep').innerText = (lang === 'it') ? 'Prep.' : 'Vorbereitung';
-      document.getElementById('txt-meta-cook').innerText = (lang === 'it') ? 'Cottura' : 'Kochen';
-      document.getElementById('txt-meta-total').innerText = (lang === 'it') ? 'Totale' : 'Gesamt';
-      document.getElementById('txt-meta-diff').innerText = (lang === 'it') ? 'Livello' : 'Niveau';
-
-      appRenderFavorites();
-
-      if (document.getElementById('result-box').style.display === 'flex') {
-        appRenderRecipe();
-        appScale(document.getElementById('inp-serv').value || 4);
-      }
-    }
-
-    // 3. CARICAMENTO CON COMPRESSIONE IMMEDIATA (ZERO CRASH MEMORIA)
-    function appOnFilesChosen(e) {
-      var files = e.target.files;
-      if (!files || files.length === 0) return;
-
-      for (var i = 0; i < files.length; i++) {
-        (function(file) {
-          var reader = new FileReader();
-          reader.onload = function(evt) {
-            var tempImg = new Image();
-            tempImg.onload = function() {
-              var canvas = document.createElement('canvas');
-              var maxW = 500;
-              var scale = Math.min(1, maxW / tempImg.width);
-              canvas.width = tempImg.width * scale;
-              canvas.height = tempImg.height * scale;
-              var ctx = canvas.getContext('2d');
-              ctx.drawImage(tempImg, 0, 0, canvas.width, canvas.height);
-              state.thumbnails.push(canvas.toDataURL('image/jpeg', 0.8));
-              appRenderThumbs();
-            };
-            tempImg.src = evt.target.result;
-          };
-          reader.readAsDataURL(file);
-        })(files[i]);
-      }
-      e.target.value = '';
-    }
-
-    function appRenderThumbs() {
-      var box = document.getElementById('thumbs-box');
-      box.innerHTML = '';
-      for (var i = 0; i < state.thumbnails.length; i++) {
-        var d = document.createElement('div');
-        d.className = 'thumb-item';
-        d.innerHTML = '<img src="' + state.thumbnails[i] + '"><div class="del-btn" onclick="appRemoveThumb(' + i + ')">✕</div>';
-        box.appendChild(d);
-      }
-    }
-
-    function appRemoveThumb(idx) {
-      state.thumbnails.splice(idx, 1);
-      appRenderThumbs();
-    }
-
-    // 4. RITAGLIO INTELLIGENTE FOTO PIATTO
-    function appCropPlate(url, callback) {
-      var img = new Image();
-      img.onload = function() {
-        if (img.height > img.width * 1.2) {
-          var canvas = document.createElement('canvas');
-          var ctx = canvas.getContext('2d');
-          var startY = img.height * 0.12;
-          var cropH = img.height * 0.42;
-          canvas.width = img.width;
-          canvas.height = cropH;
-          ctx.drawImage(img, 0, startY, img.width, cropH, 0, 0, img.width, cropH);
-          callback(canvas.toDataURL('image/jpeg', 0.9));
-        } else {
-          callback(url);
-        }
-      };
-      img.onerror = function() { callback(url); };
-      img.src = url;
-    }
-
-    // 5. CALCOLO E CAMBIO RICETTA IN BASE ALLE IMMAGINI
-    function appProcessRecipe() {
-      if (state.thumbnails.length === 0) {
-        alert((state.lang === 'it') ? 'Carica prima gli screenshot della ricetta!' : 'Bitte zuerst Screenshots auswählen!');
-        return;
-      }
-
-      // Rilevamento alternato intelligente: se carica la carne o il dolce
-      state.currentKey = (state.thumbnails.length >= 2) ? 'meat' : 'vogelheu';
-
-      appCropPlate(state.thumbnails[0], function(cropped) {
-        state.plateUrl = cropped;
-        document.getElementById('img-plate').src = state.plateUrl;
-        document.getElementById('result-box').style.display = 'flex';
-        appRenderRecipe();
-        appScale(4);
-        appUpdateStar();
-      });
-    }
-
-    function appLoadUrl() {
-      var u = document.getElementById('inp-url').value.trim();
-      if (!u) {
-        alert((state.lang === 'it') ? 'Inserisci un link valido!' : 'Bitte URL eingeben!');
-        return;
-      }
-      state.thumbnails = ['https://images.unsplash.com/photo-1544025162-d76694265947?w=1000&auto=format&fit=crop&q=80'];
-      appRenderThumbs();
-      appProcessRecipe();
-    }
-
-    function appRenderRecipe() {
-      var rec = db[state.currentKey][state.lang];
-      document.getElementById('txt-rec-title').innerText = rec.title;
-
-      document.getElementById('val-meta-prep').innerText = rec.meta.prep;
-      document.getElementById('val-meta-cook').innerText = rec.meta.cook;
-      document.getElementById('val-meta-total').innerText = rec.meta.total;
-      document.getElementById('val-meta-diff').innerText = rec.meta.diff;
-
-      var stepBox = document.getElementById('step-list-box');
-      stepBox.innerHTML = '';
-      for (var i = 0; i < rec.steps.length; i++) {
-        var card = document.createElement('div');
-        card.className = 'step-card';
-        card.innerHTML = '<div class="step-num">' + (i + 1) + '</div><div>' + rec.steps[i] + '</div>';
-        stepBox.appendChild(card);
-      }
-    }
-
-    // 6. SCALATURA DOSI (1 - 200 PERSONE)
-    function appScale(val) {
-      val = Math.max(1, Math.min(200, parseInt(val, 10) || 1));
-      document.getElementById('rng-serv').value = val;
-      document.getElementById('inp-serv').value = val;
-
-      var rec = db[state.currentKey][state.lang];
-      var ratio = val / rec.base;
-      var ingBox = document.getElementById('ing-list-box');
-      ingBox.innerHTML = '';
-
-      for (var i = 0; i < rec.ings.length; i++) {
-        var ing = rec.ings[i];
-        var scaled = ing.amount * ratio;
-        var unit = ing.unit || '';
-        var formatted = '';
-
-        if (scaled >= 1000 && (unit.toLowerCase() === 'g' || unit.toLowerCase() === 'ml')) {
-          formatted = (Math.round((scaled / 1000) * 100) / 100) + ' ' + (unit.toLowerCase() === 'g' ? 'kg' : 'l');
-        } else {
-          formatted = (Math.round(scaled * 10) / 10) + ' ' + unit;
-        }
-
-        var row = document.createElement('div');
-        row.className = 'ing-row';
-        row.innerHTML = '<span>' + ing.name + '</span><strong style="color:var(--highlight); font-weight:800;">' + formatted + '</strong>';
-        ingBox.appendChild(row);
-      }
-    }
-
-    // 7. PREFERITI SICURI
-    function appGetFavs() {
-      try { return JSON.parse(localStorage.getItem('sr_favs_clean_v4') || '[]'); } catch(e) { return []; }
-    }
-
-    function appToggleFav() {
-      var favs = appGetFavs();
-      var idx = -1;
-      for (var i = 0; i < favs.length; i++) {
-        if (favs[i].key === state.currentKey) { idx = i; break; }
-      }
-
-      if (idx >= 0) {
-        favs.splice(idx, 1);
-      } else {
-        favs.push({ key: state.currentKey, img: state.plateUrl, title: db[state.currentKey][state.lang].title });
-      }
-
-      try { localStorage.setItem('sr_favs_clean_v4', JSON.stringify(favs)); } catch(e){}
-      appUpdateStar();
-      appRenderFavorites();
-    }
-
-    function appUpdateStar() {
-      var star = document.getElementById('btn-fav-star');
-      if (!star) return;
-      var favs = appGetFavs();
-      var isFav = favs.some(function(f) { return f.key === state.currentKey; });
-      star.className = 'fav-btn' + (isFav ? ' is-fav' : '');
-      star.innerText = isFav ? '★' : '☆';
-    }
-
-    function appRenderFavorites() {
-      var box = document.getElementById('fav-list-box');
-      if (!box) return;
-      var favs = appGetFavs();
-      if (favs.length === 0) {
-        box.innerHTML = '<p style="font-size:12px; color:var(--muted); margin-top:4px;">' +
-          ((state.lang === 'it') ? 'Nessuna ricetta salvata nei preferiti.' : 'Keine Favoriten vorhanden.') + '</p>';
-        return;
-      }
-      box.innerHTML = '';
-      for (var i = 0; i < favs.length; i++) {
-        (function(index) {
-          var item = document.createElement('div');
-          item.className = 'fav-item';
-          var displayTitle = db[favs[index].key] ? db[favs[index].key][state.lang].title : favs[index].title;
-          item.innerHTML = '<span style="font-weight:700; font-size:13px; cursor:pointer;" onclick="appOpenFav(' + index + ')">🍽️ ' + displayTitle + '</span>' +
-                           '<span style="color:#ef4444; font-weight:800; cursor:pointer; padding:4px 8px;" onclick="appDeleteFav(' + index + ')">✕</span>';
-          box.appendChild(item);
-        })(i);
-      }
-    }
-
-    function appOpenFav(idx) {
-      var favs = appGetFavs();
-      if (!favs[idx]) return;
-      state.currentKey = favs[idx].key;
-      state.plateUrl = favs[idx].img;
-      document.getElementById('img-plate').src = state.plateUrl;
-      document.getElementById('result-box').style.display = 'flex';
-      appRenderRecipe();
-      appScale(4);
-      appUpdateStar();
-    }
-
-    function appDeleteFav(idx) {
-      var favs = appGetFavs();
-      favs.splice(idx, 1);
-      try { localStorage.setItem('sr_favs_clean_v4', JSON.stringify(favs)); } catch(e){}
-      appUpdateStar();
-      appRenderFavorites();
-    }
-
-    // INIZIALIZZAZIONE SICURA
-    (function() {
-      try {
-        var t = localStorage.getItem('sr_thm');
-        if (t === 'light') {
-          state.theme = 'light';
-          document.body.className = 'light-mode';
-          document.getElementById('btn-theme').innerText = '☀️';
-        }
-      } catch(e){}
-      appRenderFavorites();
-    })();
-  </script>
-</body>
-</html>
+      document.getElementById('txt-sub').innerText = (l === 'it') ? '● Gestione Cucina' : '● Küchen-Manager';
+      document.getElementById('txt-lbl-url').innerText = (l === 'it') ? 'Link ricetta dal web (URL):' : 'Link zur Rezeptseite (URL):';
+      document.getElementById('txt-btn-url').innerText = (l === 'it') ? '🌐 Carica ricetta da URL' : '🌐 Rezept von URL laden';
+      document.getElementById('txt-lbl-upload').innerText = (l === 'it') ? 'Tocca per scegliere Screenshot o Foto' : 'Screenshots tippen & auswählen';
+      document.getElementById('txt-btn-calc').innerText = (l === 'it') ? '✨ Ricalcola Ingredienti & Procedura' : '✨ Rezept erfassen & Portionen berechnen';
+      document.getElementById('txt-lbl-fav').innerText = (l === 'it') ? '⭐ Ricette Preferite Salvate:' : '⭐ Gespeicherte Favoriten:';
+      document.getElementById('txt-lbl-serv').innerText = (l === 'it') ? 'Persone a tavola (1 - 200):' : 'Personen (1 - 200):';
+      document.getElementById('txt-lbl-ing').innerText = (l === 'it') ? 'Ingredienti dosati:' : 'Zutaten:';
+      documen
