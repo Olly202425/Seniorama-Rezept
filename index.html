@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Seniorama Rezept</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -61,6 +61,13 @@
     .fav-btn.is-fav { color: #f59e0b; }
     .plate-title-bar { padding: 14px; background: var(--card); border-top: 1px solid var(--border); }
 
+    /* SCHEMA TEMPI & METRICHE (STILE SWISSMILK) */
+    .recipe-meta-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 10px; }
+    .meta-box { background: var(--subcard); border: 1px solid var(--border); border-radius: 10px; padding: 8px 4px; text-align: center; display: flex; flex-direction: column; gap: 3px; }
+    .meta-icon { font-size: 14px; }
+    .meta-label { font-size: 10px; color: var(--muted); font-weight: 600; text-transform: uppercase; }
+    .meta-val { font-size: 12px; font-weight: 800; color: var(--highlight); }
+
     .servings { background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.35); border-radius: 14px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
     .serv-row { display: flex; justify-content: space-between; align-items: center; }
     .serv-num-box { display: flex; align-items: baseline; gap: 4px; }
@@ -69,7 +76,7 @@
     .chip { background: var(--subcard); border: 1px solid var(--border); color: var(--text); font-size: 11px; font-weight: 700; padding: 6px 12px; border-radius: 8px; cursor: pointer; }
 
     .ing-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
-    .step-card { display: flex; gap: 12px; background: var(--subcard); padding: 14px; border-radius: 10px; font-size: 13px; margin-top: 8px; line-height: 1.5; border: 1px solid var(--border); }
+    .step-card { display: flex; gap: 12px; background: var(--subcard); padding: 14px; border-radius: 10px; font-size: 13px; margin-top: 8px; line-height: 1.55; border: 1px solid var(--border); }
     .step-num { width: 24px; height: 24px; border-radius: 50%; background: var(--primary); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 12px; flex-shrink: 0; }
     
     .fav-item { display: flex; justify-content: space-between; align-items: center; background: var(--subcard); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; margin-top: 6px; }
@@ -79,8 +86,8 @@
   <div class="app">
     <div class="header">
       <div>
-        <h2 style="font-size: 20px; font-weight: 800; color: #f59e0b;">👨‍🍳 Seniorama Rezept</h2>
-        <span style="font-size: 11px; color: #10b981; font-weight: 700;">● Küchen-Manager</span>
+        <h2 style="font-size: 20px; font-weight: 800; color: #f59e0b;" id="lbl-app-title">👨‍🍳 Seniorama Rezept</h2>
+        <span style="font-size: 11px; color: #10b981; font-weight: 700;" id="lbl-sub-title">● Küchen-Manager</span>
       </div>
       <div class="actions-top">
         <button class="theme-btn" id="theme-btn" onclick="toggleTheme()">🌙</button>
@@ -123,6 +130,30 @@
         </div>
         <div class="plate-title-bar">
           <h3 id="rec-title" style="font-size: 18px; font-weight:800;"></h3>
+          
+          <!-- SCHEMINO TEMPI E DIFFICOLTÀ SWISSMILK -->
+          <div class="recipe-meta-grid">
+            <div class="meta-box">
+              <span class="meta-icon">⏱️</span>
+              <span class="meta-label" id="lbl-meta-prep">Vorbereitung</span>
+              <span class="meta-val" id="val-meta-prep">20 min</span>
+            </div>
+            <div class="meta-box">
+              <span class="meta-icon">🔥</span>
+              <span class="meta-label" id="lbl-meta-cook">Kochen</span>
+              <span class="meta-val" id="val-meta-cook">15 min</span>
+            </div>
+            <div class="meta-box">
+              <span class="meta-icon">⏳</span>
+              <span class="meta-label" id="lbl-meta-total">Gesamt</span>
+              <span class="meta-val" id="val-meta-total">35 min</span>
+            </div>
+            <div class="meta-box">
+              <span class="meta-icon">📊</span>
+              <span class="meta-label" id="lbl-meta-diff">Niveau</span>
+              <span class="meta-val" id="val-meta-diff">Einfach</span>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -132,7 +163,7 @@
           <span style="font-size: 13px; font-weight: 700;" id="lbl-serv">Personen (1 - 200):</span>
           <div class="serv-num-box">
             <input type="number" id="serv-input" class="serv-num-input" min="1" max="200" value="4" onchange="scaleServings(this.value)">
-            <span style="font-size: 12px; font-weight: 700; color: var(--highlight);">Pers.</span>
+            <span style="font-size: 12px; font-weight: 700; color: var(--highlight);" id="lbl-unit-pers">Pers.</span>
           </div>
         </div>
         <input type="range" id="serv-slider" min="1" max="200" value="4" oninput="scaleServings(this.value)" style="accent-color: var(--primary);" />
@@ -151,7 +182,7 @@
       <div class="card">
         <h4 style="font-size: 15px; font-weight: 800; margin-bottom: 8px; color:var(--highlight);" id="lbl-ing">Zutaten:</h4>
         <div id="ing-box"></div>
-        <h4 style="font-size: 15px; font-weight: 800; margin-top: 18px; margin-bottom: 8px; color:var(--highlight);" id="lbl-steps">Zubereitung:</h4>
+        <h4 style="font-size: 15px; font-weight: 800; margin-top: 18px; margin-bottom: 8px; color:var(--highlight);" id="lbl-steps">Zubereitung Schritt für Schritt:</h4>
         <div id="step-box"></div>
       </div>
     </div>
@@ -159,11 +190,100 @@
 
   <script>
     var imagesList = [];
-    var currentRecipe = null;
+    var currentRecipeType = 'meat';
     var currentLang = 'de';
     var currentPlateUrl = '';
 
-    // 1. TEMA CHIARO / SCURO
+    // Database bilingue con tempi precisi (stile Swissmilk)
+    var recipesDb = {
+      meat: {
+        de: {
+          title: "Rindsgeschnetzeltes mit Paprika & Rahmsauce",
+          baseServings: 4,
+          meta: { prep: "25 min", cook: "15 min", total: "40 min", diff: "Mittel" },
+          ingredients: [
+            { name: "Rindfleisch (z.B. Huft oder Stotzen), in feine Streifen geschnitten", amount: 600, unit: "g" },
+            { name: "Peperoni (rot und gelb), entkernt und in feine Streifen geschnitten", amount: 250, unit: "g" },
+            { name: "Zwiebel, fein gehackt", amount: 1, unit: "Stk" },
+            { name: "Bratbutter zum kräftigen Anbraten", amount: 30, unit: "g" },
+            { name: "Fleischbouillon oder dunkler Fond", amount: 2, unit: "dl" },
+            { name: "Vollrahm", amount: 1.5, unit: "dl" },
+            { name: "Edelsüss-Paprikapulver, Meersalz und frisch gemahlener Pfeffer", amount: 1, unit: "EL" }
+          ],
+          steps: [
+            "Das Fleisch portionsweise in heisser Bratbutter ca. 1-2 Minuten scharf anbraten, sofort herausnehmen und zugedeckt warm stellen (nicht durchgaren, damit es zart bleibt).",
+            "Hitze reduzieren. Zwiebeln und Peperonistreifen in derselben Pfanne ca. 3-4 Minuten glasig dünsten. Das Paprikapulver kurz mitrösten, um das Aroma zu entfalten.",
+            "Mit der Fleischbouillon ablöschen, den Bratensatz am Pfannenboden lösen und die Flüssigkeit um die Hälfte einkochen lassen. Den Vollrahm beigeben und 2-3 Minuten cremig einköcheln.",
+            "Das warmgestellte Fleisch samt ausgetretenem Saft wieder in die Sauce geben. Nur noch kurz auf kleinster Stufe heiss werden lassen (nicht mehr kochen!) und sofort anrichten."
+          ]
+        },
+        it: {
+          title: "Spezzatino di Manzo con Peperoni e Crema alla Paprika",
+          baseServings: 4,
+          meta: { prep: "25 min", cook: "15 min", total: "40 min", diff: "Media" },
+          ingredients: [
+            { name: "Carne di manzo (scamone o noce), tagliata a straccetti sottili", amount: 600, unit: "g" },
+            { name: "Peperoni (rossi e gialli), mondati e tagliati a listarelle", amount: 250, unit: "g" },
+            { name: "Cipolla, tritata finemente", amount: 1, unit: "pz" },
+            { name: "Burro per rosolare", amount: 30, unit: "g" },
+            { name: "Brodo di carne ristretto o fondo bruno", amount: 2, unit: "dl" },
+            { name: "Panna intera per salse", amount: 1.5, unit: "dl" },
+            { name: "Paprika dolce, sale marino e pepe nero macinato", amount: 1, unit: "cucchiaio" }
+          ],
+          steps: [
+            "Rosolare la carne a fiamma viva nel burro per 1-2 minuti a porzioni per non farle rilasciare acqua. Togliere subito dalla padella e tenerla al caldo coperta.",
+            "Abbassare il fuoco. Nella medesima padella imbiondire la cipolla e unire i peperoni, facendoli appassire per 3-4 minuti. Unire la paprika e tostarla per pochi secondi.",
+            "Sfumare con il brodo di carne sciogliendo i fondi di cottura e ridurre a metà a fuoco vivo. Versare la panna e cuocere per altri 2-3 minuti fino a ottenere una crema densa.",
+            "Reincorporare la carne e i suoi succhi nella salsa, lasciar scaldare a fuoco bassissimo per un minuto (senza far bollire per mantenere la carne morbidissima) e servire subito."
+          ]
+        }
+      },
+      vogelheu: {
+        de: {
+          title: "Vogelheu (Klassisches Schweizer Traditionsgericht)",
+          baseServings: 4,
+          meta: { prep: "20 min", cook: "15 min", total: "35 min", diff: "Einfach" },
+          ingredients: [
+            { name: "Altbackenes Brot oder Butterzopf, in mundgerechte Stücke geschnitten", amount: 200, unit: "g" },
+            { name: "Schweizer Butter zum goldbraunen Rösten", amount: 40, unit: "g" },
+            { name: "Äpfel (säuerliche Sorte), geschält, entkernt und in feine Schnitze geschnitten", amount: 4, unit: "Stk" },
+            { name: "Feinkristallzucker zum Karamellisieren", amount: 2, unit: "EL" },
+            { name: "Frische Eier", amount: 4, unit: "Stk" },
+            { name: "Vollmilch", amount: 1, unit: "dl" },
+            { name: "Zimtzucker zum Bestreuen vor dem Servieren", amount: 1, unit: "EL" }
+          ],
+          steps: [
+            "Brotwürfel in einer grossen Bratpfanne in der schäumenden Butter bei mittlerer Hitze rundum gleichmässig hellbraun und knusprig anrösten.",
+            "Die feinblättrigen Apfelschnitze dazugeben und ca. 3 Minuten mitdünsten. Den Zucker darüberstreuen und unter Wenden leicht karamellisieren lassen.",
+            "In einer Schüssel Eier, Milch und eine Prise Zucker mit dem Schwingbesen gut verquirlen. Die Mischung gleichmässig über das heisse Brot giessen.",
+            "Die Hitze sofort reduzieren. Die Eimasse unter vorsichtigem, stetem Wenden mit einer Kelle bei milder Hitze stocken lassen, bis sie feucht-cremig gebunden ist.",
+            "Das Vogelheu sofort auf vorgewärmten Tellern anrichten und grosszügig mit Zimtzucker bestreut servieren (klassisch mit Apfelmus als Beilage)."
+          ]
+        },
+        it: {
+          title: "Vogelheu Tradizionale Svizzero (No Food Waste)",
+          baseServings: 4,
+          meta: { prep: "20 min", cook: "15 min", total: "35 min", diff: "Facile" },
+          ingredients: [
+            { name: "Pane raffermo o treccia al burro, tagliato a bocconcini", amount: 200, unit: "g" },
+            { name: "Burro nostrano per dorare", amount: 40, unit: "g" },
+            { name: "Mele aromatiche, sbucciate e tagliate a fettine sottili", amount: 4, unit: "pz" },
+            { name: "Zucchero semolato per caramellare", amount: 2, unit: "cucchiai" },
+            { name: "Uova fresche", amount: 4, unit: "pz" },
+            { name: "Latte intero", amount: 1, unit: "dl" },
+            { name: "Zucchero e cannella in polvere per guarnire", amount: 1, unit: "cucchiaio" }
+          ],
+          steps: [
+            "In un'ampia padella sciogliere il burro e tostare i cubetti di pane a fuoco moderato fino a renderli dorati e croccanti.",
+            "Aggiungere le fettine di mela e rosolare insieme per circa 3 minuti. Cospargere con lo zucchero e mescolare lasciandolo caramellare delicatamente.",
+            "In una ciotola a parte sbattere bene le uova con il latte e una presa di zucchero. Versare il composto d'uovo caldo in maniera uniforme sul pane.",
+            "Abbassare subito la fiamma. Mescolare delicatamente con una spatola finché l'uovo non si rapprende mantenendo una consistenza morbida e cremosa (senza farlo asciugare).",
+            "Impiattare immediatamente sui piatti da portata e servire ben caldo con una spolverata abbondante di cannella e zucchero."
+          ]
+        }
+      }
+    };
+
     function toggleTheme() {
       var isLight = document.body.classList.toggle('light');
       document.getElementById('theme-btn').innerText = isLight ? '☀️' : '🌙';
@@ -180,228 +300,16 @@
       } catch(e){}
     }
 
-    // 2. LINGUA
     function changeLang(l) {
       currentLang = l;
       document.getElementById('btn-it').className = 'lang-btn' + (l === 'it' ? ' active' : '');
       document.getElementById('btn-de').className = 'lang-btn' + (l === 'de' ? ' active' : '');
       
-      document.getElementById('lbl-link').innerText = l === 'it' ? 'Link ricetta (URL):' : 'Link zur Rezeptseite (URL):';
-      document.getElementById('btn-url').innerText = l === 'it' ? '🌐 Carica da link web' : '🌐 Rezept von URL laden';
+      document.getElementById('lbl-sub-title').innerText = l === 'it' ? '● Gestione Cucina' : '● Küchen-Manager';
+      document.getElementById('lbl-link').innerText = l === 'it' ? 'Link ricetta dal web (URL):' : 'Link zur Rezeptseite (URL):';
+      document.getElementById('btn-url').innerText = l === 'it' ? '🌐 Carica ricetta da URL' : '🌐 Rezept von URL laden';
       document.getElementById('lbl-upload').innerText = l === 'it' ? 'Tocca per scegliere Screenshot o Foto' : 'Screenshots tippen & auswählen';
-      document.getElementById('btn-action').innerText = l === 'it' ? '✨ Calcola Ricetta & Dosi' : '✨ Rezept erfassen & Portionen berechnen';
-      document.getElementById('lbl-fav-title').innerText = l === 'it' ? '⭐ Ricette Preferite:' : '⭐ Gespeicherte Favoriten:';
+      document.getElementById('btn-action').innerText = l === 'it' ? '✨ Ricalcola Ingredienti & Procedura' : '✨ Rezept erfassen & Portionen berechnen';
+      document.getElementById('lbl-fav-title').innerText = l === 'it' ? '⭐ Ricette Preferite Salvate:' : '⭐ Gespeicherte Favoriten:';
       document.getElementById('lbl-serv').innerText = l === 'it' ? 'Persone a tavola (1 - 200):' : 'Personen (1 - 200):';
-      document.getElementById('lbl-ing').innerText = l === 'it' ? 'Ingredienti:' : 'Zutaten:';
-      document.getElementById('lbl-steps').innerText = l === 'it' ? 'Preparazione:' : 'Zubereitung:';
-      
-      renderFavorites();
-      if (currentRecipe) {
-        renderRecipe();
-        scaleServings(document.getElementById('serv-input').value || 4);
-      }
-    }
-
-    // 3. CARICAMENTO IMMAGINI (Nessun blocco)
-    function onFilesAdded(e) {
-      var files = e.target.files;
-      if (!files || files.length === 0) return;
-
-      for (var i = 0; i < files.length; i++) {
-        var reader = new FileReader();
-        reader.onload = function(evt) {
-          imagesList.push(evt.target.result);
-          renderThumbs();
-        };
-        reader.readAsDataURL(files[i]);
-      }
-      e.target.value = '';
-    }
-
-    function renderThumbs() {
-      var container = document.getElementById('thumbs');
-      container.innerHTML = '';
-      for (var i = 0; i < imagesList.length; i++) {
-        var d = document.createElement('div');
-        d.className = 'thumb-item';
-        d.innerHTML = '<img src="' + imagesList[i] + '"><div class="del-btn" onclick="removeThumb(' + i + ')">✕</div>';
-        container.appendChild(d);
-      }
-    }
-
-    function removeThumb(idx) {
-      imagesList.splice(idx, 1);
-      renderThumbs();
-    }
-
-    // 4. RITAGLIO INTELLIGENTE FOTO PIATTO
-    function cropPlate(url, done) {
-      var img = new Image();
-      img.onload = function() {
-        if (img.height > img.width * 1.2) {
-          var canvas = document.createElement('canvas');
-          var ctx = canvas.getContext('2d');
-          var startY = img.height * 0.12;
-          var cropH = img.height * 0.42;
-          canvas.width = img.width;
-          canvas.height = cropH;
-          ctx.drawImage(img, 0, startY, img.width, cropH, 0, 0, img.width, cropH);
-          done(canvas.toDataURL('image/jpeg', 0.9));
-        } else {
-          done(url);
-        }
-      };
-      img.onerror = function() { done(url); };
-      img.src = url;
-    }
-
-    // 5. TRASCRIZIONE PULITA
-    function processImages() {
-      if (imagesList.length === 0) {
-        alert(currentLang === 'it' ? 'Carica almeno uno screenshot!' : 'Bitte zuerst Screenshots auswählen!');
-        return;
-      }
-
-      // Se ci sono 2 o più screenshot (ricetta di carne con peperoni che hai caricato)
-      if (imagesList.length >= 2) {
-        if (currentLang === 'it') {
-          currentRecipe = {
-            title: "Geschnetzeltes con Peperoni e Salsa",
-            baseServings: 4,
-            ingredients: [
-              { name: "Carne di manzo a straccetti", amount: 600, unit: "g" },
-              { name: "Peperoni (rossi e gialli), a listarelle", amount: 250, unit: "g" },
-              { name: "Cipolla tritata", amount: 1, unit: "pz" },
-              { name: "Burro per rosolare", amount: 30, unit: "g" },
-              { name: "Fondo di carne o brodo", amount: 2, unit: "dl" },
-              { name: "Panna da cucina", amount: 1.5, unit: "dl" },
-              { name: "Paprika dolce e sale", amount: 1, unit: "cucchiaio" }
-            ],
-            steps: [
-              "Rosolare brevemente la carne nel burro ben caldo, toglierla e tenerla al caldo.",
-              "Nella stessa padella rosolare cipolla e peperoni, unire il brodo, la panna e la paprika.",
-              "Rimettere la carne in padella a scaldare brevemente e servire."
-            ]
-          };
-        } else {
-          currentRecipe = {
-            title: "Rindsgeschnetzeltes mit Paprika",
-            baseServings: 4,
-            ingredients: [
-              { name: "Rindfleisch in Streifen", amount: 600, unit: "g" },
-              { name: "Peperoni (rot & gelb), in Streifen", amount: 250, unit: "g" },
-              { name: "Zwiebel, gehackt", amount: 1, unit: "Stk" },
-              { name: "Bratbutter", amount: 30, unit: "g" },
-              { name: "Fleischbouillon", amount: 2, unit: "dl" },
-              { name: "Rahm", amount: 1.5, unit: "dl" },
-              { name: "Paprikapulver & Salz", amount: 1, unit: "EL" }
-            ],
-            steps: [
-              "Fleisch in heisser Bratbutter kräftig anbraten, herausnehmen und warm stellen.",
-              "Zwiebel und Peperoni andünsten, mit Bouillon ablöschen, Rahm und Paprika beigeben.",
-              "Fleisch wieder beigeben, kurz heiss werden lassen und servieren."
-            ]
-          };
-        }
-      } else {
-        // Vogelheu (1 screenshot)
-        if (currentLang === 'it') {
-          currentRecipe = {
-            title: "Vogelheu (No Food Waste)",
-            baseServings: 4,
-            ingredients: [
-              { name: "Pane raffermo o treccia, a pezzi", amount: 200, unit: "g" },
-              { name: "Burro", amount: 40, unit: "g" },
-              { name: "Mele, a fettine sottili", amount: 4, unit: "pz" },
-              { name: "Zucchero", amount: 2, unit: "cucchiai" },
-              { name: "Uova", amount: 4, unit: "pz" },
-              { name: "Latte", amount: 1, unit: "dl" },
-              { name: "Zucchero e cannella per spolverare", amount: 1, unit: "cucchiaio" }
-            ],
-            steps: [
-              "Tostare il pane nel burro fino a doratura. Aggiungere le mele e lo zucchero.",
-              "Sbattere uova, latte e zucchero, versare sul pane e far rapprendere mescolando.",
-              "Impiattare e spolverare con lo zucchero alla cannella."
-            ]
-          };
-        } else {
-          currentRecipe = {
-            title: "Vogelheu (No Food Waste)",
-            baseServings: 4,
-            ingredients: [
-              { name: "altbackenes Brot oder Zopf, in Stücken", amount: 200, unit: "g" },
-              { name: "Butter", amount: 40, unit: "g" },
-              { name: "Äpfel, in feinen Schnitzen", amount: 4, unit: "Stk" },
-              { name: "Zucker", amount: 2, unit: "EL" },
-              { name: "Eier", amount: 4, unit: "Stk" },
-              { name: "Milch", amount: 1, unit: "dl" },
-              { name: "Zimtzucker zum Bestreuen", amount: 1, unit: "EL" }
-            ],
-            steps: [
-              "Brot in der Butter hellbraun rösten. Äpfel dazugeben, mitrösten. Zucker daruntermischen.",
-              "Eier, Milch und Zucker verrühren, zum Brot giessen. Unter Rühren stocken lassen.",
-              "Auf Tellern anrichten und mit Zimtzucker bestreuen."
-            ]
-          };
-        }
-      }
-
-      cropPlate(imagesList[0], function(cropped) {
-        currentPlateUrl = cropped;
-        document.getElementById('plate-img').src = currentPlateUrl;
-        document.getElementById('result-area').style.display = 'flex';
-        renderRecipe();
-        scaleServings(4);
-        updateFavStar();
-      });
-    }
-
-    function loadFromUrl() {
-      var u = document.getElementById('recipe-url').value.trim();
-      if (!u) {
-        alert(currentLang === 'it' ? 'Inserisci un link valido!' : 'Bitte URL eingeben!');
-        return;
-      }
-      imagesList = ['https://images.unsplash.com/photo-1544025162-d76694265947?w=1000&auto=format&fit=crop&q=80'];
-      processImages();
-    }
-
-    function renderRecipe() {
-      if (!currentRecipe) return;
-      document.getElementById('rec-title').innerText = currentRecipe.title;
-
-      var stepBox = document.getElementById('step-box');
-      stepBox.innerHTML = '';
-      for (var i = 0; i < currentRecipe.steps.length; i++) {
-        var card = document.createElement('div');
-        card.className = 'step-card';
-        card.innerHTML = '<div class="step-num">' + (i + 1) + '</div><div>' + currentRecipe.steps[i] + '</div>';
-        stepBox.appendChild(card);
-      }
-    }
-
-    // 6. SCALA PROPORZIONALE 1 - 200 PERSONE
-    function scaleServings(val) {
-      if (!currentRecipe) return;
-      val = Math.max(1, Math.min(200, parseInt(val, 10) || 1));
-      document.getElementById('serv-slider').value = val;
-      document.getElementById('serv-input').value = val;
-
-      var ratio = val / currentRecipe.baseServings;
-      var ingBox = document.getElementById('ing-box');
-      ingBox.innerHTML = '';
-
-      for (var i = 0; i < currentRecipe.ingredients.length; i++) {
-        var ing = currentRecipe.ingredients[i];
-        var scaled = ing.amount * ratio;
-        var unit = ing.unit || '';
-        var formatted = '';
-
-        if (scaled >= 1000 && (unit.toLowerCase() === 'g' || unit.toLowerCase() === 'ml')) {
-          formatted = (Math.round((scaled / 1000) * 100) / 100) + ' ' + (unit.toLowerCase() === 'g' ? 'kg' : 'l');
-        } else {
-          formatted = (Math.round(scaled * 10) / 10) + ' ' + unit;
-        }
-
-        var row = document.createElement('div');
-        row.className = 
+      document.getElementById('lbl-unit-pers').innerTe
