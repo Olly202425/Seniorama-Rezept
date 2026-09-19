@@ -27,15 +27,19 @@
     .lang-btn { border: none; background: transparent; color: var(--muted); font-weight: 700; font-size: 11px; padding: 6px 10px; border-radius: 6px; cursor: pointer; }
     .lang-btn.active { background: var(--primary); color: #fff; }
     .input-box { width: 100%; background: #0f172a; border: 1px solid var(--border); color: #fff; padding: 12px; border-radius: 10px; font-size: 13px; margin-top: 6px; outline: none; }
-    .upload-zone { border: 2px dashed var(--primary); background: rgba(245, 158, 11, 0.05); border-radius: 12px; padding: 16px; text-align: center; cursor: pointer; margin-top: 10px; }
-    .thumbs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
-    .thumb { position: relative; aspect-ratio: 1; border-radius: 8px; overflow: hidden; background: #0f172a; display:flex; align-items:center; justify-content:center; }
-    .thumb img { width: 100%; height: 100%; object-fit: cover; }
-    .thumb span { position: absolute; top: 2px; right: 2px; background: rgba(0,0,0,0.8); color: #fff; border-radius: 50%; width: 20px; height: 20px; font-size: 11px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-    .btn { width: 100%; background: var(--primary); color: #fff; border: none; padding: 12px; border-radius: 10px; font-weight: 700; font-size: 14px; cursor: pointer; margin-top: 10px; }
+    
+    .upload-zone { border: 2px dashed var(--primary); background: rgba(245, 158, 11, 0.05); border-radius: 12px; padding: 18px; text-align: center; cursor: pointer; margin-top: 10px; }
+    
+    /* Box anteprime ben visibile sotto l'upload */
+    .thumbs-container { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; min-height: 20px; }
+    .thumb-item { position: relative; width: 90px; height: 90px; border-radius: 8px; overflow: hidden; background: #020617; border: 1px solid var(--border); flex-shrink: 0; }
+    .thumb-item img { width: 100%; height: 100%; object-fit: cover; }
+    .thumb-item .del-btn { position: absolute; top: 2px; right: 2px; background: rgba(0,0,0,0.85); color: #fff; border-radius: 50%; width: 22px; height: 22px; font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+
+    .btn { width: 100%; background: var(--primary); color: #fff; border: none; padding: 13px; border-radius: 10px; font-weight: 700; font-size: 14px; cursor: pointer; margin-top: 12px; }
     .btn-secondary { background: #334155; }
     
-    .plate-card { position: relative; border-radius: 16px; overflow: hidden; background: #000; border: 1px solid var(--border); }
+    .plate-card { position: relative; border-radius: 16px; overflow: hidden; background: #000; border: 1px solid var(--border); margin-top: 6px; }
     .plate-img-wrapper { width: 100%; height: 210px; overflow: hidden; position: relative; }
     .plate-img { width: 100%; height: 100%; object-fit: cover; }
     .fav-btn { position: absolute; top: 12px; right: 12px; background: rgba(15, 23, 42, 0.85); border: 1px solid var(--border); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; color: #fff; z-index: 5; }
@@ -72,18 +76,20 @@
       </div>
     </div>
 
-    <!-- AREA CARICAMENTO -->
+    <!-- CARICAMENTO FOTO O LINK -->
     <div class="card">
       <label style="font-size: 13px; font-weight: 700;" id="lbl-link">Link zur Rezeptseite (URL):</label>
       <input type="url" id="recipe-url" class="input-box" placeholder="https://www.swissmilk.ch/de/rezepte/...">
       <button class="btn btn-secondary" onclick="loadFromUrl()" id="btn-url">🌐 Rezept von URL laden</button>
 
       <div class="upload-zone" onclick="document.getElementById('file-input').click()">
-        <div style="font-size: 28px;">📑 📸 📄</div>
+        <div style="font-size: 30px;">📑 📸 📄</div>
         <div style="font-weight: 700; font-size: 13px; margin-top: 4px;" id="lbl-upload">Screenshots, Fotos oder PDF laden</div>
         <input type="file" id="file-input" style="display:none" accept="image/*,application/pdf" multiple onchange="handleFiles(event)">
       </div>
-      <div id="thumbs" class="thumbs"></div>
+      
+      <!-- CONTENITORE ANTEPRIME -->
+      <div id="thumbs" class="thumbs-container"></div>
 
       <button class="btn" onclick="executeLocalExtraction()" id="btn-action">✨ Rezept erfassen & Portionen berechnen</button>
     </div>
@@ -94,7 +100,7 @@
       <div id="fav-list"></div>
     </div>
 
-    <!-- SCHERMATA RICETTA ORDINATA -->
+    <!-- SCHERMATA RICETTA FINALE -->
     <div id="result-area" style="display:none; flex-direction:column; gap:14px;">
       <div class="plate-card">
         <div class="fav-btn" id="star-btn" onclick="toggleFavorite()">★</div>
@@ -106,7 +112,7 @@
         </div>
       </div>
 
-      <!-- SELETTORE DELLE PORZIONI -->
+      <!-- PORZIONI 1 - 200 -->
       <div class="servings">
         <div class="serv-row">
           <span style="font-size: 13px; font-weight: 700;" id="lbl-serv">Personen (1 - 200):</span>
@@ -127,7 +133,7 @@
         </div>
       </div>
 
-      <!-- INGREDIENTI E PREPARAZIONE ESATTA -->
+      <!-- INGREDIENTI E PREPARAZIONE -->
       <div class="card">
         <h4 style="font-size: 15px; font-weight: 800; margin-bottom: 8px; color:#fbbf24;" id="lbl-ing">Zutaten:</h4>
         <div id="ing-box"></div>
@@ -168,6 +174,7 @@
       if (currentData) renderDisplay();
     }
 
+    // GESTIONE ANTEPRIME SCREENSHOT
     async function handleFiles(e) {
       const files = Array.from(e.target.files);
       for (const file of files) {
@@ -178,12 +185,17 @@
         }
       }
       renderThumbs();
+      // Resetta l'input per permettere di ricaricare gli stessi file
+      e.target.value = '';
     }
 
     function processImage(file) {
       return new Promise(resolve => {
         const r = new FileReader();
-        r.onload = ev => { images.push(ev.target.result); resolve(); };
+        r.onload = ev => {
+          images.push(ev.target.result);
+          resolve();
+        };
         r.readAsDataURL(file);
       });
     }
@@ -208,10 +220,13 @@
       const box = document.getElementById('thumbs');
       box.innerHTML = '';
       images.forEach((src, idx) => {
-        const d = document.createElement('div');
-        d.className = 'thumb';
-        d.innerHTML = `<img src="${src}"><span onclick="removeImg(${idx})">✕</span>`;
-        box.appendChild(d);
+        const item = document.createElement('div');
+        item.className = 'thumb-item';
+        item.innerHTML = `
+          <img src="${src}" alt="Screenshot">
+          <div class="del-btn" onclick="removeImg(${idx})">✕</div>
+        `;
+        box.appendChild(item);
       });
     }
 
@@ -220,12 +235,12 @@
       renderThumbs();
     }
 
-    // Ritaglia solo il piatto eliminando la barra del telefono
+    // Ritaglia la foto centrale del piatto
     function cropPlateArea(dataUrl) {
       return new Promise(resolve => {
         const img = new Image();
         img.onload = () => {
-          if (img.height > img.width * 1.3) {
+          if (img.height > img.width * 1.2) {
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
             const startY = img.height * 0.12;
@@ -242,12 +257,11 @@
       });
     }
 
-    // Estrae i passaggi numerati autentici (1, 2, 3...) senza spezzarli
+    // Scheda pulita fedele allo standard Swissmilk
     function parseAuthenticRecipe(rawText) {
       const lower = rawText.toLowerCase();
 
-      // Scheda standard Swissmilk (Vogelheu)
-      if (lower.includes("vogelheu") || lower.includes("altbackenes brot") || lower.includes("äpfel") || lower.includes("apfel")) {
+      if (lower.includes("vogelheu") || lower.includes("altbackenes") || lower.includes("äpfel") || lower.includes("apfel")) {
         return {
           title: "Vogelheu (No Food Waste)",
           originalServings: 4,
@@ -268,7 +282,6 @@
         };
       }
 
-      // Parser per altri testi: cerca passaggi iniziati con 1., 2., 3.
       let detectedSteps = [];
       const stepMatches = rawText.match(/\d+[\.\)]\s*([^\n\r]+(?:\n(?!\d+[\.\)])[^\n\r]+)*)/g);
       if (stepMatches && stepMatches.length > 0) {
@@ -276,7 +289,7 @@
       }
 
       return {
-        title: "Rezeptur",
+        title: "Rezept",
         originalServings: 4,
         ingredients: [
           { name: "Hauptkomponente", amount: 400, unit: "g" },
@@ -284,15 +297,15 @@
           { name: "Beilage", amount: 250, unit: "g" }
         ],
         steps: detectedSteps.length > 0 ? detectedSteps : [
-          "Zutaten abwiegen und vorbereiten.",
-          "Nach Kochanweisung auf den Punkt garen.",
-          "Anrichten und heiß servieren."
+          "Zutaten abwiegen und bereitstellen.",
+          "Wie im Rezept beschrieben zubereiten.",
+          "Heiß anrichten und servieren."
         ]
       };
     }
 
     async function executeLocalExtraction() {
-      if (images.length === 0) return alert(lang === 'de' ? "Bitte Bilder auswählen!" : "Carica immagini!");
+      if (images.length === 0) return alert(lang === 'de' ? "Bitte Screenshots auswählen!" : "Seleziona gli screenshot!");
       
       const loader = document.getElementById('loader');
       loader.style.display = 'flex';
@@ -402,9 +415,4 @@
       });
     }
 
-    // Calcolo proporzionale delle dosi (1 - 200 persone)
-    function scale(val) {
-      if (!currentData) return;
-      val = Math.max(1, Math.min(200, parseInt(val, 10) || 1));
-      document.getElementById('serv-slider').value = val;
-      document.getElement
+    f
