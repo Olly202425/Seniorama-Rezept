@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Seniorama Rezept</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
   <style>
@@ -20,61 +20,60 @@
       --highlight: #fbbf24;
     }
 
-    body.light-theme {
-      --bg: #f1f5f9;
-      --card: #ffffff;
-      --border: #cbd5e1;
-      --text: #0f172a;
-      --muted: #64748b;
-      --subcard: #f8fafc;
-      --highlight: #d97706;
+    body.light-mode {
+      --bg: #f8fafc !important;
+      --card: #ffffff !important;
+      --border: #cbd5e1 !important;
+      --text: #0f172a !important;
+      --muted: #64748b !important;
+      --subcard: #f1f5f9 !important;
+      --highlight: #d97706 !important;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); padding: 16px; display: flex; justify-content: center; }
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg); color: var(--text); padding: 16px; display: flex; justify-content: center; min-height: 100vh; }
     .app { width: 100%; max-width: 500px; display: flex; flex-direction: column; gap: 14px; }
     .header { display: flex; justify-content: space-between; align-items: center; }
     
     .actions-top { display: flex; align-items: center; gap: 8px; }
-    .theme-btn { background: var(--card); border: 1px solid var(--border); color: var(--text); padding: 6px 10px; border-radius: 8px; font-size: 14px; cursor: pointer; }
+    .theme-btn { background: var(--card); border: 1px solid var(--border); color: var(--text); padding: 6px 12px; border-radius: 8px; font-size: 16px; cursor: pointer; }
     
-    .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 16px; }
-    .lang-box { display: flex; gap: 4px; background: var(--subcard); padding: 3px; border-radius: 8px; border: 1px solid var(--border); }
+    .card { background-color: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 16px; }
+    .lang-box { display: flex; gap: 4px; background-color: var(--subcard); padding: 3px; border-radius: 8px; border: 1px solid var(--border); }
     .lang-btn { border: none; background: transparent; color: var(--muted); font-weight: 700; font-size: 11px; padding: 6px 10px; border-radius: 6px; cursor: pointer; }
-    .lang-btn.active { background: var(--primary); color: #fff; }
+    .lang-btn.active { background-color: var(--primary); color: #fff; }
     
-    .input-box { width: 100%; background: var(--subcard); border: 1px solid var(--border); color: var(--text); padding: 12px; border-radius: 10px; font-size: 13px; margin-top: 6px; outline: none; }
+    .input-box { width: 100%; background-color: var(--subcard); border: 1px solid var(--border); color: var(--text); padding: 12px; border-radius: 10px; font-size: 13px; margin-top: 6px; outline: none; }
     
-    .upload-zone { border: 2px dashed var(--primary); background: rgba(245, 158, 11, 0.05); border-radius: 12px; padding: 18px; text-align: center; cursor: pointer; margin-top: 10px; position: relative; }
-    .upload-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer; }
+    .upload-zone { border: 2px dashed var(--primary); background: rgba(245, 158, 11, 0.05); border-radius: 12px; padding: 18px; text-align: center; cursor: pointer; margin-top: 10px; }
     
-    .thumbs-container { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; min-height: 10px; }
-    .thumb-item { position: relative; width: 80px; height: 80px; border-radius: 8px; overflow: hidden; background: var(--subcard); border: 1px solid var(--border); }
+    .thumbs-container { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+    .thumb-item { position: relative; width: 85px; height: 85px; border-radius: 10px; overflow: hidden; background-color: var(--subcard); border: 2px solid var(--border); }
     .thumb-item img { width: 100%; height: 100%; object-fit: cover; }
     .thumb-item .del-btn { position: absolute; top: 2px; right: 2px; background: rgba(0,0,0,0.85); color: #fff; border-radius: 50%; width: 22px; height: 22px; font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center; cursor: pointer; }
 
-    .btn { width: 100%; background: var(--primary); color: #fff; border: none; padding: 13px; border-radius: 10px; font-weight: 700; font-size: 14px; cursor: pointer; margin-top: 12px; }
-    .btn-secondary { background: var(--card); border: 1px solid var(--border); color: var(--text); margin-top: 8px; }
+    .btn { width: 100%; background-color: var(--primary); color: #fff; border: none; padding: 13px; border-radius: 10px; font-weight: 700; font-size: 14px; cursor: pointer; margin-top: 12px; }
+    .btn-secondary { background-color: var(--card); border: 1px solid var(--border); color: var(--text); margin-top: 8px; }
     
-    .plate-card { position: relative; border-radius: 16px; overflow: hidden; background: var(--subcard); border: 1px solid var(--border); margin-top: 6px; }
-    .plate-img-wrapper { width: 100%; height: 220px; overflow: hidden; position: relative; background: var(--subcard); }
+    .plate-card { position: relative; border-radius: 16px; overflow: hidden; background-color: var(--subcard); border: 1px solid var(--border); margin-top: 6px; }
+    .plate-img-wrapper { width: 100%; height: 220px; overflow: hidden; position: relative; background-color: var(--subcard); }
     .plate-img { width: 100%; height: 100%; object-fit: cover; }
     .fav-btn { position: absolute; top: 12px; right: 12px; background: rgba(15, 23, 42, 0.85); border: 1px solid var(--border); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; color: #fff; z-index: 5; }
     .fav-btn.is-fav { color: #f59e0b; }
-    .plate-title-bar { padding: 14px; background: var(--card); border-top: 1px solid var(--border); }
+    .plate-title-bar { padding: 14px; background-color: var(--card); border-top: 1px solid var(--border); }
 
     .servings { background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.35); border-radius: 14px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
     .serv-row { display: flex; justify-content: space-between; align-items: center; }
     .serv-num-box { display: flex; align-items: baseline; gap: 4px; }
-    .serv-num-input { background: var(--subcard); border: 1px solid var(--primary); color: var(--highlight); font-size: 22px; font-weight: 800; width: 75px; text-align: center; border-radius: 8px; padding: 4px; }
+    .serv-num-input { background-color: var(--subcard); border: 1px solid var(--primary); color: var(--highlight); font-size: 22px; font-weight: 800; width: 75px; text-align: center; border-radius: 8px; padding: 4px; }
     .quick-chips { display: flex; gap: 6px; flex-wrap: wrap; }
-    .chip { background: var(--subcard); border: 1px solid var(--border); color: var(--text); font-size: 11px; font-weight: 700; padding: 6px 12px; border-radius: 8px; cursor: pointer; }
+    .chip { background-color: var(--subcard); border: 1px solid var(--border); color: var(--text); font-size: 11px; font-weight: 700; padding: 6px 12px; border-radius: 8px; cursor: pointer; }
 
     .ing-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
-    .step-card { display: flex; gap: 12px; background: var(--subcard); padding: 14px; border-radius: 10px; font-size: 13px; margin-top: 8px; line-height: 1.5; border: 1px solid var(--border); }
-    .step-num { width: 24px; height: 24px; border-radius: 50%; background: var(--primary); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 12px; flex-shrink: 0; }
+    .step-card { display: flex; gap: 12px; background-color: var(--subcard); padding: 14px; border-radius: 10px; font-size: 13px; margin-top: 8px; line-height: 1.5; border: 1px solid var(--border); }
+    .step-num { width: 24px; height: 24px; border-radius: 50%; background-color: var(--primary); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 12px; flex-shrink: 0; }
     
-    .fav-item { display: flex; justify-content: space-between; align-items: center; background: var(--subcard); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; margin-top: 6px; cursor: pointer; }
+    .fav-item { display: flex; justify-content: space-between; align-items: center; background-color: var(--subcard); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; margin-top: 6px; cursor: pointer; }
 
     .loader { position: fixed; inset: 0; background: rgba(15,23,42,0.95); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 50; text-align: center; padding: 20px; }
     .spin { width: 44px; height: 44px; border: 3px solid rgba(245, 158, 11, 0.3); border-top-color: var(--primary); border-radius: 50%; animation: s 0.8s linear infinite; margin-bottom: 12px; }
@@ -89,7 +88,7 @@
         <span style="font-size: 11px; color: #10b981; font-weight: 700;">● Küchen-Manager</span>
       </div>
       <div class="actions-top">
-        <button class="theme-btn" onclick="toggleTheme()" id="theme-btn" title="Tema">🌙</button>
+        <button class="theme-btn" id="theme-btn" onclick="toggleTheme()">🌙</button>
         <div class="lang-box">
           <button class="lang-btn" id="btn-it" onclick="setLang('it')">🇮🇹 IT</button>
           <button class="lang-btn active" id="btn-de" onclick="setLang('de')">🇩🇪 DE</button>
@@ -97,18 +96,19 @@
       </div>
     </div>
 
-    <!-- AREA CARICAMENTO -->
+    <!-- CARICAMENTO LINK O SCREENSHOT -->
     <div class="card">
       <label style="font-size: 13px; font-weight: 700;" id="lbl-link">Link zur Rezeptseite (URL):</label>
       <input type="url" id="recipe-url" class="input-box" placeholder="https://www.swissmilk.ch/de/rezepte/...">
       <button class="btn btn-secondary" onclick="loadFromUrl()" id="btn-url">🌐 Rezept von URL laden</button>
 
-      <div class="upload-zone">
+      <div class="upload-zone" onclick="document.getElementById('file-input').click()">
         <div style="font-size: 30px;">📑 📸 📄</div>
         <div style="font-weight: 700; font-size: 13px; margin-top: 4px;" id="lbl-upload">Screenshots tippen & auswählen</div>
-        <input type="file" id="file-input" accept="image/*" multiple>
+        <input type="file" id="file-input" accept="image/*" multiple style="display:none" onchange="handleFiles(event)">
       </div>
       
+      <!-- CONTENITORE DELLE ANTEPRIME -->
       <div id="thumbs" class="thumbs-container"></div>
 
       <button class="btn" onclick="executeProcess()" id="btn-action">✨ Rezept erfassen & Portionen berechnen</button>
@@ -132,7 +132,7 @@
         </div>
       </div>
 
-      <!-- SELETTORE PORZIONI (1 - 200) -->
+      <!-- SELETTORE DELLE PORZIONI -->
       <div class="servings">
         <div class="serv-row">
           <span style="font-size: 13px; font-weight: 700;" id="lbl-serv">Personen (1 - 200):</span>
@@ -157,7 +157,7 @@
       <div class="card">
         <h4 style="font-size: 15px; font-weight: 800; margin-bottom: 8px; color:var(--highlight);" id="lbl-ing">Zutaten:</h4>
         <div id="ing-box"></div>
-        <h4 style="font-size: 15px; font-weight: 800; margin-top: 18px; margin-bottom: 8px; color:var(--highlight);" id="lbl-steps">Zubereitung Schritt für Schritt:</h4>
+        <h4 style="font-size: 15px; font-weight: 800; margin-top: 18px; margin-bottom: 8px; color:var(--highlight);" id="lbl-steps">Zubereitung:</h4>
         <div id="step-box"></div>
       </div>
     </div>
@@ -170,26 +170,28 @@
   </div>
 
   <script>
-    let rawImages = [];
+    let images = [];
     let currentData = null;
     let lang = 'de';
     let currentImgUrl = '';
-    let isLight = false;
+
+    // GESTIONE TEMA CHIARO / SCURO IMMEDIATA
+    function toggleTheme() {
+      const isCurrentlyLight = document.body.classList.toggle('light-mode');
+      const btn = document.getElementById('theme-btn');
+      btn.innerText = isCurrentlyLight ? '☀️' : '🌙';
+      localStorage.setItem('seniorama_theme', isCurrentlyLight ? 'light' : 'dark');
+    }
 
     function initTheme() {
       const savedTheme = localStorage.getItem('seniorama_theme');
       if (savedTheme === 'light') {
-        document.body.classList.add('light-theme');
+        document.body.classList.add('light-mode');
         document.getElementById('theme-btn').innerText = '☀️';
-        isLight = true;
+      } else {
+        document.body.classList.remove('light-mode');
+        document.getElementById('theme-btn').innerText = '🌙';
       }
-    }
-
-    function toggleTheme() {
-      isLight = !isLight;
-      document.body.classList.toggle('light-theme', isLight);
-      document.getElementById('theme-btn').innerText = isLight ? '☀️' : '🌙';
-      localStorage.setItem('seniorama_theme', isLight ? 'light' : 'dark');
     }
 
     function setLang(l) {
@@ -203,7 +205,7 @@
       document.getElementById('lbl-fav-title').innerText = l === 'it' ? '⭐ Ricette Preferite:' : '⭐ Gespeicherte Favoriten:';
       document.getElementById('lbl-serv').innerText = l === 'it' ? 'Persone (1 - 200):' : 'Personen (1 - 200):';
       document.getElementById('lbl-ing').innerText = l === 'it' ? 'Ingredienti:' : 'Zutaten:';
-      document.getElementById('lbl-steps').innerText = l === 'it' ? 'Preparazione passo dopo passo:' : 'Zubereitung Schritt für Schritt:';
+      document.getElementById('lbl-steps').innerText = l === 'it' ? 'Preparazione:' : 'Zubereitung:';
       renderFavorites();
       if (currentData) {
         renderDisplay();
@@ -211,26 +213,31 @@
       }
     }
 
-    const fileInput = document.getElementById('file-input');
-    fileInput.addEventListener('change', function(e) {
-      const files = e.target.files;
+    // CARICAMENTO IMMEDIATO ANTEPRIME
+    function handleFiles(e) {
+      const files = Array.from(e.target.files);
       if (!files || files.length === 0) return;
 
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        if (file.type.startsWith('image/')) {
-          const url = URL.createObjectURL(file);
-          rawImages.push(url);
-        }
-      }
-      renderThumbs();
-      fileInput.value = '';
-    });
+      let remaining = files.length;
+      files.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = ev => {
+          images.push(ev.target.result);
+          remaining--;
+          if (remaining === 0) {
+            renderThumbs();
+          }
+        };
+        reader.readAsDataURL(file);
+      });
+
+      e.target.value = '';
+    }
 
     function renderThumbs() {
       const box = document.getElementById('thumbs');
       box.innerHTML = '';
-      rawImages.forEach((src, idx) => {
+      images.forEach((src, idx) => {
         const item = document.createElement('div');
         item.className = 'thumb-item';
         item.innerHTML = `
@@ -242,12 +249,10 @@
     }
 
     function removeImg(idx) {
-      URL.revokeObjectURL(rawImages[idx]);
-      rawImages.splice(idx, 1);
+      images.splice(idx, 1);
       renderThumbs();
     }
 
-    // Ritaglio centrato per togliere notifiche e orario
     function cropPlateArea(imgSrc) {
       return new Promise(resolve => {
         const img = new Image();
@@ -269,7 +274,6 @@
       });
     }
 
-    // Filtro per scartare barre di sistema ed elementi web
     function isSystemJunk(line) {
       const l = line.toLowerCase();
       if (/^\d{1,2}:\d{2}/.test(line)) return true;
@@ -278,7 +282,6 @@
       return false;
     }
 
-    // Parser dinamico: estrae SOLO gli ingredienti autentici e i passaggi reali
     function extractDynamicRecipe(rawText) {
       const lines = rawText.split('\n').map(l => l.trim()).filter(l => l.length > 0 && !isSystemJunk(l));
       
@@ -288,7 +291,6 @@
       let baseServings = 4;
       let inZubereitung = false;
 
-      // Titolo: prima riga significativa
       for (const l of lines) {
         if (!title && !/min|zutaten|zubereitung|portion|personen/i.test(l) && l.length > 3) {
           title = l;
@@ -296,20 +298,17 @@
         }
       }
 
-      // Regex unità ammesse (g, kg, ml, dl, l, el, tl, stk, pz)
       const ingRegex = /^([\d\.,\/\s]+)\s*(g|kg|ml|cl|dl|l|el|tl|tbsp|tsp|stk|stück|pz|dose|prise)?\b\s*(.*)$/i;
 
       for (let i = 0; i < lines.length; i++) {
         let line = lines[i];
 
-        // Individua porzioni
         let sMatch = line.match(/(?:portionen|personen|persone)[\s:]*(\d+)/i);
         if (sMatch) {
           baseServings = parseInt(sMatch[1], 10);
           continue;
         }
 
-        // Sezione procedura
         if (/zubereitung|preparazione|schritte|anleitung/i.test(line)) {
           inZubereitung = true;
           continue;
@@ -321,7 +320,6 @@
             steps.push(cleanStep);
           }
         } else {
-          // Isola solo righe che contengono una quantità ed un ingrediente reale
           let m = line.match(ingRegex);
           if (m && m[1]) {
             let numStr = m[1].replace(',', '.').replace(/\s+/g, '');
@@ -344,37 +342,37 @@
       }
 
       return {
-        title: title || (lang === 'de' ? "Erfasstes Menü" : "Piatto Acquisito"),
+        title: title || (lang === 'de' ? "Erfasstes Gericht" : "Piatto Acquisito"),
         originalServings: baseServings || 4,
         ingredients: ingredients.length > 0 ? ingredients : [
-          { name: lang === 'de' ? "Fleisch / Hauptkomponente" : "Carne / Ingrediente principale", amount: 600, unit: "g" },
-          { name: lang === 'de' ? "Gemüse / Paprika" : "Verdure / Peperoni", amount: 250, unit: "g" },
-          { name: lang === 'de' ? "Sauce / Fond" : "Salsa / Fondo", amount: 200, unit: "ml" }
+          { name: lang === 'de' ? "Hauptzutat" : "Ingrediente principale", amount: 500, unit: "g" },
+          { name: lang === 'de' ? "Gemüse / Beilage" : "Verdure / Contorno", amount: 250, unit: "g" },
+          { name: lang === 'de' ? "Sauce / Fond" : "Salsa / Fondo", amount: 150, unit: "ml" }
         ],
         steps: steps.length > 0 ? steps : [
-          lang === 'de' ? "Zutaten entsprechend der Personenanzahl vorbereiten." : "Preparare gli ingredienti scalati per le porzioni desiderate.",
-          lang === 'de' ? "In der Pfanne oder im Konvektomat auf den Punkt garen." : "Cuocere in padella o nel forno combinato fino a cottura ultimata.",
-          lang === 'de' ? "Heiß anrichten und servieren." : "Impiattare e servire caldo."
+          lang === 'de' ? "Zutaten entsprechend der gewählten Portionen vorbereiten." : "Preparare le dosi scalate per il numero di persone.",
+          lang === 'de' ? "Nach Vorgabe auf den Punkt garen." : "Cuocere a temperatura controllata fino a cottura ultimata.",
+          lang === 'de' ? "Anrichten und heiß servieren." : "Impiattare e servire caldo."
         ]
       };
     }
 
     async function executeProcess() {
-      if (rawImages.length === 0) {
-        alert(lang === 'it' ? "Tocca il box tratteggiato e carica gli screenshot della ricetta!" : "Bitte tippen und Screenshots hochladen!");
+      if (images.length === 0) {
+        alert(lang === 'it' ? "Carica prima uno screenshot!" : "Bitte tippen und mindestens einen Screenshot hochladen!");
         return;
       }
 
       const loader = document.getElementById('loader');
       document.getElementById('loader-title').innerText = lang === 'it' ? 'Lettura ricetta in corso...' : 'Rezept wird erfasst...';
-      document.getElementById('loader-sub').innerText = lang === 'it' ? 'Trascrizione ingredienti e procedura...' : 'Lese Text aus deinen Screenshots...';
+      document.getElementById('loader-sub').innerText = lang === 'it' ? 'Estrazione ingredienti e procedura...' : 'Lese Text aus deinen Screenshots...';
       loader.style.display = 'flex';
 
       try {
         let combinedText = "";
         if (window.Tesseract) {
           const worker = await Tesseract.createWorker(['deu', 'ita']);
-          for (const img of rawImages) {
+          for (const img of images) {
             const ret = await worker.recognize(img);
             combinedText += "\n" + ret.data.text;
           }
@@ -382,7 +380,7 @@
         }
 
         currentData = extractDynamicRecipe(combinedText);
-        currentImgUrl = await cropPlateArea(rawImages[0]);
+        currentImgUrl = await cropPlateArea(images[0]);
 
         document.getElementById('plate-img').src = currentImgUrl;
         document.getElementById('result-area').style.display = 'flex';
@@ -409,4 +407,10 @@
       try {
         const res = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`);
         const data = await res.json();
-        const doc = new DOMP
+        const doc = new DOMParser().parseFromString(data.contents, 'text/html');
+
+        let jsonRecipe = null;
+        const scripts = doc.querySelectorAll('script[type="application/ld+json"]');
+        for (let s of scripts) {
+          try {
+            let j = JSON
