@@ -424,7 +424,7 @@
     </div>
   </div>
 
-  <!-- MODALE MODIFICA RAPIDA -->
+  <!-- MODALE MODIFICA RAPIDA PER QUALSIASI NUOVO PIATTO -->
   <div class="modal-overlay" id="edit-modal">
     <div class="modal-box">
       <h3 style="font-size:16px; margin-bottom:10px; color:#fbbf24;">✏️ Rezept bearbeiten / Modifica Ricetta</h3>
@@ -448,10 +448,10 @@
     var currentLang = 'de';
     var isLightMode = false;
     var imageList = [];
+    var uploadRunIndex = 0;
     var currentRecipeKey = 'tiramisu';
     var mainPlateUrl = '';
 
-    // Database dinamico con ricette complete
     var dataStore = {
       tiramisu: {
         de: {
@@ -532,5 +532,4 @@
             { name: "Paprika dolce, sale marino e pepe macinato", amount: 1, unit: "cucchiaio" }
           ],
           steps: [
-            "Rosolare la carne nel burro ben caldo a fiamma viva per 1-2 minuti a porzioni. Togliere subito dalla padella e tenerla al caldo.",
-      
+            "Rosolare la carne nel burro ben caldo a fiamma viva per 1-2 minuti a porzioni. Togliere subito dalla padella e tenerla al caldo.
