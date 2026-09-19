@@ -12,7 +12,6 @@
   <style>
     :root {
       --primary: #f59e0b;
-      --primary-dark: #d97706;
       --bg: #0f172a;
       --card: #1e293b;
       --border: #334155;
@@ -36,11 +35,11 @@
     .thumb span { position: absolute; top: 2px; right: 2px; background: rgba(0,0,0,0.75); color: #fff; border-radius: 50%; width: 22px; height: 22px; font-size: 11px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
     .btn { width: 100%; background: var(--primary); color: #fff; border: none; padding: 13px; border-radius: 12px; font-weight: 700; font-size: 14px; cursor: pointer; margin-top: 10px; }
     .btn-secondary { background: #334155; }
-    .plate-card { position: relative; border-radius: 16px; overflow: hidden; min-height: 220px; background: #0f172a; border: 1px solid var(--border); display: flex; flex-direction: column; justify-content: flex-end; }
-    .plate-img { width: 100%; height: 240px; object-fit: cover; }
-    .plate-overlay { position: absolute; bottom: 0; left: 0; right: 0; padding: 16px; background: linear-gradient(to top, rgba(15, 23, 42, 0.95), transparent); }
-    .fav-btn { position: absolute; top: 12px; right: 12px; background: rgba(15, 23, 42, 0.7); border: 1px solid var(--border); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; color: #fff; }
+    .plate-card { position: relative; border-radius: 16px; overflow: hidden; min-height: 200px; max-height: 280px; background: #0f172a; border: 1px solid var(--border); display: flex; flex-direction: column; justify-content: flex-end; }
+    .plate-img { width: 100%; height: 100%; object-fit: contain; background: #020617; }
+    .fav-btn { position: absolute; top: 12px; right: 12px; background: rgba(15, 23, 42, 0.7); border: 1px solid var(--border); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; color: #fff; z-index: 5; }
     .fav-btn.is-fav { color: #f59e0b; }
+    .plate-overlay { position: absolute; bottom: 0; left: 0; right: 0; padding: 14px; background: linear-gradient(to top, rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 0.6) 70%, transparent); }
     .servings { background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.35); border-radius: 16px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
     .serv-row { display: flex; justify-content: space-between; align-items: center; }
     .serv-num-box { display: flex; align-items: baseline; gap: 4px; }
@@ -69,7 +68,7 @@
       </div>
     </div>
 
-    <!-- SEZIONE INSERIMENTO -->
+    <!-- AREA INPUT -->
     <div class="card">
       <label style="font-size: 13px; font-weight: 700;" id="lbl-link">Link zur Rezeptseite (URL):</label>
       <input type="url" id="recipe-url" class="input-box" placeholder="https://www.chefkoch.de/... oder ähnlich">
@@ -85,19 +84,19 @@
       <button class="btn" onclick="executeLocalExtraction()" id="btn-action">✨ Rezept erfassen & Portionen berechnen</button>
     </div>
 
-    <!-- SEZIONE PREFERITI -->
+    <!-- AREA PREFERITI -->
     <div class="card" id="favorites-section">
       <h4 style="font-size: 14px; font-weight: 800;" id="lbl-fav-title">⭐ Gespeicherte Favoriten:</h4>
       <div id="fav-list" style="margin-top: 6px;"></div>
     </div>
 
-    <!-- AREA RISULTATO -->
+    <!-- AREA RISULTATI -->
     <div id="result-area" style="display:none; flex-direction:column; gap:14px;">
       <div class="plate-card">
         <img id="plate-img" class="plate-img" src="" alt="Gericht">
         <div class="fav-btn" id="star-btn" onclick="toggleFavorite()">★</div>
         <div class="plate-overlay">
-          <h3 id="rec-title" style="font-size: 20px; font-weight:800;"></h3>
+          <h3 id="rec-title" style="font-size: 18px; font-weight:800; color:#fff;"></h3>
           <p id="rec-desc" style="font-size: 12px; color: var(--muted); margin-top: 2px;"></p>
         </div>
       </div>
@@ -133,7 +132,8 @@
 
   <div class="loader" id="loader">
     <div class="spin"></div>
-    <div style="font-weight: 800; font-size: 15px;" id="loader-title">Rezept wird erfasst...</div>
+    <div style="font-weight: 800; font-size: 15px;" id="loader-title">OCR-Erkennung läuft...</div>
+    <div style="font-size: 12px; color: var(--muted); margin-top: 4px;" id="loader-sub">Lese Text aus deinen Screenshots...</div>
   </div>
 
   <script>
@@ -160,36 +160,6 @@
       document.getElementById('lbl-steps').innerText = l === 'it' ? 'Preparazione:' : 'Zubereitung:';
       renderFavorites();
       if (currentData) renderDisplay();
-    }
-
-    async function loadFromUrl() {
-      const url = document.getElementById('recipe-url').value.trim();
-      if (!url) return alert(lang === 'it' ? 'Inserisci un link valido!' : 'Bitte gültige URL eingeben!');
-      
-      const loader = document.getElementById('loader');
-      loader.style.display = 'flex';
-
-      try {
-        const res = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`);
-        const data = await res.json();
-        const doc = new DOMParser().parseFromString(data.contents, 'text/html');
-
-        let title = doc.querySelector('meta[property="og:title"]')?.content || doc.title || "Web Rezept";
-        let ogImg = doc.querySelector('meta[property="og:image"]')?.content || '';
-        let text = doc.body.innerText || "";
-
-        currentImgUrl = ogImg || 'https://images.unsplash.com/photo-1544025162-d76694265947?w=1000&auto=format&fit=crop&q=80';
-        currentData = parseRecipeText(text, title);
-
-        document.getElementById('plate-img').src = currentImgUrl;
-        document.getElementById('result-area').style.display = 'flex';
-        scale(4);
-        updateStar();
-      } catch (e) {
-        alert(lang === 'it' ? 'Impossibile leggere il link direttamente (blocco del sito). Usa lo screenshot!' : 'URL konnte nicht geladen werden. Bitte Screenshot nutzen!');
-      } finally {
-        loader.style.display = 'none';
-      }
     }
 
     async function handleFiles(e) {
@@ -244,85 +214,170 @@
       renderThumbs();
     }
 
-    function parseRecipeText(rawText, forcedTitle) {
-      const lower = rawText.toLowerCase();
-      let title = forcedTitle || (lang === 'de' ? "Erfasstes Gericht" : "Piatto Rilevato");
-      let description = lang === 'de' ? "Automatisch erfasste Rezeptur." : "Dati ricetta ricavati.";
+    // Parsing dinamico del testo riconosciuto
+    function parseDynamicRecipe(rawText, fallbackTitle) {
+      const lines = rawText.split('\n').map(l => l.trim()).filter(l => l.length > 1);
+      let detectedTitle = fallbackTitle || "";
       let ingredients = [];
       let steps = [];
+      let baseServings = 4;
 
-      if (lower.includes("tiramisu") || lower.includes("mascarpone")) {
-        title = lang === 'de' ? "Klassisches Tiramisu" : "Tiramisù Tradizionale";
-        description = lang === 'de' ? "Mit Mascarpone, Löffelbiskuits und Espresso." : "Con mascarpone, savoiardi e caffè espresso.";
+      // Cerca porzioni nel testo (es: "4 Personen", "per 6 persone", "Portionen: 4")
+      for (const l of lines) {
+        const servMatch = l.match(/(?:portionen|personen|persone|porzioni|servings)[\s:]*(\d+)/i);
+        if (servMatch) {
+          baseServings = parseInt(servMatch[1], 10);
+          break;
+        }
+      }
+
+      // RegEx per intercettare quantità e unità
+      const qtyRegex = /^([\d\.,\/\s]+)\s*(g|kg|ml|cl|dl|l|liter|tl|el|tbsp|tsp|stk|stück|stueck|pz|punti|dose|prisa|presa)?\b\s*(.*)$/i;
+
+      let isReadingSteps = false;
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+
+        if (!detectedTitle && line.length > 3 && !line.match(/rezept|ingredienti|zutaten|zubereitung|preparazione/i)) {
+          detectedTitle = line;
+          continue;
+        }
+
+        if (line.match(/zubereitung|preparazione|schritte|istruzioni|instructions/i)) {
+          isReadingSteps = true;
+          continue;
+        }
+
+        if (!isReadingSteps) {
+          const match = line.match(qtyRegex);
+          if (match && match[1]) {
+            let cleanNum = match[1].replace(',', '.').replace(/\s+/g, '').trim();
+            if (cleanNum.includes('/')) {
+              const parts = cleanNum.split('/');
+              cleanNum = parseFloat(parts[0]) / parseFloat(parts[1]);
+            } else {
+              cleanNum = parseFloat(cleanNum);
+            }
+
+            if (!isNaN(cleanNum) && cleanNum > 0) {
+              let unit = match[2] ? match[2].trim() : '';
+              let ingName = match[3] ? match[3].trim() : line;
+              ingName = ingName.replace(/^[-–—•\*\.\s]+/, '');
+
+              if (ingName.length > 1) {
+                ingredients.push({
+                  name: ingName,
+                  amount: cleanNum,
+                  unit: unit
+                });
+                continue;
+              }
+            }
+          }
+          
+          if (line.length > 3 && !line.match(/zutaten|ingredienti|portion/i)) {
+            // Riga ingrediente senza numero esplicito
+            ingredients.push({
+              name: line.replace(/^[-–—•\*\.\s]+/, ''),
+              amount: 1,
+              unit: ''
+            });
+          }
+        } else {
+          if (line.length > 8) {
+            steps.push(line.replace(/^(\d+[\.\)]|[-–—•\*])\s*/, ''));
+          }
+        }
+      }
+
+      if (!detectedTitle) {
+        detectedTitle = lang === 'de' ? "Erfasstes Rezept" : "Ricetta Acquisita";
+      }
+
+      if (ingredients.length === 0) {
         ingredients = [
-          { name: lang === 'de' ? "Mascarpone" : "Mascarpone fresco", amount: 500, unit: "g" },
-          { name: lang === 'de' ? "Eigelb" : "Uova (tuorli)", amount: 4, unit: "Stk" },
-          { name: lang === 'de' ? "Zucker" : "Zucchero semolato", amount: 100, unit: "g" },
-          { name: lang === 'de' ? "Löffelbiskuits" : "Savoiardi", amount: 200, unit: "g" },
-          { name: lang === 'de' ? "Kaffee / Espresso" : "Caffè espresso", amount: 250, unit: "ml" },
-          { name: lang === 'de' ? "Kakaopulver" : "Cacao amaro in polvere", amount: 25, unit: "g" }
-        ];
-        steps = lang === 'de' ? [
-          "Eigelb und Zucker schaumig schlagen.",
-          "Mascarpone vorsichtig unterrühren.",
-          "Biskuits im kalten Espresso wenden.",
-          "Schichtweise einfüllen und 4 Std. kühl stellen."
-        ] : [
-          "Montare i tuorli con lo zucchero.",
-          "Amalgamare il mascarpone delicatamente.",
-          "Inzuppare i savoiardi nel caffè.",
-          "Comporre gli strati e riporre in frigo per 4 ore."
-        ];
-      } else {
-        ingredients = [
-          { name: lang === 'de' ? "Hauptkomponente" : "Ingrediente Base", amount: 400, unit: "g" },
-          { name: lang === 'de' ? "Sauce / Fond" : "Salsa / Fondo", amount: 150, unit: "ml" },
-          { name: lang === 'de' ? "Gemüse / Beilage" : "Contorno / Verdure", amount: 250, unit: "g" },
-          { name: lang === 'de' ? "Gewürze & Kräuter" : "Aromi e Spezie", amount: 10, unit: "g" }
-        ];
-        steps = lang === 'de' ? [
-          "Zutaten nach Mengen vorbereiten.",
-          "Auf Kerntemperatur garen.",
-          "Portionieren und servieren."
-        ] : [
-          "Preparare le quantità proporzionate.",
-          "Cuocere a temperatura controllata.",
-          "Impiattare e servire."
+          { name: lang === 'de' ? "Hauptzutat (Text manuell prüfen)" : "Ingrediente principale (verificare testo)", amount: 100, unit: "g" }
         ];
       }
 
-      return { title, description, originalServings: 4, ingredients, steps };
+      if (steps.length === 0) {
+        steps = [
+          lang === 'de' ? "Zutaten entsprechend der Personenanzahl bereitstellen." : "Preparare gli ingredienti scalati per il numero di persone.",
+          lang === 'de' ? "Wie gewohnt zubereiten und garen." : "Procedere con la cottura secondo procedura abituale."
+        ];
+      }
+
+      return {
+        title: detectedTitle,
+        description: lang === 'de' ? "Direkt aus deinem Screenshot ausgelesen." : "Estratto direttamente dal tuo screenshot.",
+        originalServings: baseServings,
+        ingredients: ingredients,
+        steps: steps
+      };
     }
 
     async function executeLocalExtraction() {
       if (images.length === 0) return alert(lang === 'de' ? "Bitte mindestens ein Bild auswählen!" : "Carica almeno un'immagine!");
       
       const loader = document.getElementById('loader');
+      document.getElementById('loader-title').innerText = lang === 'it' ? 'Lettura OCR in corso...' : 'OCR-Erkennung läuft...';
+      document.getElementById('loader-sub').innerText = lang === 'it' ? 'Estrazione dati dal tuo screenshot...' : 'Lese Text aus deinen Screenshots...';
       loader.style.display = 'flex';
 
       try {
         let combinedText = "";
         if (window.Tesseract) {
-          const worker = await Tesseract.createWorker('deu+ita');
+          const worker = await Tesseract.createWorker(['deu', 'ita']);
           for (const img of images) {
             const ret = await worker.recognize(img);
-            combinedText += " " + ret.data.text;
+            combinedText += "\n" + ret.data.text;
           }
           await worker.terminate();
         }
 
-        currentData = parseRecipeText(combinedText);
-        const tLower = currentData.title.toLowerCase();
-        currentImgUrl = tLower.includes('tiramis')
-          ? 'https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=1000&auto=format&fit=crop&q=80'
-          : 'https://images.unsplash.com/photo-1544025162-d76694265947?w=1000&auto=format&fit=crop&q=80';
+        currentData = parseDynamicRecipe(combinedText, "");
+        // Imposta direttamente il primo screenshot/immagine caricata come foto principale
+        currentImgUrl = images[0];
 
         document.getElementById('plate-img').src = currentImgUrl;
         document.getElementById('result-area').style.display = 'flex';
-        scale(4);
+        scale(currentData.originalServings || 4);
         updateStar();
       } catch (err) {
         alert("Fehler: " + err.message);
+      } finally {
+        loader.style.display = 'none';
+      }
+    }
+
+    async function loadFromUrl() {
+      const url = document.getElementById('recipe-url').value.trim();
+      if (!url) return alert(lang === 'it' ? 'Inserisci un link valido!' : 'Bitte gültige URL eingeben!');
+      
+      const loader = document.getElementById('loader');
+      document.getElementById('loader-title').innerText = lang === 'it' ? 'Caricamento pagina web...' : 'Lade Website...';
+      document.getElementById('loader-sub').innerText = '';
+      loader.style.display = 'flex';
+
+      try {
+        const res = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`);
+        const data = await res.json();
+        const doc = new DOMParser().parseFromString(data.contents, 'text/html');
+
+        let title = doc.querySelector('meta[property="og:title"]')?.content || doc.title || "Web Rezept";
+        let ogImg = doc.querySelector('meta[property="og:image"]')?.content || '';
+        let text = doc.body.innerText || "";
+
+        currentImgUrl = ogImg || 'https://images.unsplash.com/photo-1544025162-d76694265947?w=1000&auto=format&fit=crop&q=80';
+        currentData = parseDynamicRecipe(text, title);
+
+        document.getElementById('plate-img').src = currentImgUrl;
+        document.getElementById('result-area').style.display = 'flex';
+        scale(currentData.originalServings || 4);
+        updateStar();
+      } catch (e) {
+        alert(lang === 'it' ? 'Impossibile leggere il link direttamente (sito protetto). Fai uno screenshot e caricalo!' : 'URL konnte nicht geladen werden. Bitte Screenshot nutzen!');
       } finally {
         loader.style.display = 'none';
       }
@@ -351,16 +406,22 @@
 
       renderDisplay();
 
-      const ratio = val / currentData.originalServings;
+      const base = currentData.originalServings || 4;
+      const ratio = val / base;
       const ingBox = document.getElementById('ing-box');
       ingBox.innerHTML = '';
 
       currentData.ingredients.forEach(i => {
-        let qty = i.amount * ratio;
-        let unit = i.unit || '';
-        let formattedQty = (qty >= 1000 && (unit === 'g' || unit === 'ml'))
-          ? `${Math.round((qty / 1000) * 100) / 100} ${unit === 'g' ? 'kg' : 'l'}`
-          : `${Math.round(qty * 10) / 10} ${unit}`;
+        let formattedQty = '';
+        if (typeof i.amount === 'number') {
+          let scaled = i.amount * ratio;
+          let unit = i.unit || '';
+          if (scaled >= 1000 && (unit.toLowerCase() === 'g' || unit.toLowerCase() === 'ml')) {
+            formattedQty = `${Math.round((scaled / 1000) * 100) / 100} ${unit.toLowerCase() === 'g' ? 'kg' : 'l'}`;
+          } else {
+            formattedQty = `${Math.round(scaled * 10) / 10} ${unit}`;
+          }
+        }
 
         const row = document.createElement('div');
         row.className = 'ing-row';
@@ -369,7 +430,7 @@
       });
     }
 
-    // GESTIONE FAVORITI (LocalStorage)
+    // GESTIONE PREFERITI
     function getFavorites() {
       return JSON.parse(localStorage.getItem('seniorama_favs') || '[]');
     }
@@ -426,7 +487,7 @@
       currentImgUrl = fav.img;
       document.getElementById('plate-img').src = currentImgUrl;
       document.getElementById('result-area').style.display = 'flex';
-      scale(4);
+      scale(currentData.originalServings || 4);
       updateStar();
     }
 
