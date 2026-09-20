@@ -490,114 +490,6 @@
     var fullRecipePackage = null;
     var plateImageUrl = '';
 
-    // DIZIONARIO ISTANTANEO IT <-> DE PER INGREDIENTI E UNITA'
-    var TRANSLATIONS = {
-      toDe: {
-        "filetto di manzo": "Rindsfilet",
-        "carne di manzo": "Rindfleisch",
-        "burro da arrostire": "Bratbutter",
-        "burro": "Butter",
-        "cipolla": "Zwiebel",
-        "cipolle": "Zwiebeln",
-        "spicchio d'aglio": "Knoblauchzehe",
-        "aglio": "Knoblauch",
-        "peperoni": "Peperoni",
-        "peperone": "Peperoni",
-        "funghi champignon": "Champignons",
-        "funghi": "Pilze",
-        "vino rosso": "Rotwein",
-        "vino bianco": "Weisswein",
-        "paprika": "Paprikapulver",
-        "salsa arrosto legata": "gebundene Bratensauce",
-        "salsa arrosto": "Bratensauce",
-        "panna": "Vollrahm",
-        "panna intera": "Vollrahm",
-        "cetriolini sott'aceto": "Essiggurken",
-        "cetriolini": "Cornichons",
-        "sale": "Salz",
-        "pepe": "Pfeffer",
-        "mascarpone": "Mascarpone",
-        "savoiardi": "Löffelbiskuits",
-        "uova": "Eier",
-        "uovo": "Ei",
-        "zucchero": "Zucker",
-        "caffè": "Kaffee",
-        "cacao": "Kakaopulver",
-        "mele": "Äpfel",
-        "mela": "Apfel",
-        "pane raffermo": "altbackenes Brot",
-        "latte": "Milch",
-        "cannella": "Zimt",
-        "cucchiaio": "EL",
-        "cucchiai": "EL",
-        "cucchiaino": "TL",
-        "cucchiaini": "TL",
-        "pezzo": "Stk",
-        "pezzi": "Stk",
-        "spicchio": "Zehe",
-        "spicchi": "Zehen",
-        "fetta": "Scheibe",
-        "fette": "Scheiben",
-        "cubetti": "Würfel",
-        "a cubetti": "in Würfeln",
-        "a striscioline": "in Streifen",
-        "a fette": "in Scheiben",
-        "tritato": "gehackt",
-        "tritata": "gehackt"
-      },
-      toIt: {
-        "rindsfilet": "Filetto di manzo",
-        "rindfleisch": "Carne di manzo",
-        "bratbutter": "Burro per rosolare",
-        "butter": "Burro",
-        "zwiebel": "Cipolla",
-        "zwiebeln": "Cipolle",
-        "knoblauchzehe": "Spicchio d'aglio",
-        "knoblauch": "Aglio",
-        "peperoni": "Peperoni",
-        "champignons": "Funghi champignon",
-        "pilze": "Funghi",
-        "rotwein": "Vino rosso",
-        "weisswein": "Vino bianco",
-        "paprikapulver": "Paprika dolce",
-        "bratensauce": "Salsa arrosto",
-        "vollrahm": "Panna intera",
-        "rahm": "Panna",
-        "essiggurken": "Cetriolini sott'aceto",
-        "cornichons": "Cetriolini",
-        "salz": "Sale",
-        "pfeffer": "Pepe",
-        "löffelbiskuits": "Savoiardi",
-        "eier": "Uova",
-        "ei": "Uovo",
-        "zucker": "Zucchero",
-        "kaffee": "Caffè espresso",
-        "kakaopulver": "Cacao amaro",
-        "äpfel": "Mele",
-        "apfel": "Mela",
-        "brot": "Pane raffermo",
-        "milch": "Latte intero",
-        "zimt": "Cannella",
-        "el": "cucchiai",
-        "tl": "cucchiaini",
-        "stk": "pz",
-        "zehe": "spicchio",
-        "zehen": "spicchi"
-      }
-    };
-
-    function translateText(str, target) {
-      if (!str) return "";
-      var res = str;
-      var dict = (target === 'de') ? TRANSLATIONS.toDe : TRANSLATIONS.toIt;
-      for (var k in dict) {
-        var reg = new RegExp('\\b' + k + '\\b', 'gi');
-        res = res.replace(reg, dict[k]);
-      }
-      return res;
-    }
-
-    // GESTIONE CHIAVE API
     function saveApiKey() {
       var k = document.getElementById('inp-api-key').value.trim();
       if (!k) {
@@ -613,7 +505,6 @@
       return localStorage.getItem('sr_gemini_key') || '';
     }
 
-    // 1. TEMA CHIARO / SCURO
     function appToggleTheme() {
       isLight = !isLight;
       document.body.classList.toggle('light-mode', isLight);
@@ -621,7 +512,84 @@
       try { localStorage.setItem('sr_light_theme', isLight ? '1' : '0'); } catch(e){}
     }
 
-    // 2. CAMBIO LINGUA (CAMBIA IMMEDIATAMENTE OGNI ELEMENTO A SCHERMO)
     function appSetLang(l) {
       currentLang = l;
-      document.getElem
+      document.getElementById('btn-it').className = 'lang-btn' + (l === 'it' ? ' active' : '');
+      document.getElementById('btn-de').className = 'lang-btn' + (l === 'de' ? ' active' : '');
+      
+      document.getElementById('txt-sub').innerText = (l === 'it') ? '● Gestione Cucina' : '● Küchen-Manager';
+      document.getElementById('txt-lbl-upload').innerText = (l === 'it') ? 'Scegli Screenshot dalla galleria:' : 'Screenshots auswählen:';
+      document.getElementById('txt-btn-calc').innerText = (l === 'it') ? '✨ Ricalcola Ingredienti & Procedura' : '✨ Rezept erfassen & Portionen berechnen';
+      document.getElementById('txt-lbl-fav').innerText = (l === 'it') ? '⭐ Ricette Preferite Salvate:' : '⭐ Gespeicherte Favoriten:';
+      document.getElementById('txt-lbl-serv').innerText = (l === 'it') ? 'Persone a tavola (1 - 200):' : 'Personen (1 - 200):';
+      document.getElementById('txt-lbl-ing').innerText = (l === 'it') ? 'Ingredienti dosati:' : 'Zutaten:';
+      document.getElementById('txt-lbl-steps').innerText = (l === 'it') ? 'Preparazione dettagliata passo dopo passo:' : 'Zubereitung Schritt für Schritt:';
+
+      document.getElementById('txt-meta-prep').innerText = (l === 'it') ? 'Prep.' : 'Vorbereitung';
+      document.getElementById('txt-meta-cook').innerText = (l === 'it') ? 'Cottura' : 'Kochen';
+      document.getElementById('txt-meta-total').innerText = (l === 'it') ? 'Totale' : 'Gesamt';
+      document.getElementById('txt-meta-diff').innerText = (l === 'it') ? 'Livello' : 'Niveau';
+
+      appRenderFavorites();
+
+      if (fullRecipePackage && document.getElementById('result-box').style.display === 'flex') {
+        appRenderRecipeUI();
+        appScale(document.getElementById('inp-serv').value || 4);
+      }
+    }
+
+    function appOnFilesPicked(e) {
+      var files = e.target.files;
+      if (!files || files.length === 0) return;
+
+      for (var i = 0; i < files.length; i++) {
+        (function(file) {
+          var reader = new FileReader();
+          reader.onload = function(evt) {
+            imageList.push({ dataUrl: evt.target.result });
+            appRenderThumbs();
+          };
+          reader.readAsDataURL(file);
+        })(files[i]);
+      }
+      e.target.value = '';
+    }
+
+    function appRenderThumbs() {
+      var box = document.getElementById('thumbs-box');
+      box.innerHTML = '';
+      for (var i = 0; i < imageList.length; i++) {
+        var d = document.createElement('div');
+        d.className = 'thumb-item';
+        d.innerHTML = '<img src="' + imageList[i].dataUrl + '"><div class="del-btn" onclick="appDeleteThumb(' + i + ')">✕</div>';
+        box.appendChild(d);
+      }
+    }
+
+    function appDeleteThumb(idx) {
+      imageList.splice(idx, 1);
+      appRenderThumbs();
+    }
+
+    function appCropPlate(url, cb) {
+      var img = new Image();
+      img.onload = function() {
+        if (img.height > img.width * 1.2) {
+          var canvas = document.createElement('canvas');
+          var ctx = canvas.getContext('2d');
+          var startY = img.height * 0.12;
+          var cropH = img.height * 0.42;
+          canvas.width = img.width;
+          canvas.height = cropH;
+          ctx.drawImage(img, 0, startY, img.width, cropH, 0, 0, img.width, cropH);
+          cb(canvas.toDataURL('image/jpeg', 0.9));
+        } else {
+          cb(url);
+        }
+      };
+      img.onerror = function() { cb(url); };
+      img.src = url;
+    }
+
+    async function callVisionAPI(images) {
+      var apiKe
