@@ -401,12 +401,12 @@
             <div class="meta-box">
               <span class="meta-icon">⏱️</span>
               <span class="meta-label muted-text" id="txt-meta-prep">Vorbereitung</span>
-              <span class="meta-val" id="val-meta-prep">25 min</span>
+              <span class="meta-val" id="val-meta-prep">20 min</span>
             </div>
             <div class="meta-box">
               <span class="meta-icon">🔥</span>
               <span class="meta-label muted-text" id="txt-meta-cook">Kochen</span>
-              <span class="meta-val" id="val-meta-cook">15 min</span>
+              <span class="meta-val" id="val-meta-cook">20 min</span>
             </div>
             <div class="meta-box">
               <span class="meta-icon">⏳</span>
@@ -416,7 +416,7 @@
             <div class="meta-box">
               <span class="meta-icon">📊</span>
               <span class="meta-label muted-text" id="txt-meta-diff">Niveau</span>
-              <span class="meta-val" id="val-meta-diff">Mittel</span>
+              <span class="meta-val" id="val-meta-diff">Einfach</span>
             </div>
           </div>
         </div>
@@ -487,7 +487,7 @@
     var currentLang = 'de';
     var isLight = false;
     var imageList = [];
-    var fullRecipePackage = null; // contiene sia { de: {...}, it: {...} }
+    var fullRecipePackage = null;
     var plateImageUrl = '';
 
     // GESTIONE CHIAVE API
@@ -514,7 +514,7 @@
       try { localStorage.setItem('sr_light_theme', isLight ? '1' : '0'); } catch(e){}
     }
 
-    // 2. CAMBIO LINGUA (TRADUCE TUTTO ISTANTANEAMENTE: UI, TITOLO, INGREDIENTI E PROCEDURA)
+    // 2. CAMBIO LINGUA (AGGIORNA SUBITO INTERFACCIA E RICETTA)
     function appSetLang(l) {
       currentLang = l;
       document.getElementById('btn-it').className = 'lang-btn' + (l === 'it' ? ' active' : '');
@@ -541,7 +541,7 @@
       }
     }
 
-    // 3. CARICAMENTO SCREENSHOT A CATENA
+    // 3. CARICAMENTO SCREENSHOT
     function appOnFilesPicked(e) {
       var files = e.target.files;
       if (!files || files.length === 0) return;
@@ -575,7 +575,7 @@
       appRenderThumbs();
     }
 
-    // 4. RITAGLIO FOTO CENTRALE DEL PIATTO
+    // 4. RITAGLIO FOTO
     function appCropPlate(url, cb) {
       var img = new Image();
       img.onload = function() {
@@ -586,4 +586,6 @@
           var cropH = img.height * 0.42;
           canvas.width = img.width;
           canvas.height = cropH;
-          ctx.drawImage(img, 0, startY, img.
+          ctx.drawImage(img, 0, startY, img.width, cropH, 0, 0, img.width, cropH);
+          cb(canvas.toDataURL('image/jpeg', 0.9));
+        
