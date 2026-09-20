@@ -354,7 +354,7 @@
       </div>
     </div>
 
-    <!-- CONFIGURAZIONE CHIAVE API -->
+    <!-- CHIAVE API -->
     <div class="card" style="padding: 12px;">
       <details id="api-details">
         <summary style="font-size: 12px; font-weight: 700; color: #fbbf24; cursor: pointer;">🔑 Google AI API Key (Kostenlos / Gratuita)</summary>
@@ -505,6 +505,7 @@
       return localStorage.getItem('sr_gemini_key') || '';
     }
 
+    // 1. TEMA CHIARO / SCURO (IMMEDIATO)
     function appToggleTheme() {
       isLight = !isLight;
       document.body.classList.toggle('light-mode', isLight);
@@ -512,6 +513,7 @@
       try { localStorage.setItem('sr_light_theme', isLight ? '1' : '0'); } catch(e){}
     }
 
+    // 2. CAMBIO LINGUA IMMEDIATO (IT / DE)
     function appSetLang(l) {
       currentLang = l;
       document.getElementById('btn-it').className = 'lang-btn' + (l === 'it' ? ' active' : '');
@@ -538,6 +540,7 @@
       }
     }
 
+    // 3. CARICAMENTO SCREENSHOT A CATENA
     function appOnFilesPicked(e) {
       var files = e.target.files;
       if (!files || files.length === 0) return;
@@ -571,6 +574,7 @@
       appRenderThumbs();
     }
 
+    // 4. RITAGLIO FOTO
     function appCropPlate(url, cb) {
       var img = new Image();
       img.onload = function() {
@@ -586,10 +590,4 @@
         } else {
           cb(url);
         }
-      };
-      img.onerror = function() { cb(url); };
-      img.src = url;
-    }
-
-    async function callVisionAPI(images) {
-      var apiKe
+   
