@@ -16,6 +16,34 @@
       min-height: 100vh;
     }
 
+    body.light-mode {
+      background-color: #f8fafc !important;
+      color: #0f172a !important;
+    }
+
+    body.light-mode .card,
+    body.light-mode .plate-title-bar,
+    body.light-mode .modal-box {
+      background-color: #ffffff !important;
+      border-color: #cbd5e1 !important;
+      color: #0f172a !important;
+    }
+
+    body.light-mode .meta-box,
+    body.light-mode .step-card,
+    body.light-mode .fav-item,
+    body.light-mode .input-box,
+    body.light-mode .chip,
+    body.light-mode .modal-textarea {
+      background-color: #f1f5f9 !important;
+      border-color: #cbd5e1 !important;
+      color: #0f172a !important;
+    }
+
+    body.light-mode .muted-text {
+      color: #64748b !important;
+    }
+
     .app { width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 14px; }
     .header { display: flex; justify-content: space-between; align-items: center; }
     .actions-top { display: flex; align-items: center; gap: 8px; }
@@ -67,7 +95,7 @@
       background-color: #020617;
       border: 1px solid #334155;
       color: inherit;
-      padding: 12px;
+      padding: 10px 12px;
       border-radius: 10px;
       font-size: 13px;
       margin-top: 6px;
@@ -131,11 +159,6 @@
       font-size: 14px;
       cursor: pointer;
       margin-top: 12px;
-    }
-    .btn-secondary {
-      background-color: #334155;
-      color: #fff;
-      margin-top: 8px;
     }
     
     .plate-card {
@@ -257,6 +280,29 @@
       margin-top: 6px;
     }
 
+    .loader {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.92);
+      z-index: 999;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 20px;
+    }
+    .spin {
+      width: 44px;
+      height: 44px;
+      border: 4px solid rgba(245, 158, 11, 0.3);
+      border-top-color: #f59e0b;
+      border-radius: 50%;
+      animation: s 0.8s linear infinite;
+      margin-bottom: 14px;
+    }
+    @keyframes s { to { transform: rotate(360deg); } }
+
     .modal-overlay {
       display: none;
       position: fixed;
@@ -308,13 +354,20 @@
       </div>
     </div>
 
-    <!-- CARICAMENTO -->
-    <div class="card" id="card-upload">
-      <label style="font-size: 13px; font-weight: 700;" id="txt-lbl-url">Link zur Rezeptseite (URL):</label>
-      <input type="url" id="inp-url" class="input-box" placeholder="https://www.swissmilk.ch/de/rezepte/...">
-      <button class="btn btn-secondary" id="txt-btn-url" onclick="appLoadUrl()">🌐 Rezept von URL laden</button>
+    <!-- CONFIGURAZIONE CHIAVE API -->
+    <div class="card" style="padding: 12px;">
+      <details id="api-details">
+        <summary style="font-size: 12px; font-weight: 700; color: #fbbf24; cursor: pointer;">🔑 Google AI API Key (Kostenlos / Gratuita)</summary>
+        <div style="margin-top: 8px;">
+          <input type="password" id="inp-api-key" class="input-box" placeholder="AIzaSy...">
+          <button class="btn" style="padding: 8px; margin-top: 6px; font-size: 12px;" onclick="saveApiKey()">💾 API Key Speichern / Salva</button>
+        </div>
+      </details>
+    </div>
 
-      <div class="upload-box" id="upload-box">
+    <!-- CARICAMENTO SCREENSHOT -->
+    <div class="card">
+      <div class="upload-box">
         <div style="font-size: 28px;">📑 📸 📄</div>
         <div style="font-weight: 700; font-size: 13px; margin-top: 4px;" id="txt-lbl-upload">Screenshots auswählen:</div>
         <input type="file" id="inp-file" class="real-file-input" accept="image/*" multiple onchange="appOnFilesPicked(event)">
@@ -326,43 +379,43 @@
     </div>
 
     <!-- PREFERITI -->
-    <div class="card" id="card-favs">
+    <div class="card">
       <h4 style="font-size: 13px; font-weight: 800;" id="txt-lbl-fav">⭐ Gespeicherte Favoriten:</h4>
       <div id="fav-box"></div>
     </div>
 
     <!-- SCHEDA RISULTATO -->
     <div id="result-box" style="display:none; flex-direction:column; gap:14px;">
-      <div class="plate-card" id="card-plate">
+      <div class="plate-card">
         <div class="fav-btn" id="btn-fav-star" onclick="appToggleFav()">★</div>
         <div class="plate-img-wrapper">
           <img id="plate-img" class="plate-img" src="" alt="Gericht">
         </div>
-        <div class="plate-title-bar" id="plate-title-bar">
+        <div class="plate-title-bar">
           <div style="display:flex; justify-content:space-between; align-items:center;">
             <h3 id="rec-title" style="font-size: 18px; font-weight:800;"></h3>
             <button class="edit-btn" onclick="appOpenEditModal()">✏️ Edit</button>
           </div>
           
           <div class="recipe-meta-grid">
-            <div class="meta-box" id="meta-box-1">
+            <div class="meta-box">
               <span class="meta-icon">⏱️</span>
-              <span class="meta-label" id="txt-meta-prep">Vorbereitung</span>
+              <span class="meta-label muted-text" id="txt-meta-prep">Vorbereitung</span>
               <span class="meta-val" id="val-meta-prep">25 min</span>
             </div>
-            <div class="meta-box" id="meta-box-2">
+            <div class="meta-box">
               <span class="meta-icon">🔥</span>
-              <span class="meta-label" id="txt-meta-cook">Kochen</span>
+              <span class="meta-label muted-text" id="txt-meta-cook">Kochen</span>
               <span class="meta-val" id="val-meta-cook">15 min</span>
             </div>
-            <div class="meta-box" id="meta-box-3">
+            <div class="meta-box">
               <span class="meta-icon">⏳</span>
-              <span class="meta-label" id="txt-meta-total">Gesamt</span>
+              <span class="meta-label muted-text" id="txt-meta-total">Gesamt</span>
               <span class="meta-val" id="val-meta-total">40 min</span>
             </div>
-            <div class="meta-box" id="meta-box-4">
+            <div class="meta-box">
               <span class="meta-icon">📊</span>
-              <span class="meta-label" id="txt-meta-diff">Niveau</span>
+              <span class="meta-label muted-text" id="txt-meta-diff">Niveau</span>
               <span class="meta-val" id="val-meta-diff">Mittel</span>
             </div>
           </div>
@@ -370,7 +423,7 @@
       </div>
 
       <!-- PORZIONI 1 - 200 -->
-      <div class="servings" id="card-servings">
+      <div class="servings">
         <div class="serv-row">
           <span style="font-size: 13px; font-weight: 700;" id="txt-lbl-serv">Personen (1 - 200):</span>
           <div class="serv-num-box">
@@ -391,7 +444,7 @@
       </div>
 
       <!-- INGREDIENTI E PROCEDURA -->
-      <div class="card" id="card-recipe-details">
+      <div class="card">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
           <h4 style="font-size: 15px; font-weight: 800; color:#fbbf24;" id="txt-lbl-ing">Zutaten:</h4>
         </div>
@@ -403,6 +456,11 @@
         <div id="step-box"></div>
       </div>
     </div>
+  </div>
+
+  <div class="loader" id="loader">
+    <div class="spin"></div>
+    <div style="font-weight: 800; font-size: 15px; color: #fff;" id="loader-txt">Rezept wird erfasst...</div>
   </div>
 
   <!-- MODALE MODIFICA RAPIDA -->
@@ -420,7 +478,7 @@
       
       <div style="display:flex; gap:8px; margin-top:12px;">
         <button class="btn" onclick="appSaveModalEdit()" style="margin:0;">💾 Speichern / Salva</button>
-        <button class="btn btn-secondary" onclick="appCloseEditModal()" style="margin:0;">Abbrechen</button>
+        <button class="btn btn-secondary" onclick="appCloseEditModal()" style="margin:0; background:#334155;">Abbrechen</button>
       </div>
     </div>
   </div>
@@ -432,34 +490,28 @@
     var currentRecipe = null;
     var plateImageUrl = '';
 
-    // 1. CHIARO / SCURO - APPLICAZIONE DIRETTA E SICURA DEGLI STILI
+    // CHIAVE API
+    function saveApiKey() {
+      var k = document.getElementById('inp-api-key').value.trim();
+      if (!k) {
+        alert(currentLang === 'it' ? 'Inserisci una chiave API valida!' : 'Bitte API-Key eingeben!');
+        return;
+      }
+      localStorage.setItem('sr_gemini_key', k);
+      alert(currentLang === 'it' ? 'Chiave API salvata con successo!' : 'API-Key erfolgreich gespeichert!');
+      document.getElementById('api-details').open = false;
+    }
+
+    function getApiKey() {
+      return localStorage.getItem('sr_gemini_key') || '';
+    }
+
+    // 1. TEMA CHIARO / SCURO (IMMEDIATO)
     function appToggleTheme() {
       isLight = !isLight;
-      var bg = isLight ? '#f8fafc' : '#0f172a';
-      var cardBg = isLight ? '#ffffff' : '#1e293b';
-      var subBg = isLight ? '#f1f5f9' : '#020617';
-      var text = isLight ? '#0f172a' : '#f8fafc';
-      var border = isLight ? '#cbd5e1' : '#334155';
-
-      document.body.style.backgroundColor = bg;
-      document.body.style.color = text;
+      document.body.classList.toggle('light-mode', isLight);
       document.getElementById('btn-thm').innerText = isLight ? '☀️' : '🌙';
-
-      var cards = document.querySelectorAll('.card, .plate-title-bar, .modal-box');
-      for (var i = 0; i < cards.length; i++) {
-        cards[i].style.backgroundColor = cardBg;
-        cards[i].style.borderColor = border;
-        cards[i].style.color = text;
-      }
-
-      var subBoxes = document.querySelectorAll('.meta-box, .step-card, .input-box, .modal-textarea, .chip, .thumb-item, .fav-item');
-      for (var j = 0; j < subBoxes.length; j++) {
-        subBoxes[j].style.backgroundColor = subBg;
-        subBoxes[j].style.borderColor = border;
-        subBoxes[j].style.color = text;
-      }
-
-      try { localStorage.setItem('sr_light_mode', isLight ? '1' : '0'); } catch(e){}
+      try { localStorage.setItem('sr_light_theme', isLight ? '1' : '0'); } catch(e){}
     }
 
     // 2. CAMBIO LINGUA
@@ -469,8 +521,6 @@
       document.getElementById('btn-de').className = 'lang-btn' + (l === 'de' ? ' active' : '');
       
       document.getElementById('txt-sub').innerText = (l === 'it') ? '● Gestione Cucina' : '● Küchen-Manager';
-      document.getElementById('txt-lbl-url').innerText = (l === 'it') ? 'Link ricetta dal web (URL):' : 'Link zur Rezeptseite (URL):';
-      document.getElementById('txt-btn-url').innerText = (l === 'it') ? '🌐 Carica ricetta da URL' : '🌐 Rezept von URL laden';
       document.getElementById('txt-lbl-upload').innerText = (l === 'it') ? 'Scegli Screenshot dalla galleria:' : 'Screenshots auswählen:';
       document.getElementById('txt-btn-calc').innerText = (l === 'it') ? '✨ Ricalcola Ingredienti & Procedura' : '✨ Rezept erfassen & Portionen berechnen';
       document.getElementById('txt-lbl-fav').innerText = (l === 'it') ? '⭐ Ricette Preferite Salvate:' : '⭐ Gespeicherte Favoriten:';
@@ -491,16 +541,21 @@
       }
     }
 
-    // 3. CARICAMENTO SCREENSHOT A CATENA
+    // 3. CARICAMENTO IMMAGINI (LEGGERISSIMO)
     function appOnFilesPicked(e) {
       var files = e.target.files;
       if (!files || files.length === 0) return;
 
       for (var i = 0; i < files.length; i++) {
-        var url = URL.createObjectURL(files[i]);
-        imageList.push({ url: url, name: files[i].name || '' });
+        (function(file) {
+          var reader = new FileReader();
+          reader.onload = function(evt) {
+            imageList.push({ dataUrl: evt.target.result });
+            appRenderThumbs();
+          };
+          reader.readAsDataURL(file);
+        })(files[i]);
       }
-      appRenderThumbs();
       e.target.value = '';
     }
 
@@ -510,7 +565,7 @@
       for (var i = 0; i < imageList.length; i++) {
         var d = document.createElement('div');
         d.className = 'thumb-item';
-        d.innerHTML = '<img src="' + imageList[i].url + '"><div class="del-btn" onclick="appDeleteThumb(' + i + ')">✕</div>';
+        d.innerHTML = '<img src="' + imageList[i].dataUrl + '"><div class="del-btn" onclick="appDeleteThumb(' + i + ')">✕</div>';
         box.appendChild(d);
       }
     }
@@ -520,7 +575,7 @@
       appRenderThumbs();
     }
 
-    // 4. RITAGLIO FOTO
+    // 4. RITAGLIO FOTO CENTRALE DEL PIATTO
     function appCropPlate(url, cb) {
       var img = new Image();
       img.onload = function() {
@@ -532,32 +587,279 @@
           canvas.width = img.width;
           canvas.height = cropH;
           ctx.drawImage(img, 0, startY, img.width, cropH, 0, 0, img.width, cropH);
-          cb(canvas.toDataURL('image/jpeg', 0.9), img);
+          cb(canvas.toDataURL('image/jpeg', 0.9));
         } else {
-          cb(url, img);
+          cb(url);
         }
       };
-      img.onerror = function() { cb(url, null); };
+      img.onerror = function() { cb(url); };
       img.src = url;
     }
 
-    // 5. RICONOSCIMENTO AUTOMATICO RICETTA
-    function appDetectDish(img, fileName) {
-      var name = (fileName || '').toLowerCase();
-      if (name.includes('tiramis')) return 'tiramisu';
-      if (name.includes('rind') || name.includes('strog') || name.includes('fleisch') || name.includes('geschnetz')) return 'meat';
-      if (name.includes('vogelheu') || name.includes('apfel') || name.includes('äpfel')) return 'vogelheu';
+    // 5. CHIAMATA CLOUD VISION API (LEGGE QUALSIASI RICETTA IN 1 SECONDO)
+    async function callVisionAPI(images) {
+      var apiKey = getApiKey();
+      if (!apiKey) {
+        throw new Error(currentLang === 'it' ? "Inserisci prima la tua Google AI API Key gratuita in cima alla pagina!" : "Bitte zuerst Google AI API-Key oben eingeben!");
+      }
 
-      if (img) {
-        try {
-          var c = document.createElement('canvas');
-          c.width = 10; c.height = 10;
-          var ctx = c.getContext('2d');
-          ctx.drawImage(img, 0, 0, 10, 10);
-          var d = ctx.getImageData(0,0,10,10).data;
-          var rSum = 0, gSum = 0, bSum = 0;
-          for(var i=0; i<d.length; i+=4) { rSum += d[i]; gSum += d[i+1]; bSum += d[i+2]; }
-          var count = d.length / 4;
-          var r = rSum/count, g = gSum/count, b = bSum/count;
+      var parts = [];
+      for (var i = 0; i < images.length; i++) {
+        var base64Data = images[i].dataUrl.split(',')[1];
+        parts.push({
+          inlineData: {
+            mimeType: "image/jpeg",
+            data: base64Data
+          }
+        });
+      }
 
-          if (r > 
+      var promptText = "Extract this recipe strictly into JSON without markdown or backticks. Format:\n" +
+        "{\n" +
+        '  "title": "Recipe Title",\n' +
+        '  "meta": { "prep": "20 min", "cook": "15 min", "total": "35 min", "diff": "Einfach" },\n' +
+        '  "base": 4,\n' +
+        '  "ings": [ { "name": "Ingredient name", "amount": 200, "unit": "g" } ],\n' +
+        '  "steps": [ "Step 1 text", "Step 2 text" ]\n' +
+        "}\n" +
+        "Use language: " + (currentLang === 'it' ? 'Italian' : 'German');
+
+      parts.push({ text: promptText });
+
+      var url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + apiKey;
+
+      var response = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ contents: [{ role: "user", parts: parts }] })
+      });
+
+      if (!response.ok) {
+        var err = await response.json();
+        throw new Error(err.error?.message || "Fehler bei der Erkennung");
+      }
+
+      var data = await response.json();
+      var rawReply = data.candidates[0].content.parts[0].text;
+      var cleanJson = rawReply.replace(/```json/g, '').replace(/```/g, '').trim();
+      return JSON.parse(cleanJson);
+    }
+
+    // 6. ELABORAZIONE RICETTA
+    async function appProcessScreenshots() {
+      if (imageList.length === 0) {
+        alert(currentLang === 'it' ? 'Carica prima gli screenshot della ricetta!' : 'Bitte zuerst Screenshots auswählen!');
+        return;
+      }
+
+      var loader = document.getElementById('loader');
+      document.getElementById('loader-txt').innerText = (currentLang === 'it') ? "Lettura ricetta via Cloud AI..." : "Rezept wird erfasst...";
+      loader.style.display = 'flex';
+
+      try {
+        currentRecipe = await callVisionAPI(imageList);
+
+        appCropPlate(imageList[0].dataUrl, function(cropped) {
+          plateImageUrl = cropped;
+          document.getElementById('plate-img').src = plateImageUrl;
+          document.getElementById('result-box').style.display = 'flex';
+          appRenderRecipeUI();
+          appScale(currentRecipe.base || 4);
+          appRefreshStar();
+        });
+      } catch (e) {
+        alert(e.message);
+      } finally {
+        loader.style.display = 'none';
+      }
+    }
+
+    function appRenderRecipeUI() {
+      if (!currentRecipe) return;
+      document.getElementById('rec-title').innerText = currentRecipe.title;
+
+      document.getElementById('val-meta-prep').innerText = currentRecipe.meta?.prep || "20 min";
+      document.getElementById('val-meta-cook').innerText = currentRecipe.meta?.cook || "15 min";
+      document.getElementById('val-meta-total').innerText = currentRecipe.meta?.total || "35 min";
+      document.getElementById('val-meta-diff').innerText = currentRecipe.meta?.diff || "Einfach";
+
+      var stepBox = document.getElementById('step-box');
+      stepBox.innerHTML = '';
+      for (var i = 0; i < currentRecipe.steps.length; i++) {
+        var card = document.createElement('div');
+        card.className = 'step-card';
+        card.innerHTML = '<div class="step-num">' + (i + 1) + '</div><div>' + currentRecipe.steps[i] + '</div>';
+        stepBox.appendChild(card);
+      }
+    }
+
+    // 7. SCALATURA DOSI (1 - 200 PERSONE)
+    function appScale(val) {
+      if (!currentRecipe) return;
+      val = Math.max(1, Math.min(200, parseInt(val, 10) || 1));
+      document.getElementById('rng-serv').value = val;
+      document.getElementById('inp-serv').value = val;
+
+      var ratio = val / (currentRecipe.base || 4);
+      var ingBox = document.getElementById('ing-box');
+      ingBox.innerHTML = '';
+
+      for (var i = 0; i < currentRecipe.ings.length; i++) {
+        var ing = currentRecipe.ings[i];
+        var scaled = ing.amount * ratio;
+        var unit = ing.unit || '';
+        var formatted = '';
+
+        if (scaled >= 1000 && (unit.toLowerCase() === 'g' || unit.toLowerCase() === 'ml')) {
+          formatted = (Math.round((scaled / 1000) * 100) / 100) + ' ' + (unit.toLowerCase() === 'g' ? 'kg' : 'l');
+        } else {
+          formatted = (Math.round(scaled * 10) / 10) + ' ' + unit;
+        }
+
+        var row = document.createElement('div');
+        row.className = 'ing-row';
+        row.innerHTML = '<span>' + ing.name + '</span><strong style="color:#fbbf24; font-weight:800;">' + formatted + '</strong>';
+        ingBox.appendChild(row);
+      }
+    }
+
+    // 8. MODIFICA RAPIDA
+    function appOpenEditModal() {
+      if (!currentRecipe) return;
+      document.getElementById('modal-inp-title').value = currentRecipe.title;
+      
+      var ingsText = currentRecipe.ings.map(function(i) {
+        return i.amount + ' ' + (i.unit ? i.unit + ' ' : '') + i.name;
+      }).join('\n');
+      document.getElementById('modal-txt-ings').value = ingsText;
+      
+      document.getElementById('modal-txt-steps').value = currentRecipe.steps.join('\n');
+      document.getElementById('edit-modal').style.display = 'flex';
+    }
+
+    function appCloseEditModal() {
+      document.getElementById('edit-modal').style.display = 'none';
+    }
+
+    function appSaveModalEdit() {
+      if (!currentRecipe) return;
+      var newTitle = document.getElementById('modal-inp-title').value.trim();
+      var ingsRaw = document.getElementById('modal-txt-ings').value.split('\n');
+      var stepsRaw = document.getElementById('modal-txt-steps').value.split('\n');
+
+      var newIngs = [];
+      for (var i = 0; i < ingsRaw.length; i++) {
+        var line = ingsRaw[i].trim();
+        if (!line) continue;
+        var parts = line.match(/^([\d\.,\/]+)?\s*([a-zA-ZäöüÄÖÜ]+)?\s*(.*)$/);
+        newIngs.push({
+          amount: parts && parts[1] ? parseFloat(parts[1].replace(',', '.')) : 1,
+          unit: parts && parts[2] ? parts[2] : '',
+          name: parts && parts[3] ? parts[3] : line
+        });
+      }
+
+      var newSteps = stepsRaw.map(function(s){ return s.trim(); }).filter(function(s){ return s.length > 0; });
+
+      if (newTitle) currentRecipe.title = newTitle;
+      if (newIngs.length > 0) currentRecipe.ings = newIngs;
+      if (newSteps.length > 0) currentRecipe.steps = newSteps;
+
+      appCloseEditModal();
+      appRenderRecipeUI();
+      appScale(document.getElementById('inp-serv').value || 4);
+    }
+
+    // 9. PREFERITI
+    function appGetFavorites() {
+      try { return JSON.parse(localStorage.getItem('sr_clean_vision_favs') || '[]'); } catch(e) { return []; }
+    }
+
+    function appToggleFav() {
+      if (!currentRecipe) return;
+      var favs = appGetFavorites();
+      var idx = -1;
+      for (var i = 0; i < favs.length; i++) {
+        if (favs[i].title === currentRecipe.title) { idx = i; break; }
+      }
+
+      if (idx >= 0) {
+        favs.splice(idx, 1);
+      } else {
+        favs.push({ recipe: currentRecipe, img: plateImageUrl, title: currentRecipe.title });
+      }
+
+      try { localStorage.setItem('sr_clean_vision_favs', JSON.stringify(favs)); } catch(e){}
+      appRefreshStar();
+      appRenderFavorites();
+    }
+
+    function appRefreshStar() {
+      var star = document.getElementById('btn-fav-star');
+      if (!star || !currentRecipe) return;
+      var favs = appGetFavorites();
+      var isFav = favs.some(function(f) { return f.title === currentRecipe.title; });
+      star.className = 'fav-btn' + (isFav ? ' is-fav' : '');
+      star.innerText = isFav ? '★' : '☆';
+    }
+
+    function appRenderFavorites() {
+      var box = document.getElementById('fav-box');
+      if (!box) return;
+      var favs = appGetFavorites();
+      if (favs.length === 0) {
+        box.innerHTML = '<p class="muted-text" style="font-size:12px; margin-top:4px;">' +
+          ((currentLang === 'it') ? 'Nessuna ricetta salvata nei preferiti.' : 'Keine Favoriten vorhanden.') + '</p>';
+        return;
+      }
+      box.innerHTML = '';
+      for (var i = 0; i < favs.length; i++) {
+        (function(index) {
+          var item = document.createElement('div');
+          item.className = 'fav-item';
+          item.innerHTML = '<span style="font-weight:700; font-size:13px; cursor:pointer;" onclick="appOpenFav(' + index + ')">🍽️ ' + favs[index].title + '</span>' +
+                           '<span style="color:#ef4444; font-weight:800; cursor:pointer; padding:4px 8px;" onclick="appDeleteFav(' + index + ')">✕</span>';
+          box.appendChild(item);
+        })(i);
+      }
+    }
+
+    function appOpenFav(idx) {
+      var favs = appGetFavorites();
+      if (!favs[idx]) return;
+      currentRecipe = favs[idx].recipe;
+      plateImageUrl = favs[idx].img;
+      document.getElementById('plate-img').src = plateImageUrl;
+      document.getElementById('result-box').style.display = 'flex';
+      appRenderRecipeUI();
+      appScale(currentRecipe.base || 4);
+      appRefreshStar();
+    }
+
+    function appDeleteFav(idx) {
+      var favs = appGetFavorites();
+      favs.splice(idx, 1);
+      try { localStorage.setItem('sr_clean_vision_favs', JSON.stringify(favs)); } catch(e){}
+      appRefreshStar();
+      appRenderFavorites();
+    }
+
+    // AVVIO
+    (function() {
+      try {
+        var isL = localStorage.getItem('sr_light_theme');
+        if (isL === '1') {
+          appToggleTheme();
+        }
+        var savedKey = getApiKey();
+        if (savedKey) {
+          document.getElementById('inp-api-key').value = savedKey;
+        } else {
+          document.getElementById('api-details').open = true;
+        }
+      } catch(e){}
+      appRenderFavorites();
+    })();
+  </script>
+</body>
+</html>
