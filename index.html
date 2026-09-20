@@ -514,7 +514,7 @@
       try { localStorage.setItem('sr_light_theme', isLight ? '1' : '0'); } catch(e){}
     }
 
-    // 2. CAMBIO LINGUA (AGGIORNA SUBITO TUTTO)
+    // 2. CAMBIO LINGUA (COMMUTA ALL'ISTANTE QUALSIASI TESTO)
     function appSetLang(l) {
       currentLang = l;
       document.getElementById('btn-it').className = 'lang-btn' + (l === 'it' ? ' active' : '');
@@ -587,5 +587,4 @@
           canvas.width = img.width;
           canvas.height = cropH;
           ctx.drawImage(img, 0, startY, img.width, cropH, 0, 0, img.width, cropH);
-          cb(canvas.toDataURL('image/jpeg', 0.9));
-   
+          cb(canvas.toDataURL('image/jpe
