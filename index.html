@@ -354,7 +354,7 @@
       </div>
     </div>
 
-    <!-- CHIAVE API -->
+    <!-- CONFIGURAZIONE CHIAVE API -->
     <div class="card" style="padding: 12px;">
       <details id="api-details">
         <summary style="font-size: 12px; font-weight: 700; color: #fbbf24; cursor: pointer;">🔑 Google AI API Key (Kostenlos / Gratuita)</summary>
@@ -513,7 +513,7 @@
       try { localStorage.setItem('sr_light_theme', isLight ? '1' : '0'); } catch(e){}
     }
 
-    // 2. CAMBIO LINGUA IMMEDIATO (IT / DE)
+    // 2. CAMBIO LINGUA (COMMUTAZIONE ISTANTANEA SENZA RICARICARE)
     function appSetLang(l) {
       currentLang = l;
       document.getElementById('btn-it').className = 'lang-btn' + (l === 'it' ? ' active' : '');
@@ -587,7 +587,4 @@
           canvas.height = cropH;
           ctx.drawImage(img, 0, startY, img.width, cropH, 0, 0, img.width, cropH);
           cb(canvas.toDataURL('image/jpeg', 0.9));
-        } else {
-          cb(url);
-        }
-   
+        } e
